@@ -14,7 +14,7 @@ app.use(express.errorHandler());
 var routes = {
   dir: __dirname + '/public'
 };
-app.use(express.static(routes.dir)); //setup static public directory
+app.use(express.static(__dirname)); //setup static public directory
 
 
 // render index page
