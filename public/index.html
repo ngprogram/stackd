@@ -18,12 +18,12 @@
       stackd
     </div>
 
-    <div class="top-container">
+    <div class="top-container" ng-show="searchCtrl.showData">
       <div class="topic">
-        {{searchCtrl.data.topic}}
+        {{searchCtrl.newData.topic}}
       </div>
 
-      <div class="search-again-button" ng-show="searchCtrl.showData">
+      <div class="search-again-button">
         <button ng-click="searchCtrl.showData = !searchCtrl.showData">Search Again</button>
       </div>
     </div>
@@ -44,7 +44,7 @@
         </div>
         <div class="top-comment">
           Top Comment
-          <p>{{searchCtrl.data.topComment}}</p>
+          <p>{{searchCtrl.newData.topComment}}</p>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
         <div>
           Top Values
           <ul>
-            <li ng-repeat="value in searchCtrl.data.topValues track by $index">{{value}}</li>
+            <li ng-repeat="value in searchCtrl.newData.topValues track by $index">{{value.key}}</li>
           </ul>
         </div>
       </div>
@@ -61,13 +61,13 @@
         <div class="positive-comments">
           Positive Comments
           <ul>
-            <li ng-repeat="comment in searchCtrl.data.posComments track by $index">{{comment}}</li>
+            <li ng-repeat="comment in searchCtrl.newData.posComments track by $index">{{comment}}</li>
           </ul>
         </div>
         <div class="negative-comments">
           Negative Comments
           <ul>
-            <li ng-repeat="comment in searchCtrl.data.negComments track by $index">{{comment}}</li>
+            <li ng-repeat="comment in searchCtrl.newData.negComments track by $index">{{comment}}</li>
           </ul>
         </div>
       </div>

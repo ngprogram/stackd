@@ -7,13 +7,18 @@
     this.searchTerm = '';
     this.incomingData = {};
     this.showData = ChartFactory.showData;
+    this.newData = ChartFactory.newData;
     this.search = function(val) {
       $http.get('/search/' + val)
       .success(function(data, status) {
         console.log('qwer',data,status);
         vm.incomingData = data;
+        ChartFactory.newData = data;
+        vm.newData = data;
+        console.log('hihi',ChartFactory.newData);
+        console.log('hoho', vm.newData);
         console.log('success');
-        console.log(1234,vm.incomingData.avg);
+        // console.log(1234,vm.incomingData.avg);
         vm.showData = true;
         ChartFactory.data[0].values[0].value = Math.round((vm.incomingData.avg * 100) * 100) / 100;
         if (vm.incomingData.avg < 0) {
@@ -41,6 +46,7 @@
   app.factory('ChartFactory', ChartFactory);
 
   function ChartFactory() {
+    var newData = {};
     var showData = false;
 
     var options = {
@@ -119,7 +125,8 @@
     return {
       options: options,
       data: data,
-      showData: showData
+      showData: showData,
+      newData: newData
     }; 
   }
 
