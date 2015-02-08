@@ -15,18 +15,15 @@ function aggregate(req,res) {
   total.forEach(function(obj) {
     var sentiment = obj.sentiment;
     avgRating += obj[Object.keys(obj)[2]];
-    console.log(storage, sentiment);
     if (!storage[sentiment]) {
       storage[sentiment] = 1;
     } else {
       storage[sentiment]++;
     }
   });
-  console.log(storage);
   var returnResult = {};
   returnResult.avg = avgRating/total.length;
   returnResult.topValues = sortObject(storage);
-  console.log('RES',returnResult);
   clear();
   res.send(returnResult);
 };
