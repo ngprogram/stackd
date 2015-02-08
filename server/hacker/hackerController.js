@@ -23,8 +23,7 @@ function gatherComments(req, res, next) {
     console.log('counter', count);
     console.log('total', total);
     if (count >= total) {
-      console.log('ended');
-      // next();
+      next();
     }
   });
 }
@@ -46,7 +45,6 @@ function getCommentsFromStoryID(id, keyword, callback) {
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       var commentsArray = JSON.parse(body).kids;
       var title = JSON.parse(body).title;
-      console.log(title);
       if (checkTitleForKeyword(keyword, title)) {
         commentsArray.forEach(function(commentId) {
           total++;
@@ -58,13 +56,10 @@ function getCommentsFromStoryID(id, keyword, callback) {
 
 //returns comment from
 function getComment(id, callback) {
-  // console.log('getting comment', id);
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       var comment = JSON.parse(body).text;
-      console.log('comment');
-      // idolController.addSentiment(comment, callback);
-      callback(null, 'no error');
+      idolController.addSentiment(comment, callback);
     });
 }
 
