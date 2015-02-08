@@ -54,7 +54,7 @@ function parseSentiments(sentiments) {
     }
   }
   if (negativeSentiments) {
-    for (var i = 0; i < positiveSentiments.length; i++) {
+    for (var i = 0; i < negativeSentiments.length; i++) {
       sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative'));
     }
   }
