@@ -52,7 +52,8 @@
     var options = {
       chart: {
         type: 'multiBarHorizontalChart',
-        height: 200,
+        height: 235,
+        width: 580,
         x: function(d){return d.label;},
         y: function(d){return d.value;},
         showControls: true,
