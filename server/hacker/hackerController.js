@@ -10,6 +10,8 @@ var commentsArray = [];
 hackerController.getCommentsFromStoryID = getCommentsFromStoryID;
 hackerController.getComment = getComment;
 hackerController.gatherComments = gatherComments;
+hackerController.clear = clear;
+hackerController.getCommentFromSentiment = getCommentFromSentiment;
 
 function gatherComments(req, res, next) {
   var keyword = req.params.term;
@@ -42,13 +44,16 @@ function goThroughTitles(keyword, callback) {
 function getCommentsFromStoryID(id, keyword, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
-      var commentsArray = JSON.parse(body).kids;
-      var title = JSON.parse(body).title;
-      if (checkTitleForKeyword(keyword, title)) {
-        commentsArray.forEach(function(commentId) {
-          total++;
-          getComment(commentId, callback);
-        });
+
+      if (!err) {
+        var commentsArray = JSON.parse(body).kids;
+        var title = JSON.parse(body).title;
+        if (checkTitleForKeyword(keyword, title)) {
+          commentsArray.forEach(function(commentId) {
+            total++;
+            getComment(commentId, callback);
+          });
+        }
       }
     });
 }
@@ -57,8 +62,11 @@ function getCommentsFromStoryID(id, keyword, callback) {
 function getComment(id, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
-      var comment = JSON.parse(body).text;
-      idolController.getSentimentsSync(comment, callback);
+      if (!err) {
+        var comment = JSON.parse(body).text;
+        commentsArray.push(comment);
+        idolController.getSentimentsSync(comment, callback);
+      }
     });
 }
 
@@ -67,12 +75,15 @@ function checkTitleForKeyword(keyword, title) {
 }
 
 function clear() {
-
+  commentsArray = [];
 }
 
 function getCommentFromSentiment(sentiment) {
-
-  return comment;
+  for (var i = 0; i < commentsArray; i++) {
+    if (commentsArray[i].toLowerCase().match(sentiment.toLowerCase())) {
+      return commentsArray[i];
+    }
+  }
 }
 
 module.exports = hackerController;
