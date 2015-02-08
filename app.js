@@ -1,11 +1,7 @@
 /*jshint node:true*/
-
-// app.js
-// This file contains the server side JavaScript code for your application.
-// This sample application uses express as web application framework (http://expressjs.com/),
-// and jade as template engine (http://jade-lang.com/).
-
 var express = require('express');
+var hackerController = require('./server/hacker/hackerController');
+var bodyParser = require('body-parser');
 
 // setup middleware
 var app = express();
@@ -16,11 +12,18 @@ var routes = {
 };
 app.use(express.static(__dirname)); //setup static public directory
 
+app.use(bodyParser.json());
+app.use(express.static(__dirname + '/public')); //setup static public directory
+app.set('views', __dirname + '/views'); //optional since express defaults to CWD/views
 
 // render index page
 app.get('/', function(req, res){
   res.sendfile(routes.dir + '/index.html');
 });
+
+//chang with
+app.get('/search', hackerController.gatherComments, aggregatorController.aggregate);
+
 
 // There are many useful environment variables available in process.env.
 // VCAP_APPLICATION contains useful information about a deployed application.
