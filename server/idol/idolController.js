@@ -10,7 +10,7 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
 
-function getSentimentsSync(text) {
+function getSentimentsSync(text, title) {
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
 
@@ -23,7 +23,7 @@ function getSentimentsSync(text) {
     if (error) {
       console.log(err);
     } else {
-      sentimentController.addSentiment(parseSentiments(sentiments, text));
+      parseSentiments(sentiments, text, title);
     }
   });
 
@@ -41,7 +41,7 @@ function generateQuery(text) {
   return queryString;
 }
 
-function parseSentiments(sentiments, comment) {
+function parseSentiments(sentiments, comment, title) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
@@ -49,25 +49,25 @@ function parseSentiments(sentiments, comment) {
   if (positiveSentiments) {
     console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
-      sentimentsArr.push(processSentiment(positiveSentiments[i], 'positive', comment));
+      sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title));
     }
   }
   if (negativeSentiments) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative', comment));
+      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title));
     }
   }
 
   return sentimentsArr;
 }
 
-function processSentiment(sentiment, rating, comment) {
+function processSentiment(sentiment, rating, comment, title) {
   var sentimentObj = {};
 
   sentimentObj.sentiment = sentiment.sentiment;
   sentimentObj.rating = rating;
   sentimentObj.score = sentiment.score;
-  sentimentObj.topic = sentiment.topic;
+  sentimentObj.title = title;
   sentimentObj.comment = comment;
 
   return sentimentObj;
