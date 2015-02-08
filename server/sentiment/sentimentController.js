@@ -6,6 +6,8 @@ mongoose.connect(mongooseURI.URI);
 
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
+sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
+sentimentController.getCommentFromSentiment = getCommentFromSentiment;
 
 function addSentiment(sentiment, callback) {
   Sentiment.create(sentiment, callback);
