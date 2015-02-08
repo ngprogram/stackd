@@ -1,3 +1,4 @@
+var hackerController = require('../hacker/hackerController');
 
 var aggregatorController = {};
 aggregatorController.add = add;
@@ -21,9 +22,21 @@ function aggregate(req,res) {
       storage[sentiment]++;
     }
   });
+
+  var topVals = sortObject(storage);
+    
+  var comments = [];
+  comments.push(hackerController.getCommentFromSentiment(topVals[0].key));
+  comments.push(hackerController.getCommentFromSentiment(topVals[1].key));
+  
   var returnResult = {};
   returnResult.avg = avgRating/total.length;
-  returnResult.topValues = sortObject(storage);
+  returnResult.topValues = topVals;
+  returnResult.twoComments = comments;
+  hackerController.clear();
+
+  console.log('RESULT');
+  console.log(returnResult);
   clear();
   res.send(returnResult);
 };
