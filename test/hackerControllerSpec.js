@@ -5,8 +5,8 @@ describe('hackerController', function() {
   it('should get array of comments from post', function(done) {
     var req = {};
     req.body = {};
-    body.keyword = 'React';
-    hackerController.gatherComments(req, res, );
+    req.body.keyword = 'Docker';
+    hackerController.gatherComments(req);
   });
 
   xit('should return comment', function(done) {
