@@ -14,14 +14,63 @@
   </head>
 
   <body class="container" ng-controller="SearchController as searchCtrl">
-    <div>
+    <div class="title">
+      stackd
+    </div>
+
+    <div class="top-container" ng-show="searchCtrl.showData">
+      <div class="topic">
+        {{searchCtrl.newData.topic}}
+      </div>
+
+      <div class="search-again-button">
+        <button ng-click="searchCtrl.showData = !searchCtrl.showData">Search Again</button>
+      </div>
+    </div>
+
+    <div class="search-bar">
       <input ng-model="term" placeholder="enter term">
       <button ng-click="searchCtrl.search(term)">search</button>
     </div>
-    <div>
+
+    <div class="chart" ng-show="searchCtrl.showData">
       <nvd3 options="searchCtrl.options" data="searchCtrl.data" refreshDataOnly="true" objectEquality="true"></nvd3>
-      {{searchCtrl.incomingData}}
-      <button ng-click="searchCtrl.test()">test</button>
+    </div>
+
+    <div class="bottom-container">
+      <div class="dashboard section-1" ng-show="searchCtrl.showData">
+        <div>
+          Percentage: {{searchCtrl.data[0].values[0].value}}%
+        </div>
+        <div class="top-comment">
+          Top Comment
+          <p>{{searchCtrl.newData.topComment}}</p>
+        </div>
+      </div>
+
+      <div class="top-values section-2" ng-show="searchCtrl.showData">
+        <div>
+          Top Values
+          <ul>
+            <li ng-repeat="value in searchCtrl.newData.topValues track by $index">{{value.key}}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="comments section-3" ng-show="searchCtrl.showData">
+        <div class="positive-comments">
+          Positive Comments
+          <ul>
+            <li ng-repeat="comment in searchCtrl.newData.posComments track by $index">{{comment}}</li>
+          </ul>
+        </div>
+        <div class="negative-comments">
+          Negative Comments
+          <ul>
+            <li ng-repeat="comment in searchCtrl.newData.negComments track by $index">{{comment}}</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
   </body>
