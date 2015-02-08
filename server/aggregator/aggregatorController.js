@@ -2,56 +2,58 @@ var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
 aggregatorController.aggregate = aggregate;
 
-var storage = {};
-var avgRating = 0;
 
 function aggregate(req,res) {
+  var storage = {};
+  var avgRating = 0;
   var term = req.params.term;
 
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
-    // console.log('length', total.length);
     if (total.length === 0) {
       res.send([]);
     }
 
     total.forEach(function(obj) {
+      // console.log('ob',JSON.stringify(obj.id));
+      var objId = JSON.stringify(obj.id);
       var sentiment = obj.sentiment;
+      var valObj = {};
       avgRating += obj['score'];
       if (!storage[sentiment]) {
-        storage[sentiment] = 1;
+        valObj.count = 1;
+        valObj.id = objId;
+        storage[sentiment] = valObj;
       } else {
-        storage[sentiment]++;
+        storage[sentiment].count++;
       }
     });
-    // console.log('storage', storage);
-    var topVals = sortObject(storage);
-    console.log('topval', topVals);
+    var topVals = sortObjectByCount(storage);
+    console.log('storage', topVals);
+    console.log('topval', storage[topVals[0].key].id, term);
     var comments = [];
-
     // TO DO, if not sentiments, then do not use topVals[0].key
-    sentimentController.getCommentFromSentiment(topVals[0].key, term, function(err, foundComment) {
-      console.log(foundComment);
-      comments = comments.concat(foundComment);
+    sentimentController.getCommentFromSentiment(storage[topVals[0].key].id, function(err, foundSentiment) {
+      console.log('foundsent', foundSentiment);
+      comments = comments.concat(foundSentiment);
       var returnResult = {};
       returnResult.avg = avgRating/total.length;
       returnResult.topValues = topVals;
       returnResult.twoComments = comments;
-      console.log(returnResult);
-      clearCache();
+      console.log('return res',returnResult);
+      //clearCache
+      storage = {};
+      avgRating = 0;
       res.send(returnResult);
-    })
+    });
   });
 };
 
-function clearCache() {
-  storage = {};
-  avgRating = 0;
-};
 
-function sortObject(obj) {
+function sortObjectByCount(obj) {
   var arr = [];
   for (var prop in obj) {
     if (obj.hasOwnProperty(prop)) {
+      console.log('prop', prop);
       arr.push({
         'key': prop,
         'value': obj[prop]
@@ -59,9 +61,11 @@ function sortObject(obj) {
     }
   }
   arr.sort(function(a, b) {
-    return b.value - a.value;
+    return b.value.count - a.value.count;
   });
+  console.log('arr', arr);
   return arr;
 }
+
 
 module.exports = aggregatorController;
