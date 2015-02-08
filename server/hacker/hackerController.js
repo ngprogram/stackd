@@ -7,7 +7,6 @@ var total = 0;
 var count = 0;
 
 hackerController.gatherSentiments = gatherSentiments;
-hackerController.gatherComments = gatherComments;
 
 function gatherSentiments() {
   count = 0;
@@ -15,45 +14,40 @@ function gatherSentiments() {
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topIDs = JSON.parse(body);
-      topIDs.forEach(function(ID) {
-        getCommentsFromStoryID(ID, keyword);
+      topIDs.slice(0,50).forEach(function(ID) {
+        getCommentsFromStoryID(ID);
       });
     });
 }
 
-function getCommentsFromStoryID(id, keyword) {
+function getCommentsFromStoryID(id) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
 
-      if (!err) {
+      if (!err && JSON.parse(body).kids) {
+        console.log(JSON.parse(body));
         var commentsArray = JSON.parse(body).kids;
         var title = JSON.parse(body).title;
-        if (checkTitleForKeyword(keyword, title)) {
-          commentsArray.forEach(function(commentId) {
-            total++;
-            getComment(commentId);
-          });
-        }
+        commentsArray.forEach(function(commentId) {
+          total++;
+          getComment(commentId, title);
+        });
       }
     });
 }
 
 //returns comment from
-function getComment(id, callback) {
+function getComment(id, title, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       if (!err) {
         var comment = JSON.parse(body).text;
-        commentsArray.push(comment);
-        idolController.getSentimentsSync(comment);
+        if (comment) {
+          idolController.getSentimentsSync(comment, title);
+        }
       }
     });
 }
-
-function checkTitleForKeyword(keyword, title) {
-  return Boolean(title.toLowerCase().match(keyword.toLowerCase()));
-}
-
 module.exports = hackerController;
 
 
