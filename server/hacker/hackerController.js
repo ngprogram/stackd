@@ -6,71 +6,48 @@ var hackerController = {};
 var total = 0;
 var count = 0;
 
-hackerController.getCommentsFromStoryID = getCommentsFromStoryID;
-hackerController.getComment = getComment;
-hackerController.gatherComments = gatherComments;
+hackerController.gatherSentiments = gatherSentiments;
 
-function gatherComments(req, res, next) {
-  var keyword = req.params.term;
-  goThroughTitles(keyword, function(err, sentiment) {
-    if (!err) {
-      aggregatorController.add(sentiment);
-    }
-    if (count < total) {
-      count++;
-    }
-    if (count >= total) {
-      next();
-    }
-  });
-}
-
-function goThroughTitles(keyword, callback) {
+function gatherSentiments() {
   count = 0;
   total = 0;
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topIDs = JSON.parse(body);
       topIDs.slice(0,50).forEach(function(ID) {
-        getCommentsFromStoryID(ID, keyword, callback);
+        getCommentsFromStoryID(ID);
       });
     });
 }
 
-
-function getCommentsFromStoryID(id, keyword, callback) {
+function getCommentsFromStoryID(id) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
 
-      if (!err) {
+      if (!err && JSON.parse(body).kids) {
+        console.log(JSON.parse(body));
         var commentsArray = JSON.parse(body).kids;
         var title = JSON.parse(body).title;
-        if (checkTitleForKeyword(keyword, title)) {
-          commentsArray.forEach(function(commentId) {
-            total++;
-            getComment(commentId, callback);
-          });
-        }
+        commentsArray.forEach(function(commentId) {
+          total++;
+          getComment(commentId, title);
+        });
       }
     });
 }
 
 //returns comment from
-function getComment(id, callback) {
+function getComment(id, title, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       if (!err) {
         var comment = JSON.parse(body).text;
-        commentsArray.push(comment);
-        idolController.getSentimentsSync(comment, callback);
+        if (comment) {
+          idolController.getSentimentsSync(comment, title);
+        }
       }
     });
 }
-
-function checkTitleForKeyword(keyword, title) {
-  return Boolean(title.toLowerCase().match(keyword.toLowerCase()));
-}
-
 module.exports = hackerController;
 
 
