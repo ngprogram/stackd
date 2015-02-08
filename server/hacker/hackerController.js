@@ -6,40 +6,22 @@ var hackerController = {};
 var total = 0;
 var count = 0;
 
-hackerController.getCommentsFromStoryID = getCommentsFromStoryID;
-hackerController.getComment = getComment;
+hackerController.gatherSentiments = gatherSentiments;
 hackerController.gatherComments = gatherComments;
 
-function gatherComments(req, res, next) {
-  // var keyword = req.params.term;
-  var keyword = 'paanda';
-  goThroughTitles(keyword, function(err, sentiment) {
-    if (!err) {
-      aggregatorController.add(sentiment);
-    }
-    if (count < total) {
-      count++;
-    }
-    if (count >= total) {
-      next();
-    }
-  });
-}
-
-function goThroughTitles(keyword, callback) {
+function gatherSentiments() {
   count = 0;
   total = 0;
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topIDs = JSON.parse(body);
-      topIDs.slice(0,50).forEach(function(ID) {
-        getCommentsFromStoryID(ID, keyword, callback);
+      topIDs.forEach(function(ID) {
+        getCommentsFromStoryID(ID, keyword);
       });
     });
 }
 
-
-function getCommentsFromStoryID(id, keyword, callback) {
+function getCommentsFromStoryID(id, keyword) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
 
@@ -49,7 +31,7 @@ function getCommentsFromStoryID(id, keyword, callback) {
         if (checkTitleForKeyword(keyword, title)) {
           commentsArray.forEach(function(commentId) {
             total++;
-            getComment(commentId, callback);
+            getComment(commentId);
           });
         }
       }
@@ -63,7 +45,7 @@ function getComment(id, callback) {
       if (!err) {
         var comment = JSON.parse(body).text;
         commentsArray.push(comment);
-        idolController.getSentimentsSync(comment, callback);
+        idolController.getSentimentsSync(comment);
       }
     });
 }
