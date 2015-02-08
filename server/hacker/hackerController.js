@@ -11,7 +11,8 @@ hackerController.getComment = getComment;
 hackerController.gatherComments = gatherComments;
 
 function gatherComments(req, res, next) {
-  var keyword = req.params.term;
+  // var keyword = req.params.term;
+  var keyword = 'paanda';
   goThroughTitles(keyword, function(err, sentiment) {
     if (!err) {
       aggregatorController.add(sentiment);
