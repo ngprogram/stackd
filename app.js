@@ -24,7 +24,8 @@ app.get('/', function(req, res){
 
 //chang with
 //
-app.get('/search/:term', hackerController.gatherComments, aggregatorController.aggregate);
+app.get('/search/:term', aggregatorController.aggregate);
+app.get('/search/update', hackerController.gatherComments);
 
 
 // There are many useful environment variables available in process.env.
