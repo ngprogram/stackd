@@ -16,6 +16,7 @@ function gatherSentiments() {
       var topIDs = JSON.parse(body);
       topIDs.slice(0,50).forEach(function(ID) {
         getCommentsFromStoryID(ID);
+        getCommentsFromStoryID(ID, keyword, callback);
       });
     });
 }
@@ -48,6 +49,7 @@ function getComment(id, title, callback) {
       }
     });
 }
+
 module.exports = hackerController;
 
 
