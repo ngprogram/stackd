@@ -1,18 +1,18 @@
-var hackerController = require('../hacker/hackerController');
-
+var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
-aggregatorController.add = add;
 aggregatorController.aggregate = aggregate;
 
 var storage = {};
 var total = [];
 var avgRating = 0;
 
-function add(sent) {
-  total = total.concat(sent);
-};
-
 function aggregate(req,res) {
+  var term = req.params.term;
+  total = sentimentController.getSentimentsFromKeyword();
+  console.log(total);
+  if (!total) {
+    res.send([]);
+  }
   total.forEach(function(obj) {
     var sentiment = obj.sentiment;
     avgRating += obj[Object.keys(obj)[2]];
@@ -26,8 +26,8 @@ function aggregate(req,res) {
   var topVals = sortObject(storage);
     
   var comments = [];
-  comments.push(hackerController.getCommentFromSentiment(topVals[0].key));
-  comments.push(hackerController.getCommentFromSentiment(topVals[1].key));
+  comments.push(sentimentController.getCommentFromSentiment(topVals[0].key), term);
+  comments.push(sentimentController.getCommentFromSentiment(topVals[1].key), term);
   
   var returnResult = {};
   returnResult.avg = avgRating/total.length;
