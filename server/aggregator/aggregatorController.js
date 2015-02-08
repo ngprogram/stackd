@@ -29,8 +29,9 @@ function aggregate(req,res) {
     var comments = [];
 
     // TO DO, if not sentiments, then do not use topVals[0].key
-    sentimentController.getCommentFromSentiment(topVals[0].key, term, function(err, foundSentiment) {
-      comments = comments.concat(foundSentiment);
+    sentimentController.getCommentFromSentiment(topVals[0].key, term, function(err, foundComment) {
+      console.log(foundComment);
+      comments = comments.concat(foundComment);
       var returnResult = {};
       returnResult.avg = avgRating/total.length;
       returnResult.topValues = topVals;
