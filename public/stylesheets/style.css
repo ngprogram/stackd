@@ -82,7 +82,6 @@ table {
 
   margin-left: auto;
   margin-right: auto;
-  /*margin: auto;*/
 	z-index: 2;
 	background-color: white;
 }
@@ -104,14 +103,15 @@ table {
 }
 
 /*Bottom Section*/
-.section-1, .section-2, .section-3 {
-	/*width: 33%;*/
-	float: left;
-	border: solid;
-}
-
 .bottom-container {
-	width: 500px;
+	width: 100%;
 	border: 1px solid black;
 	overflow: hidden; /* add this to contain floated children */
+}
+
+.section-1, .section-2, .section-3 {
+	width: 30%;
+	height: 100%;
+	float: left;
+	border: solid;
 }
