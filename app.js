@@ -22,10 +22,8 @@ app.get('/', function(req, res){
   res.sendfile(routes.dir + '/index.html');
 });
 
-//chang with
-//
 app.get('/search/:term', aggregatorController.aggregate);
-app.get('/search/update', hackerController.gatherComments);
+app.get('/update', hackerController.gatherSentiments);
 
 
 // There are many useful environment variables available in process.env.

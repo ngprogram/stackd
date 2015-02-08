@@ -14,7 +14,7 @@ function addSentiment(sentiment, callback) {
 }
 
 function getSentimentsFromKeyword(keyword, callback) {
-  Sentiment.find({topic: keyword}, callback);
+  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}}, callback);
 }
 
 function getCommentFromSentiment(sentiment, keyword, callback) {

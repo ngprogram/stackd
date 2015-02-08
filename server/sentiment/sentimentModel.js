@@ -3,12 +3,14 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var sentimentSchema = new Schema({
-  sentiment: String,
+  sentiment: { type: String },
   rating: String,
   score: Number,
-  topic: String,
-  comment: { type: String, unique: true }
+  title: String,
+  comment: { type: String }
 });
+
+sentimentSchema.index({ "sentiment": 1, "comment": 1 }, { unique: true });
 
 // compile message schema into a message model
 module.exports = mongoose.model('Sentiment', sentimentSchema);
