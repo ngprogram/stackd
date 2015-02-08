@@ -6,7 +6,8 @@ var sentimentSchema = new Schema({
   sentiment: String,
   rating: String,
   score: Number,
-  topic: String
+  topic: String,
+  comment: String
 });
 
 // compile message schema into a message model
