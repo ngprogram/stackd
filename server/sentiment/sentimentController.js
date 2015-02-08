@@ -21,7 +21,7 @@ function getSentimentsFromKeyword(keyword, callback) {
 
 //passing back single object, and need id
 function getCommentFromSentimentID(id, callback) {
-  Sentiment.findById(id, callback);
-
+  Sentiment.findById(JSON.parse(id), callback);
+}
 
 module.exports = sentimentController;
