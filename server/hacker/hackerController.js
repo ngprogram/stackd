@@ -43,6 +43,7 @@ function goThroughTitles(keyword, callback) {
     });
 }
 
+
 function getCommentsFromStoryID(id, keyword, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
