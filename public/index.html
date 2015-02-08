@@ -1,8 +1,15 @@
 <!DOCTYPE html>
+<html ng-app="stackdApp">
   <head>
-    <title></title>
+    <link href="./public/stylesheets/style.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+   <script src="./public/pubApp.js"></script>
+
   </head>
-  <body>
-    <div>HI</div>
+  <body class="container">
+    <div ng-controller="SearchController as searchCtrl">
+      <input ng-model="term" placeholder="enter term">
+     <button ng-click="searchCtrl.search(term)">search</button>
+    </div>
   </body>
-</html> 
+</html>
