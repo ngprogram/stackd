@@ -5,13 +5,10 @@ var aggregatorController = require('../aggregator/aggregatorController');
 var hackerController = {};
 var total = 0;
 var count = 0;
-var commentsArray = [];
 
 hackerController.getCommentsFromStoryID = getCommentsFromStoryID;
 hackerController.getComment = getComment;
 hackerController.gatherComments = gatherComments;
-hackerController.clear = clear;
-hackerController.getCommentFromSentiment = getCommentFromSentiment;
 
 function gatherComments(req, res, next) {
   var keyword = req.params.term;
@@ -72,18 +69,6 @@ function getComment(id, callback) {
 
 function checkTitleForKeyword(keyword, title) {
   return Boolean(title.toLowerCase().match(keyword.toLowerCase()));
-}
-
-function clear() {
-  commentsArray = [];
-}
-
-function getCommentFromSentiment(sentiment) {
-  for (var i = 0; i < commentsArray; i++) {
-    if (commentsArray[i].toLowerCase().match(sentiment.toLowerCase())) {
-      return commentsArray[i];
-    }
-  }
 }
 
 module.exports = hackerController;

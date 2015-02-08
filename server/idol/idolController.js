@@ -1,5 +1,6 @@
 var request = require('request');
 var configAuth = require('../../config/auth');
+var sentimentController = require('../sentiment/sentimentController');
 
 var _apiKey = configAuth.idolAuth.apiKey;
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
@@ -8,8 +9,6 @@ var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
-
-console.log('hi');
 
 function getSentimentsSync(text, callback) {
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
@@ -24,7 +23,7 @@ function getSentimentsSync(text, callback) {
     if (error) {
       callback(err);
     } else {
-      callback(null, parseSentiments(sentiments));
+      sentimentController.addSentiment(parseSentiments(sentiments, text));
     }
   });
 
@@ -42,7 +41,7 @@ function generateQuery(text) {
   return queryString;
 }
 
-function parseSentiments(sentiments) {
+function parseSentiments(sentiments, comment) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
@@ -50,25 +49,26 @@ function parseSentiments(sentiments) {
   if (positiveSentiments) {
     console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
-      sentimentsArr.push(processSentiment(positiveSentiments[i], 'positive'));
+      sentimentsArr.push(processSentiment(positiveSentiments[i], 'positive', comment));
     }
   }
   if (negativeSentiments) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative'));
+      sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative', comment));
     }
   }
 
   return sentimentsArr;
 }
 
-function processSentiment(sentiment, rating) {
+function processSentiment(sentiment, rating, comment) {
   var sentimentObj = {};
 
   sentimentObj.sentiment = sentiment.sentiment;
   sentimentObj.rating = rating;
   sentimentObj.score = sentiment.score;
   sentimentObj.topic = sentiment.topic;
+  sentimentObj.comment = comment;
 
   return sentimentObj;
 }
