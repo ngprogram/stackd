@@ -9,9 +9,12 @@
     this.search = function(val) {
       $http.get('/search/' + val)
       .success(function(data, status) {
+        console.log('qwer',data,status);
         vm.incomingData = data;
-        console.log('success');
+        console.log('success', vm.incomingData);
         console.log(vm.incomingData.avg);
+        console.log(vm.incomingData.topComment);
+
         ChartFactory.data[0].values[0].value = vm.incomingData.avg * 100;
       })
       .error(function(error) {
