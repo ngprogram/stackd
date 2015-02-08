@@ -1,6 +1,5 @@
 var request = require('request');
 var idolController = require('../idol/idolController');
-var aggregatorController = require('../aggregator/aggregatorController');
 
 var hackerController = {};
 var total = 0;
