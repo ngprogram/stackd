@@ -1,9 +1,7 @@
-var mongoose = require('mongoose');
-var $ = require('jquery');
-var sentimentController = require('../sentiment/sentimentController');
-var topicController = require('../topic/topicController');
+var request = require('request');
+var configAuth = require('../../config/auth');
 
-var _apiKey = '';
+var _apiKey = configAuth.idolAuth.apiKey;
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
@@ -11,21 +9,37 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
 
+console.log('hi');
 
 function getSentimentsSync(text, callback) {
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
+  var queryString = generateQuery(text);
 
-  $.ajax({
-    url: _syncUrl,
-    type: 'GET',
-    data: parameters,
-    success: function(sentiments) {
-      callback(parseSentiments(sentiments));
-    },
-    error: function(err) {
-      console.log('Failed to get Sentiments', err);
+  request({
+    method: 'GET',
+    uri: _syncUrl + queryString,
+  },
+  function (error, response) {
+    var sentiments = JSON.parse(response.body);
+    if (error) {
+      callback(err);
+    } else {
+      callback(null, parseSentiments(sentiments));
     }
   });
+
+}
+
+function generateQuery(text) {
+  var queryString = '?text=';
+  var textArray = text.split(' ');
+
+  for (var i = 0; i < textArray.length; i++) {
+    queryString += ('+' + textArray[i]);
+  }
+
+  queryString += ('&apikey=' + _apiKey);
+  return queryString;
 }
 
 function parseSentiments(sentiments) {
@@ -34,13 +48,14 @@ function parseSentiments(sentiments) {
   var negativeSentiments = sentiments.negative;
 
   if (positiveSentiments) {
-    for (var i = 0; i < positiveSentiments.length; ) {
-      sentimentsArr.push(processSentiment(sentiments.positive, 'positive'));
+    console.log(positiveSentiments);
+    for (var i = 0; i < positiveSentiments.length; i++) {
+      sentimentsArr.push(processSentiment(positiveSentiments[i], 'positive'));
     }
   }
   if (negativeSentiments) {
-    for (var i = 0; i < positiveSentiments.length; ) {
-      sentimentsArr.push(processSentiment(sentiments.negative, 'negative'));
+    for (var i = 0; i < positiveSentiments.length; i++) {
+      sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative'));
     }
   }
 
