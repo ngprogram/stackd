@@ -10,7 +10,7 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
 
-function getSentimentsSync(text, callback) {
+function getSentimentsSync(text) {
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
 
@@ -21,7 +21,7 @@ function getSentimentsSync(text, callback) {
   function (error, response) {
     var sentiments = JSON.parse(response.body);
     if (error) {
-      callback(err);
+      console.log(err);
     } else {
       sentimentController.addSentiment(parseSentiments(sentiments, text));
     }
