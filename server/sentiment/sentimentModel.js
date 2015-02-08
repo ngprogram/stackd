@@ -3,8 +3,11 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var sentimentSchema = new Schema({
-  percentage: Number,
-  sentiments: [String]
+  sentiment: String,
+  rating: String,
+  score: Number,
+  topic: String,
+  count: Number
 });
 
 // compile message schema into a message model
