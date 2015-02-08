@@ -1,27 +1,25 @@
 var request = require('request');
-// var idolController = require('../idol/idolController');
+var idolController = require('../idol/idolController');
 var aggregatorController = require('../aggregator/aggregatorController');
 
 var hackerController = {};
-var counter = 0;
 var total = 0;
 var count = 0;
+var commentsArray = [];
 
 hackerController.getCommentsFromStoryID = getCommentsFromStoryID;
 hackerController.getComment = getComment;
 hackerController.gatherComments = gatherComments;
 
 function gatherComments(req, res, next) {
-  var keyword = req.body.keyword;
+  var keyword = req.params.term;
   goThroughTitles(keyword, function(err, sentiment) {
     if (!err) {
-      // aggregatorController.add(sentiment);
+      aggregatorController.add(sentiment);
     }
     if (count < total) {
       count++;
     }
-    console.log('counter', count);
-    console.log('total', total);
     if (count >= total) {
       next();
     }
@@ -30,6 +28,7 @@ function gatherComments(req, res, next) {
 
 function goThroughTitles(keyword, callback) {
   count = 0;
+  total = 0;
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topIDs = JSON.parse(body);
@@ -59,12 +58,21 @@ function getComment(id, callback) {
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       var comment = JSON.parse(body).text;
-      idolController.addSentiment(comment, callback);
+      idolController.getSentimentsSync(comment, callback);
     });
 }
 
 function checkTitleForKeyword(keyword, title) {
-  return Boolean(title.match(keyword));
+  return Boolean(title.toLowerCase().match(keyword.toLowerCase()));
+}
+
+function clear() {
+
+}
+
+function getCommentFromSentiment(sentiment) {
+
+  return comment;
 }
 
 module.exports = hackerController;
