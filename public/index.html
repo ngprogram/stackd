@@ -1,15 +1,28 @@
 <!DOCTYPE html>
 <html ng-app="stackdApp">
   <head>
-    <link href="./public/stylesheets/style.css" rel="stylesheet" type="text/css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
-   <script src="./public/pubApp.js"></script>
+    <meta charset="utf-8">  <!-- it's important for d3.js -->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/nvd3/nv.d3.js"></script> <!-- or use another assembly -->
+    <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+    <link rel="stylesheet" href="bower_components/nvd3/nv.d3.css">
 
+    <link href="./public/stylesheets/style.css" rel="stylesheet" type="text/css">
+    <!-- // <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script> -->
+   <script src="./public/pubApp.js"></script>
   </head>
-  <body class="container">
-    <div ng-controller="SearchController as searchCtrl">
+
+  <body class="container" ng-controller="SearchController as searchCtrl">
+    <div>
       <input ng-model="term" placeholder="enter term">
-     <button ng-click="searchCtrl.search(term)">search</button>
+      <button ng-click="searchCtrl.search(term)">search</button>
     </div>
+    <div>
+      <nvd3 options="searchCtrl.options" data="searchCtrl.data" refreshDataOnly="true" objectEquality="true"></nvd3>
+      {{searchCtrl.incomingData}}
+      <button ng-click="searchCtrl.test()">test</button>
+    </div>
+
   </body>
 </html>
