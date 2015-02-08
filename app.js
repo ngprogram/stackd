@@ -11,18 +11,22 @@ var express = require('express');
 var app = express();
 app.use(app.router);
 app.use(express.errorHandler());
-app.use(express.static(__dirname + '/public')); //setup static public directory
-app.set('views', __dirname + '/views'); //optional since express defaults to CWD/views
+var routes = {
+  dir: __dirname + '/public'
+};
+app.use(express.static(routes.dir)); //setup static public directory
+
 
 // render index page
 app.get('/', function(req, res){
-	res.render('index');
+  res.sendfile(routes.dir + '/index.html');
 });
 
 // There are many useful environment variables available in process.env.
 // VCAP_APPLICATION contains useful information about a deployed application.
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 // TODO: Get application information and use it in your app.
+
 
 // VCAP_SERVICES contains all the credentials of services bound to
 // this application. For details of its content, please refer to
