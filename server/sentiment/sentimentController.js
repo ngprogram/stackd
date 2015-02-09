@@ -14,7 +14,9 @@ function addSentiment(sentiment, callback) {
 
 function getSentimentsFromKeyword(keyword, callback) {
   var days = 30;
-  var time = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  var time = Date.now()/1000 - days * 24 * 60 * 60;
+  console.log('keyword', keyword);
+  console.log('time', time);
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
 }
 
