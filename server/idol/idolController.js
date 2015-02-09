@@ -10,8 +10,10 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
 
-function getSentimentsSync(comment, title) {
+function getSentimentsSync(comment) {
   var text = comment.text;
+  var title = comment.title;
+  var time = comment.date;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
 
@@ -24,7 +26,7 @@ function getSentimentsSync(comment, title) {
     if (error) {
       console.log(err);
     } else {
-      parseSentiments(sentiments, comment, title);
+      parseSentiments(sentiments, comment, title, time);
     }
   });
 }
@@ -41,27 +43,27 @@ function generateQuery(text) {
   return queryString;
 }
 
-function parseSentiments(sentiments, comment, title) {
+function parseSentiments(sentiments, comment, title, time) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
 
-  if (positiveSentiments) {
+  if (positiveSentiments && positiveSentiments.length > 0) {
     console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
       sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title));
     }
   }
-  if (negativeSentiments) {
+  if (negativeSentiments && negativeSentiments.length > 0) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title));
+      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time));
     }
   }
 
   return sentimentsArr;
 }
 
-function processSentiment(sentiment, rating, comment, title) {
+function processSentiment(sentiment, rating, comment, title, time) {
   var sentimentObj = {};
 
   sentimentObj.sentiment = sentiment.sentiment;
@@ -69,52 +71,10 @@ function processSentiment(sentiment, rating, comment, title) {
   sentimentObj.score = sentiment.score;
   sentimentObj.title = title;
   sentimentObj.comment = comment.text;
-  sentimentObj.date = comment.time;
-  sentimentsObj.author = comment.by;
+  sentimentObj.date = time;
+  sentimentObj.author = comment.by;
 
   return sentimentObj;
 }
-
-// function saveSentiments(sentimentsArr, topic, rating) {
-//   for (var i = 0; i < sentimentsArr.length; i++) {
-//     var sentimentToSave = {};
-//     var sentiment = sentimentsArr[i];
-
-//     sentimentToSave.sentiment = sentiment.sentiment;
-//     sentimentToSave.rating = rating;
-//     sentimentToSave.score = sentiment.score;
-//     sentimentToSave.topic = sentiment.topic;
-//     sentimentToSave.count = 1;
-
-//     sentimentController.save(sentimentToSave);
-//   }
-// }
-
-// function saveTopic(sentimentsObj, topic) {
-//   var topicToSave = {};
-//   var aggregate = sentimentsObj.aggregate;
-
-//   topicToSave.topic = aggregate.topic;
-//   topicToSave.sentimentCount = countSentiments(sentimentsObj);
-//   topicToSave.aggregateSentiment = aggregate.sentiment;
-//   topicToSave.aggregateSentimentScore = aggregate.score;
-// }
-
-// function countSentiments(sentimentsObj) {
-//   var count = 0;
-
-//   if (sentiments.positive) {
-//     for (var i = 0; i < sentiments.positive.length; i++) {
-//       count++;
-//     }
-//   }
-//   if (sentiments.negative) {
-//     for (var i = 0; i < sentiments.negative.length; i++) {
-//       count++;
-//     }
-//   }
-
-//   return count;
-// }
 
 module.exports = idolController;

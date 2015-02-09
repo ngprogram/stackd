@@ -1,11 +1,13 @@
 var request = require('request');
 var idolController = require('../idol/idolController');
+var aggregatorController = require('../aggregator/aggregatorController');
+var storyController = require('../story/storyController');
 
 var hackerController = {};
 var total = 0;
 var count = 0;
 
-hackerController.populate = populate;
+// hackerController.populate = populate;
 hackerController.gatherSentiments = gatherSentiments;
 
 function gatherSentiments() {
@@ -22,6 +24,7 @@ function gatherSentiments() {
 }
 
 function getCommentsFromStoryID(id) {
+  console.log('id', id);
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       if (!err && JSON.parse(body).kids) {
@@ -41,37 +44,11 @@ function getComment(id, title, callback) {
     .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
       if (!err) {
         var comment = JSON.parse(body);
-        if (comment) {
+        if (comment && comment.deleted === undefined) {
           idolController.getSentimentsSync(comment, title);
         }
       }
     });
-}
-
-function populate(lower, higher) {
-  var storyArray = [];
-  console.log('lower %d, higher %d', lower, higher);
-  for (var i = lower; i < higher; i++) {
-    request
-    .get('https://hacker-news.firebaseio.com/v0/item/' +i +'.json', function(err, response, body) {
-        var item = JSON.parse(body);
-        if (item.type === 'story') {
-          console.log('enter');
-          storyArray.push(item.id);
-
-          if (i === higher - 1) {
-            console.log(storyArray);
-            iterateThroughStories(storyArray);
-          }
-        }
-      });
-  }
-}
-
-function iterateThroughStories(storyArray) {
-  for (var i = 0; i < storyArray.length; i++) {
-    getCommentsFromStoryID(storyArray[i]);
-  }
 }
 
 module.exports = hackerController;
