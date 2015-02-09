@@ -8,7 +8,6 @@ var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
 var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
-// idolController.getSentimentsAsync = getSentimentsAsync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;

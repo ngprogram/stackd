@@ -2,7 +2,6 @@ var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
 aggregatorController.aggregate = aggregate;
 
-
 function aggregate(req,res) {
   var storage = {};
   var avgRating = 0;
