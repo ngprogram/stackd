@@ -7,7 +7,7 @@ function aggregate(req,res) {
   var storage = {};
   var avgRating = 0;
   var term = req.params.term;
-
+  console.log('aggregate called');
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
     if (total.length === 0) {
       res.send([]);
@@ -64,13 +64,13 @@ function aggregate(req,res) {
         var negArr = [];
 
         sentimentController.getCommentFromSentimentID(posId[0], function(err, foundSentiment) {
-          posArr.push(foundSentiment.comment); 
+          posArr.push(foundSentiment.comment);
           sentimentController.getCommentFromSentimentID(posId[1], function(err, foundSentiment2) {
-              posArr.push(foundSentiment2.comment); 
+              posArr.push(foundSentiment2.comment);
             sentimentController.getCommentFromSentimentID(negId[0], function(err, foundSentiment3) {
-              negArr.push(foundSentiment3.comment); 
+              negArr.push(foundSentiment3.comment);
               sentimentController.getCommentFromSentimentID(negId[1], function(err, foundSentiment4) {
-                negArr.push(foundSentiment4.comment); 
+                negArr.push(foundSentiment4.comment);
 
                 returnResult.posComments = posArr;
                 returnResult.negComments = negArr;

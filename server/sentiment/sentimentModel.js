@@ -15,7 +15,9 @@ var sentimentSchema = new Schema({
 sentimentSchema.index({ "sentiment": 1, "comment": 1 }, { unique: true });
 
 // compile message schema into a message model
-module.exports = mongoose.model('Sentiments', sentimentSchema);
+// module.exports = mongoose.model('Sentiments', sentimentSchema);
+module.exports = mongoose.model('Sentiment_test', sentimentSchema);
+
 
 // var total = [
 //   {

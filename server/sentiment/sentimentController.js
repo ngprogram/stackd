@@ -1,8 +1,5 @@
-var mongoose = require('mongoose');
 var Sentiment = require('./sentimentModel');
-var mongooseURI = require('../../config/database');
 
-mongoose.connect(mongooseURI.URI);
 // mongoose.connect('mongodb://localhost/stackd');
 
 

@@ -10,8 +10,9 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 // idolController.getSentimentsAsync = getSentimentsAsync;
 
-function getSentimentsSync(comment, title) {
+function getSentimentsSync(comment) {
   var text = comment.text;
+  var title = comment.title;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
 
@@ -46,13 +47,13 @@ function parseSentiments(sentiments, comment, title) {
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
 
-  if (positiveSentiments) {
+  if (positiveSentiments.length > 0) {
     console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
       sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title));
     }
   }
-  if (negativeSentiments) {
+  if (negativeSentiments.length > 0) {
     for (var i = 0; i < negativeSentiments.length; i++) {
       sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title));
     }
@@ -70,7 +71,7 @@ function processSentiment(sentiment, rating, comment, title) {
   sentimentObj.title = title;
   sentimentObj.comment = comment.text;
   sentimentObj.date = comment.time;
-  sentimentsObj.author = comment.by;
+  sentimentObj.author = comment.by;
 
   return sentimentObj;
 }
