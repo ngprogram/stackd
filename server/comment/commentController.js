@@ -20,6 +20,7 @@ function addComment(comment, callback) {
 function getAllIds(callback) {
   var commentIds = [];
   Comment.find({}, function(err,foundComments) {
+    console.log('getting all ids', err);
     if (!err) {
       for (var i = 0; i < foundComments.length; i++) {
         commentIds.push(foundComments[i].commentId);

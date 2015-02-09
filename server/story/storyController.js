@@ -59,7 +59,6 @@ function populateWithComments() {
 }
 
 function createComment(commentId, title) {
-  console.log('commentId', commentId);
   request
     .get('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json', function(err, response, body) {
         if (!err && JSON.parse(body)) {
@@ -79,7 +78,8 @@ function createCommentForDB(commentFromAPI, title) {
   comment.commentId = commentFromAPI.id;
   comment.kids = commentFromAPI.kids || [];
   comment.text = commentFromAPI.text;
-  comment.date = commentFromAPI.date;
+  console.log('date', commentFromAPI);
+  comment.date = commentFromAPI.time;
   comment.title = title;
   return comment;
 }
