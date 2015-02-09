@@ -13,7 +13,9 @@ function addSentiment(sentiment, callback) {
 }
 
 function getSentimentsFromKeyword(keyword, callback) {
-  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}}, callback);
+  var days = 30;
+  var time = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
 }
 
 //passing back single object, and need id

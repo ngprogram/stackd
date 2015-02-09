@@ -12,14 +12,16 @@ function fillDatabase() {
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topID = JSON.parse(body)[99];
-      populateDBWithStories(topID-10000, topID);
+      populateDBWithStories(topID-100, topID);
     });
 }
 
 function populateDBWithStories(lower, higher) {
   var commentsArray = [];
+  console.log('calling');
   commentController.getAllIds(function(err, commentIds) {
     storyController.getAllIds(function(err, storyIds) {
+      console.log('got all ids');
       for (var i = lower; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
           console.log('called');

@@ -76,46 +76,4 @@ function processSentiment(sentiment, rating, comment, title) {
   return sentimentObj;
 }
 
-// function saveSentiments(sentimentsArr, topic, rating) {
-//   for (var i = 0; i < sentimentsArr.length; i++) {
-//     var sentimentToSave = {};
-//     var sentiment = sentimentsArr[i];
-
-//     sentimentToSave.sentiment = sentiment.sentiment;
-//     sentimentToSave.rating = rating;
-//     sentimentToSave.score = sentiment.score;
-//     sentimentToSave.topic = sentiment.topic;
-//     sentimentToSave.count = 1;
-
-//     sentimentController.save(sentimentToSave);
-//   }
-// }
-
-// function saveTopic(sentimentsObj, topic) {
-//   var topicToSave = {};
-//   var aggregate = sentimentsObj.aggregate;
-
-//   topicToSave.topic = aggregate.topic;
-//   topicToSave.sentimentCount = countSentiments(sentimentsObj);
-//   topicToSave.aggregateSentiment = aggregate.sentiment;
-//   topicToSave.aggregateSentimentScore = aggregate.score;
-// }
-
-// function countSentiments(sentimentsObj) {
-//   var count = 0;
-
-//   if (sentiments.positive) {
-//     for (var i = 0; i < sentiments.positive.length; i++) {
-//       count++;
-//     }
-//   }
-//   if (sentiments.negative) {
-//     for (var i = 0; i < sentiments.negative.length; i++) {
-//       count++;
-//     }
-//   }
-
-//   return count;
-// }
-
 module.exports = idolController;
