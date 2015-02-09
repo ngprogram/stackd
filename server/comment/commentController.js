@@ -3,7 +3,7 @@ var Comment = require('./commentModel');
 
 var commentController = {};
 commentController.addComment = addComment;
-commentController.getAllIds = getAllIds;
+commentController.getAllCommentIds = getAllCommentIds;
 commentController.getComments = getComments;
 
 function addComment(comment, callback) {
@@ -14,7 +14,7 @@ function addComment(comment, callback) {
   });
 }
 
-function getAllIds(callback) {
+function getAllCommentIds(callback) {
   var commentIds = [];
   Comment.find({}, function(err,foundComments) {
     if (!err) {

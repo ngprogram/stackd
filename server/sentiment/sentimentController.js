@@ -4,6 +4,7 @@ var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
 sentimentController.getCommentFromSentimentID = getCommentFromSentimentID;
+sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 
 function addSentiment(sentiment, callback) {
   Sentiment.create(sentiment, callback);
@@ -17,9 +18,22 @@ function getSentimentsFromKeyword(keyword, callback) {
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
 }
 
-//passing back single object, and need id
-function getCommentFromSentimentID(id, callback) {
+function getSentimentById(id, callback) {
   Sentiment.findById(JSON.parse(id), callback);
+}
+
+function getAllSentiments(callback) {
+  Sentiment.find({}, callback);
+}
+
+function getCommentIdsFromSavedSentiments(callback) {
+  Sentiment.find({}, function(err, foundSentiments) {
+    var sentimentIds = [];
+    for (var i = 0; i < foundSentiments.length; i++) {
+      sentimentIds.push(foundSentiments[i].commentId);
+    }
+    callback(err, sentimentIds);
+  });
 }
 
 module.exports = sentimentController;

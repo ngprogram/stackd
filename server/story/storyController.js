@@ -4,7 +4,7 @@ var commentController = require('../comment/commentController');
 
 var storyController = {};
 storyController.addStory = addStory;
-storyController.getAllIds = getAllIds;
+storyController.getAllStoryIds = getAllStoryIds;
 storyController.getAllStories = getAllStories;
 
 function addStory(story, callback) {
@@ -15,7 +15,7 @@ function addStory(story, callback) {
   });
 }
 
-function getAllIds(callback) {
+function getAllStoryIds(callback) {
   var storyIds = [];
   Story.find({}, function(err, foundStory) {
     if (!err) {

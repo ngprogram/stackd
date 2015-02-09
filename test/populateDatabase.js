@@ -1,7 +1,8 @@
-var request = require('request');
+// var request = require('request');
 var commentController = require('../server/comment/commentController');
 var storyController = require('../server/story/storyController');
 var idolController = require('../server/idol/idolController');
+var Promise = require('bluebird');
 
 var mongoose = require('mongoose');
 var mongooseURI = require('../config/database').URI;
@@ -12,15 +13,15 @@ function populateDBWithStories() {
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topID = JSON.parse(body)[99];
-      getNewStories(topID-100, topID);
+      getNewStories(topID-70000, topID);
     });
 }
 
 // use promises
 function getNewStories(lower, higher) {
   var commentsArray = [];
-  commentController.getAllIds(function(err, commentIds) {
-    storyController.getAllIds(function(err, storyIds) {
+  commentController.getAllCommentIds(function(err, commentIds) {
+    storyController.getAllStoryIds(function(err, storyIds) {
       for (var i = lower; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
           (function(id) {
@@ -94,14 +95,16 @@ function updateCommentsWithTitle() {
 
 function generateSentiments() {
   commentController.getComments(function(err, foundComments) {
-    for (var i = 0; i < foundComments.length; i++) {
-      if (foundComments[i] && foundComments[i].text) {
-        idolController.getSentimentsSync(foundComments[i]);
+    sentimentController.getCommentIdsFromSavedSentiments(function(err, sentimentIds) {
+      for (var i = 0; i < foundComments.length; i++) {
+        if (foundComments[i] && foundComments[i].text && sentimentIds.indexOf(foundComments[i].id) < 0) {
+          idolController.getSentimentsSync(foundComments[i]);
+        }
       }
-    }
+    })
   });
 }
 
 // populateDBWithStories();
-updateCommentsWithTitle();
-// generateSentiments();
+// updateCommentsWithTitle();
+generateSentiments();
