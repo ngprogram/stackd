@@ -1,35 +1,32 @@
-// var hackerController = require('../server/hacker/hackerController');
 var request = require('request');
 var commentController = require('../server/comment/commentController');
 var storyController = require('../server/story/storyController');
+var idolController = require('../server/idol/idolController');
+
 var mongoose = require('mongoose');
 var mongooseURI = require('../config/database').URI;
-var idolController = require('../server/idol/idolController');
 
 mongoose.connect(mongooseURI);
 
-function fillDatabase() {
+function populateDBWithStories() {
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topID = JSON.parse(body)[99];
-      populateDBWithStories(topID-100, topID);
+      getNewStories(topID-100, topID);
     });
 }
 
-function populateDBWithStories(lower, higher) {
+// use promises
+function getNewStories(lower, higher) {
   var commentsArray = [];
-  console.log('calling');
   commentController.getAllIds(function(err, commentIds) {
     storyController.getAllIds(function(err, storyIds) {
-      console.log('got all ids');
       for (var i = lower; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
-          console.log('called');
           (function(id) {
             request
             .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
                 var item = JSON.parse(body);
-                console.log('called inside');
                 if (!err && item) {
                   if (item.type === 'story') {
                     var story = createStoryForDB(item);
@@ -48,13 +45,6 @@ function populateDBWithStories(lower, higher) {
   });
 }
 
-function populateDBWithComments() {
-  storyController.populate(function() {
-
-
-  });
-}
-
 function createStoryForDB(storyFromAPI) {
   var story = {};
   story.storyId = storyFromAPI.id;
@@ -64,33 +54,54 @@ function createStoryForDB(storyFromAPI) {
   return story;
 }
 
-function createCommentForDB(commentFromAPI) {
+function createComment(commentId, title) {
+  request
+    .get('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json', function(err, response, body) {
+        if (!err && JSON.parse(body)) {
+          var comment = createCommentForDB(JSON.parse(body), title);
+          commentController.addComment(comment);
+          if (comment.kids.length > 0) {
+            for (var i = 0; i < comment.kids.length; i++) {
+              createComment(comment.kids[i], title);
+            }
+          }
+        }
+      });
+}
+
+function createCommentForDB(commentFromAPI, title) {
   var comment = {};
   comment.commentId = commentFromAPI.id;
+  comment.kids = commentFromAPI.kids || [];
   comment.text = commentFromAPI.text;
-  comment.date = commentFromAPI.date;
-  comment.parentId = commentFromAPI.parent;
+  comment.date = commentFromAPI.time;
+  comment.title = title;
+
   return comment;
 }
 
 function updateCommentsWithTitle() {
-  // commentController.updateComment();
-  storyController.populateWithComments();
+  storyController.getAllStories(function(err, foundStories) {
+    for (var i = 0; i < foundStories.length; i++) {
+      if (foundStories[i].kids.length) {
+        for (var j = 0; j < foundStories[i].kids.length; j++) {
+          createComment(foundStories[i].kids[j], foundStories[i].title);
+        }
+      }
+    }
+  });
 }
 
 function generateSentiments() {
   commentController.getComments(function(err, foundComments) {
-    console.log(foundComments);
     for (var i = 0; i < foundComments.length; i++) {
-      console.log('hello');
       if (foundComments[i] && foundComments[i].text) {
-        console.log(foundComments[i]);
         idolController.getSentimentsSync(foundComments[i]);
       }
     }
   });
 }
 
-// fillDatabase();
-// updateCommentsWithTitle();
-generateSentiments();
+// populateDBWithStories();
+updateCommentsWithTitle();
+// generateSentiments();

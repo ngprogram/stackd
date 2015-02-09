@@ -1,8 +1,5 @@
 var Sentiment = require('./sentimentModel');
 
-// mongoose.connect('mongodb://localhost/stackd');
-
-
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
