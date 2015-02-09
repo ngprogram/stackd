@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A sample nodejs app for Bluemix",
   "dependencies": {
+    "bluebird": "^2.9.7",
     "body-parser": "^1.11.0",
     "express": "^3.4.7",
     "mongoose": "^3.8.23",
@@ -12,7 +13,7 @@
     "node": "0.10.*"
   },
   "scripts": {
-    "start" : "node test/populateDatabase.js"
+    "start": "node test/populateDatabase.js"
   },
   "repository": {},
   "devDependencies": {
