@@ -4,6 +4,11 @@ var hackerController = require('./server/hacker/hackerController');
 var bodyParser = require('body-parser');
 var aggregatorController = require('./server/aggregator/aggregatorController');
 
+var mongoose = require('mongoose');
+var mongooseURI = require('./config/database');
+
+mongoose.connect(mongooseURI.URI);
+
 // setup middleware
 var app = express();
 app.use(app.router);
