@@ -13,6 +13,7 @@ idolController.getSentimentsSync = getSentimentsSync;
 function getSentimentsSync(comment) {
   var text = comment.text;
   var title = comment.title;
+  var time = comment.date;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
 
@@ -25,7 +26,7 @@ function getSentimentsSync(comment) {
     if (error) {
       console.log(err);
     } else {
-      parseSentiments(sentiments, comment, title);
+      parseSentiments(sentiments, comment, title, time);
     }
   });
 }
@@ -42,27 +43,27 @@ function generateQuery(text) {
   return queryString;
 }
 
-function parseSentiments(sentiments, comment, title) {
+function parseSentiments(sentiments, comment, title, time) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
 
-  if (positiveSentiments.length > 0) {
+  if (positiveSentiments && positiveSentiments.length > 0) {
     console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
       sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title));
     }
   }
-  if (negativeSentiments.length > 0) {
+  if (negativeSentiments && negativeSentiments.length > 0) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title));
+      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time));
     }
   }
 
   return sentimentsArr;
 }
 
-function processSentiment(sentiment, rating, comment, title) {
+function processSentiment(sentiment, rating, comment, title, time) {
   var sentimentObj = {};
 
   sentimentObj.sentiment = sentiment.sentiment;
@@ -70,7 +71,7 @@ function processSentiment(sentiment, rating, comment, title) {
   sentimentObj.score = sentiment.score;
   sentimentObj.title = title;
   sentimentObj.comment = comment.text;
-  sentimentObj.date = comment.time;
+  sentimentObj.date = time;
   sentimentObj.author = comment.by;
 
   return sentimentObj;

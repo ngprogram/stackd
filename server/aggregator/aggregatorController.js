@@ -9,6 +9,7 @@ function aggregate(req,res) {
   var term = req.params.term;
   console.log('aggregate called');
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
+    console.log(total);
     if (total.length === 0) {
       res.send([]);
     }
