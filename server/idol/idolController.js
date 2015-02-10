@@ -13,19 +13,23 @@ function getSentimentsSync(comment) {
   var text = comment.text;
   var title = comment.title;
   var time = comment.date;
+  var commentId = comment.commentId;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
-
+  console.log('request being made');
   request({
     method: 'GET',
     uri: _syncUrl + queryString,
   },
   function (error, response) {
-    var sentiments = JSON.parse(response.body);
     if (error) {
-      console.log(err);
+      console.log('error with idol request', error);
+    } else if (!Boolean(response.body.match('502 Bad Gateway'))) {
+      console.log('running');
+      var sentiments = JSON.parse(response.body);
+      parseSentiments(sentiments, comment, title, time, commentId);
     } else {
-      parseSentiments(sentiments, comment, title, time);
+      console.log('did not run');
     }
   });
 }
@@ -42,27 +46,26 @@ function generateQuery(text) {
   return queryString;
 }
 
-function parseSentiments(sentiments, comment, title, time) {
+function parseSentiments(sentiments, comment, title, time, commentId) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
 
   if (positiveSentiments && positiveSentiments.length > 0) {
-    console.log(positiveSentiments);
     for (var i = 0; i < positiveSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title));
+      sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title, time, commentId));
     }
   }
   if (negativeSentiments && negativeSentiments.length > 0) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time));
+      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time, commentId));
     }
   }
 
   return sentimentsArr;
 }
 
-function processSentiment(sentiment, rating, comment, title, time) {
+function processSentiment(sentiment, rating, comment, title, time, commentId) {
   var sentimentObj = {};
 
   sentimentObj.sentiment = sentiment.sentiment;
@@ -70,6 +73,7 @@ function processSentiment(sentiment, rating, comment, title, time) {
   sentimentObj.score = sentiment.score;
   sentimentObj.title = title;
   sentimentObj.comment = comment.text;
+  sentimentObj.commentId = commentId;
   sentimentObj.date = time;
   sentimentObj.author = comment.by;
 

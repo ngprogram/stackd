@@ -13,7 +13,7 @@
     "node": "0.10.*"
   },
   "scripts": {
-    "start": "node test/populateDatabase.js"
+    "start": "node worker/populateDatabase.js"
   },
   "repository": {},
   "devDependencies": {

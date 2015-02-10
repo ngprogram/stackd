@@ -1,7 +1,8 @@
-// var request = require('request');
+var request = require('request');
 var commentController = require('../server/comment/commentController');
 var storyController = require('../server/story/storyController');
 var idolController = require('../server/idol/idolController');
+var sentimentController = require('../server/sentiment/sentimentController');
 var Promise = require('bluebird');
 
 var mongoose = require('mongoose');
@@ -13,7 +14,7 @@ function populateDBWithStories() {
   request
     .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
       var topID = JSON.parse(body)[99];
-      getNewStories(topID-70000, topID);
+      getNewStories(topID-30000, topID);
     });
 }
 
@@ -95,16 +96,22 @@ function updateCommentsWithTitle() {
 
 function generateSentiments() {
   commentController.getComments(function(err, foundComments) {
-    sentimentController.getCommentIdsFromSavedSentiments(function(err, sentimentIds) {
-      for (var i = 0; i < foundComments.length; i++) {
-        if (foundComments[i] && foundComments[i].text && sentimentIds.indexOf(foundComments[i].id) < 0) {
+    // console.log(foundComments);
+    sentimentController.getCommentIdsFromSavedSentiments(function(err, commentIds) {
+      console.log(commentIds);
+      for (var i = Math.floor(foundComments.length/2); i < foundComments.length; i++) {
+        if (foundComments[i] && foundComments[i].text && commentIds.indexOf(foundComments[i].commentId) < 0) {
+          console.log('calling get sent', i);
           idolController.getSentimentsSync(foundComments[i]);
+        } else {
+          console.log('skipped sentiment', i);
+          // console.log(foundComments[i]);
         }
       }
     })
   });
 }
 
-// populateDBWithStories();
+populateDBWithStories();
 // updateCommentsWithTitle();
-generateSentiments();
+// generateSentiments();

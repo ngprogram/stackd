@@ -3,7 +3,7 @@ var Sentiment = require('./sentimentModel');
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
-sentimentController.getCommentFromSentimentID = getCommentFromSentimentID;
+sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 
 function addSentiment(sentiment, callback) {
@@ -28,11 +28,11 @@ function getAllSentiments(callback) {
 
 function getCommentIdsFromSavedSentiments(callback) {
   Sentiment.find({}, function(err, foundSentiments) {
-    var sentimentIds = [];
+    var commentIds = [];
     for (var i = 0; i < foundSentiments.length; i++) {
-      sentimentIds.push(foundSentiments[i].commentId);
+      commentIds.push(foundSentiments[i].commentId);
     }
-    callback(err, sentimentIds);
+    callback(err, commentIds);
   });
 }
 
