@@ -3,11 +3,8 @@ var Comment = require('./commentModel');
 
 var commentController = {};
 commentController.addComment = addComment;
-commentController.getAllIds = getAllIds;
-// commentController.updateComment = updateComment;
+commentController.getAllCommentIds = getAllCommentIds;
 commentController.getComments = getComments;
-
-module.exports = commentController;
 
 function addComment(comment, callback) {
   Comment.create(comment, function(err, createdComment) {
@@ -17,10 +14,9 @@ function addComment(comment, callback) {
   });
 }
 
-function getAllIds(callback) {
+function getAllCommentIds(callback) {
   var commentIds = [];
   Comment.find({}, function(err,foundComments) {
-    console.log('getting all ids', err);
     if (!err) {
       for (var i = 0; i < foundComments.length; i++) {
         commentIds.push(foundComments[i].commentId);
@@ -33,3 +29,5 @@ function getAllIds(callback) {
 function getComments(callback) {
   Comment.find({}, callback);
 }
+
+module.exports = commentController;

@@ -2,7 +2,6 @@ var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
 aggregatorController.aggregate = aggregate;
 
-
 function aggregate(req,res) {
   var storage = {};
   var avgRating = 0;
@@ -64,13 +63,13 @@ function aggregate(req,res) {
         var posArr = [];
         var negArr = [];
 
-        sentimentController.getCommentFromSentimentID(posId[0], function(err, foundSentiment) {
+        sentimentController.getSentimentById(posId[0], function(err, foundSentiment) {
           posArr.push(foundSentiment.comment);
-          sentimentController.getCommentFromSentimentID(posId[1], function(err, foundSentiment2) {
+          sentimentController.getSentimentById(posId[1], function(err, foundSentiment2) {
               posArr.push(foundSentiment2.comment);
-            sentimentController.getCommentFromSentimentID(negId[0], function(err, foundSentiment3) {
+            sentimentController.getSentimentById(negId[0], function(err, foundSentiment3) {
               negArr.push(foundSentiment3.comment);
-              sentimentController.getCommentFromSentimentID(negId[1], function(err, foundSentiment4) {
+              sentimentController.getSentimentById(negId[1], function(err, foundSentiment4) {
                 negArr.push(foundSentiment4.comment);
 
                 returnResult.posComments = posArr;
