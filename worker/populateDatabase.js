@@ -1,50 +1,50 @@
-var request = require('request');
-var commentController = require('../server/comment/commentController');
-var storyController = require('../server/story/storyController');
+var Promise = require('bluebird');
+
+var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
+var storyController = Promise.promisifyAll(require('../server/story/storyController'));
+var storyController = (require('../server/story/storyController'));
+
 var idolController = require('../server/idol/idolController');
 var sentimentController = require('../server/sentiment/sentimentController');
-var Promise = require('bluebird');
 var config = require('config');
+var request = Promise.promisify(require('request'));
 
 var mongoose = require('mongoose');
-
-mongoose.connect(config.get('mongo').uri);
+mongoose.connect(config.get('mongo'));
 
 function populateDBWithStories() {
-  request
-    .get('https://hacker-news.firebaseio.com/v0/topstories.json', function(err, response, body) {
+  request('https://hacker-news.firebaseio.com/v0/topstories.json')
+    .spread(function(response, body) {
       var topID = JSON.parse(body)[99];
-      getNewStories(topID-30000, topID);
+      getNewStories(topID-100, topID);
+    }).catch(function(err) {
+      console.log('error with request', err);
     });
 }
 
 // use promises
 function getNewStories(lower, higher) {
-  var commentsArray = [];
-  commentController.getAllCommentIds(function(err, commentIds) {
-    storyController.getAllStoryIds(function(err, storyIds) {
+  Promise.join(commentController.getAllCommentIds(), storyController.getAllStoryIds(),
+   function(commentIds, storyIds) {
       for (var i = lower; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
-          (function(id) {
-            request
-            .get('https://hacker-news.firebaseio.com/v0/item/' +id +'.json', function(err, response, body) {
-                var item = JSON.parse(body);
-                if (!err && item) {
-                  if (item.type === 'story') {
-                    var story = createStoryForDB(item);
-                    storyController.addStory(story);
-                  }
-
-                  if (id === higher - 1) {
-                    console.log('finished');
-                  }
-                }
-              });
-          })(i);
+          request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
+            .spread(function(response, body) {
+              var item = JSON.parse(body);
+              if (item && item.type === 'story') {
+                var story = createStoryForDB(item);
+                  // storyController.addStory(story);
+              }
+            })
+            .then(null, function(error) {
+              console.log('error finding new stories', error);
+            })
         }
       }
     })
-  });
+    .then(null, function(err) {
+      console.log('error getting new story', err);
+    });
 }
 
 function createStoryForDB(storyFromAPI) {
@@ -113,5 +113,6 @@ function generateSentiments() {
 }
 
 populateDBWithStories();
+// getNewStories();
 // updateCommentsWithTitle();
 // generateSentiments();
