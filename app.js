@@ -3,11 +3,12 @@ var express = require('express');
 var hackerController = require('./server/hacker/hackerController');
 var bodyParser = require('body-parser');
 var aggregatorController = require('./server/aggregator/aggregatorController');
+var config = require('config');
+
 
 var mongoose = require('mongoose');
-var mongooseURI = require('./config/database');
 
-mongoose.connect(mongooseURI.URI);
+mongoose.connect(config.get('mongo'));
 
 // setup middleware
 var app = express();

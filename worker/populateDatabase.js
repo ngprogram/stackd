@@ -4,11 +4,11 @@ var storyController = require('../server/story/storyController');
 var idolController = require('../server/idol/idolController');
 var sentimentController = require('../server/sentiment/sentimentController');
 var Promise = require('bluebird');
+var config = require('config');
 
 var mongoose = require('mongoose');
-var mongooseURI = require('../config/database').URI;
 
-mongoose.connect(mongooseURI);
+mongoose.connect(config.get('mongo').uri);
 
 function populateDBWithStories() {
   request

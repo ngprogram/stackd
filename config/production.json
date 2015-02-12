@@ -1,0 +1,8 @@
+{
+  "mongo": {
+    "URI": "mongodb://azai91:$hackreactor&@ds027758.mongolab.com:27758/Stackd_MongoDB"
+  },
+  "idol": {
+    "apikey" : "53b0f751-6ddb-4aba-b169-a3971bbcffe1"
+  }
+}
