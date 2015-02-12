@@ -1,8 +1,11 @@
 var request = require('request');
-var configAuth = require('../../config/auth');
+// var configAuth = require('../../config/auth');
 var sentimentController = require('../sentiment/sentimentController');
 
-var _apiKey = configAuth.idolAuth.apiKey;
+// var _apiKey = configAuth.idolAuth.apiKey;
+
+var config = require('config');
+var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
