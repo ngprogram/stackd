@@ -1,3 +1,4 @@
+var Promise = require('bluebird');
 var Sentiment = require('./sentimentModel');
 
 var sentimentController = {};

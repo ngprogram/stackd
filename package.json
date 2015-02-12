@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "nodemon app.js",
-    "worker": "node worker/populateDatabase.js"
+    "fill": "node worker/populateDatabase.js",
+    "test": "mocha test/commentControllerSpec.js"
   },
   "repository": {},
   "devDependencies": {

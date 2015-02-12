@@ -1,3 +1,4 @@
+var Promise = require('bluebird');
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
@@ -11,4 +12,5 @@ var commentSchema = new Schema({
 });
 
 // compile message schema into a message model
-module.exports = mongoose.model('Comment', commentSchema);
+
+module.exports = mongoose.model('Comment', commentSchema);;
