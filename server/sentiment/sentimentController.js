@@ -8,9 +8,6 @@ sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSen
 function addSentiment(sentiment) {
 
   return Sentiment.create(sentiment)
-    .then(function(createdSentiment) {
-      return createdSentiment;
-    })
     .then(null, function(err) {
       console.log('error with adding sentiment', err);
     });
@@ -31,13 +28,17 @@ function getAllSentiments(callback) {
 }
 
 function getCommentIdsFromSavedSentiments(callback) {
-  Sentiment.find({}, function(err, foundSentiments) {
-    var commentIds = [];
-    for (var i = 0; i < foundSentiments.length; i++) {
-      commentIds.push(foundSentiments[i].commentId);
-    }
-    callback(err, commentIds);
-  });
+  return Sentiment.find({}).exec()
+    .then(function(foundSentiments) {
+      var commentIds = [];
+      for (var i = 0; i < foundSentiments.length; i++) {
+        commentIds.push(foundSentiments[i].commentId);
+      }
+      return commentIds;
+    })
+    .then(null, function(err) {
+      console.log('error getting commentIds from saved sentiments', err);
+    });
 }
 
 module.exports = sentimentController;

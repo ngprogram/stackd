@@ -36,21 +36,16 @@ function getNewStories(lower, higher) {
     .then(function(hackerNewsItems) {
       var stories = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
-        console.log(i, hackerNewsItems[i][0].body);
         var item = JSON.parse(hackerNewsItems[i][0].body);
         if (item.type === 'story') {
           // console.log('hello');
-          console.log(item);
           stories.push(storyController.addStory(createStoryForDB(item)));
         }
-        console.log('i', i);
       }
-      console.log('done');
       return Promise.all(stories);
     })
     // get comments from stories
     .then(function(stories) {
-      console.log('stories', stories);
       var array = [];
       for (var i =0 ; i < stories.length; i++) {
         for (var j = 0; j < stories[i].kids.length; j++) {
@@ -90,38 +85,13 @@ function getNewStories(lower, higher) {
     // });
 }
 
-function updateCommentsWithTitle() {
-  storyController.getAllStories(function(err, foundStories) {
-    for (var i = 0; i < foundStories.length; i++) {
-      if (foundStories[i].kids.length) {
-        for (var j = 0; j < foundStories[i].kids.length; j++) {
-          createComment(foundStories[i].kids[j], foundStories[i].title);
-        }
-      }
-    }
-  });
-}
-
-
-
 function createStoryForDB(storyFromAPI) {
-  console.log('creating');
   var story = {};
   story.storyId = storyFromAPI.id;
   story.title = storyFromAPI.title;
   story.kids = storyFromAPI.kids || [];
-  console.log('done creating');
   return story;
 }
-
-// function getComments(commentIds) {
-//   var array = [];
-//   for (var i = 0; i < commentIds.length; i++) {
-//     array.push(request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json'));
-//   }
-
-
-// }
 
 function createComment(commentId, title) {
   request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
@@ -153,23 +123,38 @@ function createCommentForDB(commentFromAPI, title) {
 }
 
 function generateSentiments() {
-  commentController.getComments(function(err, foundComments) {
-    sentimentController.getCommentIdsFromSavedSentiments(function(err, commentIds) {
-      console.log(commentIds);
-      for (var i = Math.floor(foundComments.length/2); i < foundComments.length; i++) {
-        if (foundComments[i] && foundComments[i].text && commentIds.indexOf(foundComments[i].commentId) < 0) {
-          console.log('calling get sent', i);
-          idolController.getSentimentsSync(foundComments[i]);
-        } else {
-          console.log('skipped sentiment', i);
-          // console.log(foundComments[i]);
+  Promise.join(commentController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
+    function(comments, usedCommentIds) {
+      // array with contain nested arrays
+      var sentimentsFromComments = [];
+
+      for (var i = 0; i < comments.length; i++) {
+        if (comments[i] && comments[i].text && usedCommentIds.indexOf(comments[i].commentId) < 0) {
+          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
         }
       }
+      return Promise.all(sentimentsFromComments);
     })
-  });
+    //flattens array
+    .then(function(sentimentsFromComments) {
+      var sentiments = [];
+      for (var i = 0; i < sentimentsFromComments.length; i++) {
+        for (var j = 0; j < sentimentsFromComments[i].length; j++) {
+          sentiments.push(sentimentsFromComments[i][j]);
+        }
+      }
+
+      for (var i = 0; i < sentiments.length; i++) {
+        sentimentController.addSentiment(sentiments[i]);
+      }
+
+    })
+    .then(null, function(err) {
+      console.log('error generating sentiments', err);
+    });
 }
 
-populateDBWithStories();
+// populateDBWithStories();
 // getNewStories();
 // updateCommentsWithTitle();
-// generateSentiments();
+generateSentiments();

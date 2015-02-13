@@ -31,8 +31,11 @@ function getAllCommentIds(callback) {
     });
 }
 
-function getComments(callback) {
-  Comment.find({}, callback);
+function getComments() {
+  return Comment.find({}).exec()
+    .then(null, function(err) {
+      console.log('error getting comments', err);
+    });
 }
 
 module.exports = commentController;
