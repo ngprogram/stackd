@@ -1,20 +1,21 @@
 var Sentiment = require('./sentimentModel');
-
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 
-function addSentiment(sentiment, callback) {
-  Sentiment.create(sentiment, callback);
+function addSentiment(sentiment) {
+
+  return Sentiment.create(sentiment)
+    .then(null, function(err) {
+      console.log('error with adding sentiment', err);
+    });
 }
 
 function getSentimentsFromKeyword(keyword, callback) {
   var days = 30;
   var time = Date.now()/1000 - days * 24 * 60 * 60;
-  console.log('keyword', keyword);
-  console.log('time', time);
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
 }
 
@@ -27,13 +28,17 @@ function getAllSentiments(callback) {
 }
 
 function getCommentIdsFromSavedSentiments(callback) {
-  Sentiment.find({}, function(err, foundSentiments) {
-    var commentIds = [];
-    for (var i = 0; i < foundSentiments.length; i++) {
-      commentIds.push(foundSentiments[i].commentId);
-    }
-    callback(err, commentIds);
-  });
+  return Sentiment.find({}).exec()
+    .then(function(foundSentiments) {
+      var commentIds = [];
+      for (var i = 0; i < foundSentiments.length; i++) {
+        commentIds.push(foundSentiments[i].commentId);
+      }
+      return commentIds;
+    })
+    .then(null, function(err) {
+      console.log('error getting commentIds from saved sentiments', err);
+    });
 }
 
 module.exports = sentimentController;

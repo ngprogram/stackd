@@ -7,24 +7,22 @@ storyController.addStory = addStory;
 storyController.getAllStoryIds = getAllStoryIds;
 storyController.getAllStories = getAllStories;
 
-function addStory(story, callback) {
-  Story.create(story, function(err, createdStory) {
-    if (err) {
-      console.log('error adding story to db', err);
-    }
-  });
+function addStory(story) {
+  return Story.create(story);
 }
 
 function getAllStoryIds(callback) {
   var storyIds = [];
-  Story.find({}, function(err, foundStory) {
-    if (!err) {
-      for (var i = 0; i < foundStory.length; i++) {
-        storyIds.push(foundStory[i].storyId);
-      }
-      callback(err, storyIds);
-    }
-  });
+  return Story.find({}).exec()
+    .then(function(foundStory) {
+        for (var i = 0; i < foundStory.length; i++) {
+          storyIds.push(foundStory[i].storyId);
+        }
+        return storyIds;
+    })
+    .then(null, function(err) {
+      console.log('error getting all storyIds', err);
+    });
 }
 
 function getAllStories(callback) {

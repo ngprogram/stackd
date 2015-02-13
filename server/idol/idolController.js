@@ -1,8 +1,8 @@
-var request = require('request');
-var configAuth = require('../../config/auth');
-var sentimentController = require('../sentiment/sentimentController');
-
-var _apiKey = configAuth.idolAuth.apiKey;
+var Promise = require('bluebird');
+var request = Promise.promisify(require('request'));
+var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
+var config = require('config');
+var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
@@ -10,40 +10,20 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
+  console.log('comment', comment);
   var text = comment.text;
   var title = comment.title;
   var time = comment.date;
   var commentId = comment.commentId;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
-  console.log('request being made');
-  request({
-    method: 'GET',
-    uri: _syncUrl + queryString,
-  },
-  function (error, response) {
-    if (error) {
-      console.log('error with idol request', error);
-    } else if (!Boolean(response.body.match('502 Bad Gateway'))) {
-      console.log('running');
-      var sentiments = JSON.parse(response.body);
-      parseSentiments(sentiments, comment, title, time, commentId);
-    } else {
-      console.log('did not run');
-    }
-  });
-}
-
-function generateQuery(text) {
-  var queryString = '?text=';
-  var textArray = text.split(' ');
-
-  for (var i = 0; i < textArray.length; i++) {
-    queryString += ('+' + textArray[i]);
-  }
-
-  queryString += ('&apikey=' + _apiKey);
-  return queryString;
+  return request({ method: 'GET', uri: _syncUrl + queryString})
+    .spread(function (response, body) {
+      return parseSentiments(JSON.parse(body), comment, title, time, commentId);
+    })
+    .then(null, function(err) {
+      console.log('error with idol request', err);
+    });
 }
 
 function parseSentiments(sentiments, comment, title, time, commentId) {
@@ -53,12 +33,12 @@ function parseSentiments(sentiments, comment, title, time, commentId) {
 
   if (positiveSentiments && positiveSentiments.length > 0) {
     for (var i = 0; i < positiveSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title, time, commentId));
+      sentimentsArr.push(processSentiment(positiveSentiments[i], 'positive', comment, title, time, commentId));
     }
   }
   if (negativeSentiments && negativeSentiments.length > 0) {
     for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time, commentId));
+      sentimentsArr.push(processSentiment(negativeSentiments[i], 'negative', comment, title, time, commentId));
     }
   }
 
@@ -78,6 +58,17 @@ function processSentiment(sentiment, rating, comment, title, time, commentId) {
   sentimentObj.author = comment.by;
 
   return sentimentObj;
+}
+
+function generateQuery(text) {
+  var queryString = '?text=';
+  var textArray = text.split(' ');
+
+  for (var i = 0; i < textArray.length; i++) {
+    queryString += ('+' + textArray[i]);
+  }
+  queryString += ('&apikey=' + _apiKey);
+  return queryString;
 }
 
 module.exports = idolController;

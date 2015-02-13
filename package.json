@@ -5,6 +5,8 @@
   "dependencies": {
     "bluebird": "^2.9.7",
     "body-parser": "^1.11.0",
+    "bookshelf": "^0.7.9",
+    "config": "^1.10.0",
     "express": "^3.4.7",
     "mongoose": "^3.8.23",
     "request": "^2.53.0"
@@ -13,7 +15,9 @@
     "node": "0.10.*"
   },
   "scripts": {
-    "start": "node worker/populateDatabase.js"
+    "start": "nodemon app.js",
+    "fill": "node worker/populateDatabase.js",
+    "test": "export NODE_ENV='test'; mocha test/storyControllerSpec.js"
   },
   "repository": {},
   "devDependencies": {
