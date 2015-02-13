@@ -1,5 +1,5 @@
 var Comment = require('./commentModel');
-// var storyController = require('../story/storyController');
+var storyController = require('../story/storyController');
 
 var commentController = {};
 commentController.addComment = addComment;
@@ -16,18 +16,26 @@ function addComment(comment, callback) {
 
 function getAllCommentIds(callback) {
   var commentIds = [];
-  Comment.find({}, function(err,foundComments) {
-    if (!err) {
+  // console.log(Comment.find().exec());
+  return Comment.find()
+    .exec()
+    .then(function(foundComments) {
+
       for (var i = 0; i < foundComments.length; i++) {
         commentIds.push(foundComments[i].commentId);
       }
-      callback(err, commentIds);
-    }
-  });
+      return commentIds;
+    })
+    .then(null, function(err) {
+      console.log('error getting all commentIds', err);
+    });
 }
 
-function getComments(callback) {
-  Comment.find({}, callback);
+function getComments() {
+  return Comment.find({}).exec()
+    .then(null, function(err) {
+      console.log('error getting comments', err);
+    });
 }
 
 module.exports = commentController;
