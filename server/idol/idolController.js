@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = Promise.promisifyAll(require('request'));
+var request = Promise.promisify(require('request'));
 var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
 var config = require('config');
 var _apiKey = config.get('idol');
@@ -10,35 +10,20 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
+  console.log('comment', comment);
   var text = comment.text;
   var title = comment.title;
   var time = comment.date;
   var commentId = comment.commentId;
   var parameters = {text: text, language: 'eng', apikey: _apiKey};
   var queryString = generateQuery(text);
-  console.log('request being made');
   return request({ method: 'GET', uri: _syncUrl + queryString})
-    .then(function (response) {
-      if (!Boolean(response.body.match('502 Bad Gateway'))) {
-        console.log('running');
-        var sentiments = JSON.parse(response.body);
-        return parseSentiments(sentiments, comment, title, time, commentId);
-      } else {
-        console.log('did not run');
-      }
-  })
-}
-
-function generateQuery(text) {
-  var queryString = '?text=';
-  var textArray = text.split(' ');
-
-  for (var i = 0; i < textArray.length; i++) {
-    queryString += ('+' + textArray[i]);
-  }
-
-  queryString += ('&apikey=' + _apiKey);
-  return queryString;
+    .spread(function (response, body) {
+      return parseSentiments(JSON.parse(body), comment, title, time, commentId);
+    })
+    .then(null, function(err) {
+      console.log('error with idol request', err);
+    });
 }
 
 function parseSentiments(sentiments, comment, title, time, commentId) {
@@ -73,6 +58,17 @@ function processSentiment(sentiment, rating, comment, title, time, commentId) {
   sentimentObj.author = comment.by;
 
   return sentimentObj;
+}
+
+function generateQuery(text) {
+  var queryString = '?text=';
+  var textArray = text.split(' ');
+
+  for (var i = 0; i < textArray.length; i++) {
+    queryString += ('+' + textArray[i]);
+  }
+  queryString += ('&apikey=' + _apiKey);
+  return queryString;
 }
 
 module.exports = idolController;
