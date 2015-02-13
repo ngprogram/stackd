@@ -17,7 +17,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "fill": "node worker/populateDatabase.js",
-    "test": "mocha test/commentControllerSpec.js"
+    "test": "export NODE_ENV='test'; mocha test/storyControllerSpec.js"
   },
   "repository": {},
   "devDependencies": {

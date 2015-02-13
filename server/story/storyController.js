@@ -7,12 +7,8 @@ storyController.addStory = addStory;
 storyController.getAllStoryIds = getAllStoryIds;
 storyController.getAllStories = getAllStories;
 
-function addStory(story, callback) {
-  Story.create(story, function(err, createdStory) {
-    if (err) {
-      console.log('error adding story to db', err);
-    }
-  });
+function addStory(story) {
+  return Story.create(story);
 }
 
 function getAllStoryIds(callback) {

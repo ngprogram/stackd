@@ -1,28 +1,36 @@
+var Promise = require('bluebird');
 var expect = require('chai').expect;
-var sentimentController = require('../server/sentiment/sentimentController');
+var sentimentController = Promise.promisifyAll(require('../server/sentiment/sentimentController'));
+var config = require('config');
+
+var mongoose = require('mongoose');
+mongoose.connect(config.get('mongo'));
 
 describe('Sentiment Controller', function() {
-  // it('should save a user', function(done) {
-  //   var sample = {
-  //     sentiment: "good",
-  //     rating: "80",
-  //     score: 0.8,
-  //     title: "React is the best",
-  //     comment: "this is the best thing everr"
-  //   };
+  it('should save a user', function(done) {
+    var sample = {
+      sentiment: "good",
+      commentId: 34534,
+      rating: "80",
+      score: 0.8,
+      title: "React is the best",
+      author: "Me",
+      date: 56,
+      comment: "this is the best thing everr"
+    };
 
-  //   sentimentController.addSentiment(sample, function(err, createdSentiment) {
-  //     console.log(createdSentiment);
-  //     expect(createdSentiment.comment).to.eql("this is the best thing everr");
+    sentimentController.addSentiment(sample)
+      .then(function(createdSentiment) {
+        console.log(createdSentiment);
+        done();
+      });
+  });
+
+  // it('should retrive', function(done) {
+  //   sentimentController.getSentimentsFromKeyword('Docker', function(err, foundSentiments) {
+  //     console.log(foundSentiments);
   //     done();
   //   });
   // });
-
-  it('should retrive', function(done) {
-    sentimentController.getSentimentsFromKeyword('Docker', function(err, foundSentiments) {
-      console.log(foundSentiments);
-      done();
-    });
-  });
 });
 
