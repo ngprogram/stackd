@@ -13,8 +13,6 @@ describe('commentController', function() {
     commentController.getAllCommentIds().then(function(commentIds) {
       expect(commentIds).to.exist;
       done();
-    }).then(null, function(err) {
-      console.log('err');
     });
   });
 });

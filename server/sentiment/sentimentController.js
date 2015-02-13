@@ -1,21 +1,24 @@
-var Promise = require('bluebird');
 var Sentiment = require('./sentimentModel');
-
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 
-function addSentiment(sentiment, callback) {
-  Sentiment.create(sentiment, callback);
+function addSentiment(sentiment) {
+
+  return Sentiment.create(sentiment)
+    .then(function(createdSentiment) {
+      return createdSentiment;
+    })
+    .then(null, function(err) {
+      console.log('error with adding sentiment', err);
+    });
 }
 
 function getSentimentsFromKeyword(keyword, callback) {
   var days = 30;
   var time = Date.now()/1000 - days * 24 * 60 * 60;
-  console.log('keyword', keyword);
-  console.log('time', time);
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
 }
 
