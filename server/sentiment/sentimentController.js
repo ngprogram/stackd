@@ -4,6 +4,7 @@ sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
+sentimentController.deleteSentiments = deleteSentiments;
 
 function addSentiment(sentiment) {
 
@@ -39,6 +40,11 @@ function getCommentIdsFromSavedSentiments(callback) {
     .then(null, function(err) {
       console.log('error getting commentIds from saved sentiments', err);
     });
+}
+
+function deleteSentiments() {
+  return Sentiment.remove({})
+    .exec();
 }
 
 module.exports = sentimentController;

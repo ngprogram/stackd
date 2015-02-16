@@ -5,6 +5,7 @@ var commentController = {};
 commentController.addComment = addComment;
 commentController.getAllCommentIds = getAllCommentIds;
 commentController.getComments = getComments;
+commentController.deleteComments = deleteComments;
 
 function addComment(comment) {
   return Comment.create(comment);
@@ -31,6 +32,11 @@ function getComments() {
     .then(null, function(err) {
       console.log('error getting comments', err);
     });
+}
+
+function deleteComments() {
+  return Comment.remove({})
+    .exec();
 }
 
 module.exports = commentController;
