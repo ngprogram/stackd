@@ -1,4 +1,5 @@
 var Promise = require('bluebird');
+var _ = require('lodash');
 
 var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
 var storyController = Promise.promisifyAll(require('../server/story/storyController'));
@@ -11,7 +12,7 @@ var request = Promise.promisify(require('request'));
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var numberToScrape = 100;
+var numberToScrape = 500;
 
 function populateDBWithStories() {
 
@@ -52,7 +53,6 @@ function populateDBWithStories() {
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
         if (item && item.type === 'story') {
-          console.log('item', item);
           stories.push(storyController.addStory(createStoryForDB(item)));
         }
       }
@@ -70,12 +70,11 @@ function populateDBWithStories() {
             if (JSON.parse(body)) {
               var comment = createCommentForDB(JSON.parse(body), title);
               var tempArray = [];
-              if (comment.kids.length > 0) {
-                for (var i = 0; i < comment.kids.length; i++) {
-                  tempArray.push(createComment(comment.kids[i], title));
-                }
-              }
               tempArray.push(commentController.addComment(comment));
+
+              for (var i = 0; i < comment.kids.length; i++) {
+                tempArray.push(createComment(comment.kids[i], title));
+              }
               return Promise.all(tempArray);
             }
           })
@@ -86,7 +85,7 @@ function populateDBWithStories() {
 
       for (var i = 0; i < stories.length; i++) {
         for (var j = 0; j < stories[i].kids.length; j++) {
-          commentRequests.push(createComment(stories[i].kids[j], stories[i].title))
+          commentRequests.push(createComment(stories[i].kids[j], stories[i].title));
         }
       }
 
@@ -94,7 +93,7 @@ function populateDBWithStories() {
     })
     .then(function(comments) {
 
-      comments = flattenArray(comments);
+      comments = _.flattenDeep(comments);
       console.log('length', comments.length);
       // console.log('comments', comments);
       var sentimentsFromComments = [];
@@ -176,20 +175,6 @@ function generateSentiments() {
     });
 }
 
-function flattenArray(array) {
-  var temp = [];
-  for (var i = 0; i < array.length; i++) {
-    if (Array.isArray(array[i])) {
-      for (var j = 0; j < array[i].length; j++) {
-        temp.push(array[i][j]);
-      }
-    } else {
-      temp.push(array[i]);
-    }
-  }
-
-  return temp;
-}
 
 populateDBWithStories();
 // updateCommentsWithTitle();
