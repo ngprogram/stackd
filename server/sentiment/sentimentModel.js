@@ -8,9 +8,9 @@ var sentimentSchema = new Schema({
   rating: String,
   score: Number,
   title: String,
-  author: String,
-  date: Number,
-  comment: { type: String }
+  by: String,
+  time: Number,
+  comment: String
 });
 
 sentimentSchema.index({ "sentiment": 1, "comment": 1 }, { unique: true });
