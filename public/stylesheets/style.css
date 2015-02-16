@@ -12,17 +12,17 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup, 
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
 }
 
 h3 {
   font-size: 20px;
-  color: white;
+  color: #4374a8;
   padding-bottom: 15px;
   padding-top: 10px;
 }
@@ -30,59 +30,100 @@ h3 {
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
-	display: block;
+  display: block;
 }
 body {
   font-family: 'Raleway', sans-serif;
-
-	line-height: 1;
-  background-color: #738698;
+  line-height: 1;
+  background-color: #FDFDFD;
 }
 
 ol, ul {
-	list-style: none;
+  list-style: none;
 }
 blockquote, q {
-	quotes: none;
+  quotes: none;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
-	content: none;
+  content: '';
+  content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
+
 
 /*Title*/
 .title {
 	padding-top: 20px;
   padding-bottom: 15px;
-  color: #EAEAEA;
+  
+	color: #FFFFFF;
 	text-align: center;
 	font-size: 35px;
   font-family: 'Raleway', sans-serif;
-  background-color: #4E5B69;
+	background-color: #4374A8;
 }
 
 /*Search Bar*/
-
 .search-bar {
-  width: 190px;
+  margin: 0 auto;
   text-align: center;
-  height: 25px;
-  position: absolute;
+  position: relative;
   top: 250px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  /*margin: auto;*/
 	z-index: 1;
+  font-size: 0;
+}
+.searchInput {
+  text-align: left;
+  display: inline-block;
+}
 
-	/*border: solid;*/
+.searchButton {
+  display: inline-block;
+  border: none;
+  background: #4374A8;
+  font-size: 18px; 
+  font-weight: bold; 
+  color: #ffffff;
+  margin: 0 auto;
+  vertical-align: middle;
+  padding: 0 10px; 
+  height: 64px;
+  width: 70px;
+}
+
+/* The next blocks of code are for user actions on the buttons. */
+.searchButton:hover {
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #60bdc5; 
+}
+
+button:focus {
+  outline:none;
+}
+
+input {
+  outline: none;
+  color: #4374a8;
+  height: 30px;
+  width: 300px;
+  border: 2px solid #4374a8;
+  border-right: none;
+  padding: 15px;
+  font-size: 20px;
+  text-align: left;
+  margin: 0 auto;
+  vertical-align: middle;
+}
+
+input:focus, input.focus.hover.active {
+  border: 2px solid #60bdc5;
+  border-right: none;
+  color: #4374a8;
 }
 
 text {
@@ -104,7 +145,7 @@ text {
   margin-left: auto;
   margin-right: auto;
 	z-index: 2;
-	background-color: #4A5664;
+	
 }
 
 /*Top Section*/
@@ -129,7 +170,7 @@ text {
 
 /*Bottom Section*/
 .bottom-container {
-  color: #DCDDDD;
+  color: #60BDC5;
 	width: 90%;
   margin:auto;
   margin-top: 300px;
@@ -153,69 +194,11 @@ text {
 }
 
 
-input {
-  outline: none;
-  background-color: #738698;
-  color: white;
-  height: 15px;
-  width: 150px;
-  border: 1px solid white;
-  padding: 15px;
-  margin: 10px auto 10px auto;
-  font-size: 15px;
-  text-align: center;
-}
-
-input:focus, input.focus.hover.active {
-  background-color: white;
-  color: #738698;
-}
 
 li {
   padding-top: 10px;
   padding-bottom: 10px;
 
 }
-.btn {
 
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  -ms-border-radius: 2px;
-  -o-border-radius: 2px;
-  border-radius: 2px;   
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  -webkit-transition-property: background;
-  -moz-transition-property: background;
-  -o-transition-property: background;
-  transition-property: background;
-  -webkit-transition-duration: 0.3s;
-  -moz-transition-duration: 0.3s;
-  -o-transition-duration: 0.3s;
-  transition-duration: 0.3s;
-  background-color: #545E66;
-  color: #ffffff;
-  text-shadow: none;
-  border: none;
-  height: 30px;
-  line-height: 30px;
-  padding: 0px 15.6px;
-  font-weight: 300;
-  font-size: 14px;
-  /*border: 1px #969595 solid;*/
-  /*font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;*/
-  margin: 5px;
-  text-decoration: none;
-  text-align: center;
-  display: inline-block; 
-
-}
-
-/* The next blocks of code are for user actions on the buttons. */
-.btn:hover {
-  text-decoration: none;
-  color: #ffffff;
-  background-color: #A6A6A6; 
-}
 

@@ -4,7 +4,7 @@
 
   app.controller('SearchController', ['$http', '$scope', 'ChartFactory', function($http, $scope, ChartFactory) {
     var vm = this;
-    this.searchTerm = '';
+    $scope.searchTerm = '';
     this.incomingData = {};
     this.showData = ChartFactory.showData;
     this.newData = ChartFactory.newData;
@@ -18,11 +18,13 @@
         console.log('hihi',ChartFactory.newData);
         console.log('hoho', vm.newData);
         console.log('success');
+        $scope.searchTerm = '';
+
         // console.log(1234,vm.incomingData.avg);
         vm.showData = true;
         ChartFactory.data[0].values[0].value = Math.round((vm.incomingData.avg * 100) * 100) / 100;
         if (vm.incomingData.avg < 0) {
-          ChartFactory.data[0].color = '#d62728';
+          ChartFactory.data[0].color = '#CF7273';
         }
         console.log(3333,ChartFactory.data);
       })
@@ -39,7 +41,6 @@
     //   console.log(this.data);
     //   console.log(vm.data)
     // }
-
 
   }]);
 
@@ -113,7 +114,7 @@
     var data = [
       {
         "key": "POSITIVE",
-        "color": "#1f77b4",
+        "color": "#728CCF",
         "values": [
           {
             "label" : "Group A" ,
