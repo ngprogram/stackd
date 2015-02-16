@@ -36,7 +36,11 @@ function populateDBWithStories() {
       var requestsForStories = [];
       for (var i = higher - numberToScrape; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
-          requestsForStories.push(request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json'));
+          var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
+            .spread(function(response, body) {
+              return JSON.parse(body);
+            });
+          requestsForStories.push(temp);
         }
       }
 
@@ -46,8 +50,9 @@ function populateDBWithStories() {
     .then(function(hackerNewsItems) {
       var stories = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
-        var item = JSON.parse(hackerNewsItems[i][0].body);
-        if (item.type === 'story') {
+        var item = hackerNewsItems[i];
+        if (item && item.type === 'story') {
+          console.log('item', item);
           stories.push(storyController.addStory(createStoryForDB(item)));
         }
       }
@@ -56,36 +61,42 @@ function populateDBWithStories() {
     })
     // get comments from stories
     .then(function(stories) {
-      var array = [];
-
+      var commentRequests = [];
+      var count = 0;
       function createComment(commentId, title) {
+        console.log(++count);
         return request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
           .spread(function(response, body) {
             if (JSON.parse(body)) {
               var comment = createCommentForDB(JSON.parse(body), title);
+              var tempArray = [];
               if (comment.kids.length > 0) {
                 for (var i = 0; i < comment.kids.length; i++) {
-                  array.push(createComment(comment.kids[i], title));
+                  tempArray.push(createComment(comment.kids[i], title));
                 }
               }
-              return commentController.addComment(comment);
+              tempArray.push(commentController.addComment(comment));
+              return Promise.all(tempArray);
             }
           })
           .catch(function(err) {
-            console.log('error creating comment');
+            console.log('error with creating commment', err);
           });
       }
 
       for (var i = 0; i < stories.length; i++) {
         for (var j = 0; j < stories[i].kids.length; j++) {
-          array.push(createComment(stories[i].kids[j], stories[i].title))
+          commentRequests.push(createComment(stories[i].kids[j], stories[i].title))
         }
       }
 
-      return Promise.all(array);
+      return Promise.all(commentRequests);
     })
     .then(function(comments) {
-      console.log('comments', comments);
+
+      comments = flattenArray(comments);
+      console.log('length', comments.length);
+      // console.log('comments', comments);
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
         if (comments[i] && comments[i].text) {
@@ -121,24 +132,6 @@ function createStoryForDB(storyFromAPI) {
   story.kids = storyFromAPI.kids || [];
   return story;
 }
-
-// function createComment(commentId, title) {
-//   request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
-//     .spread(function(response, body) {
-//       if (JSON.parse(body)) {
-//         var comment = createCommentForDB(JSON.parse(body), title);
-//         commentController.addComment(comment);
-//         if (comment.kids.length > 0) {
-//           for (var i = 0; i < comment.kids.length; i++) {
-//             createComment(comment.kids[i], title);
-//           }
-//         }
-//       }
-//     })
-//     .catch(function(err) {
-//       console.log('error creating comment');
-//     });
-// }
 
 function createCommentForDB(commentFromAPI, title) {
   var comment = {};
@@ -181,6 +174,21 @@ function generateSentiments() {
     .then(null, function(err) {
       console.log('error generating sentiments', err);
     });
+}
+
+function flattenArray(array) {
+  var temp = [];
+  for (var i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i])) {
+      for (var j = 0; j < array[i].length; j++) {
+        temp.push(array[i][j]);
+      }
+    } else {
+      temp.push(array[i]);
+    }
+  }
+
+  return temp;
 }
 
 populateDBWithStories();

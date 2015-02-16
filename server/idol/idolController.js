@@ -10,7 +10,6 @@ var idolController = {};
 idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
-  console.log('comment', comment);
   var text = comment.text;
   var title = comment.title;
   var time = comment.date;

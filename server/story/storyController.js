@@ -6,6 +6,7 @@ var storyController = {};
 storyController.addStory = addStory;
 storyController.getAllStoryIds = getAllStoryIds;
 storyController.getAllStories = getAllStories;
+storyController.deleteStories = deleteStories;
 
 function addStory(story) {
   return Story.create(story);
@@ -27,6 +28,11 @@ function getAllStoryIds(callback) {
 
 function getAllStories(callback) {
   Story.find({}, callback);
+}
+
+function deleteStories() {
+  return Story.remove({})
+    .exec();
 }
 
 module.exports = storyController;
