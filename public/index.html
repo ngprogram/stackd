@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="stackdApp">
   <head>
-    <meta charset="utf-8">  <!-- it's important for d3.js -->
+    <meta charset="utf-8"> 
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
@@ -11,13 +11,12 @@
   <link href='http://fonts.googleapis.com/css?family=Raleway:700,400' rel='stylesheet' type='text/css'>
     <link href="./public/stylesheets/style.css" rel="stylesheet" type="text/css">
 
-    <!-- // <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script> -->
    <script src="./public/pubApp.js"></script>
   </head>
 
   <body class="container" ng-controller="SearchController as searchCtrl">
     <div class="title">
-      stackd
+      stat
     </div>
 
     <div class="top-container" ng-show="searchCtrl.showData">
@@ -26,13 +25,13 @@
       </div>
 
       <div class="search-again-button">
-        <button class="btn" ng-click="searchCtrl.showData = !searchCtrl.showData">Search Again</button>
+        <button class="searchButton" ng-click="searchCtrl.showData = !searchCtrl.showData"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
       </div>
     </div>
 
-    <div class="search-bar">
-      <input ng-model="term" placeholder="enter term">
-      <button class="btn" ng-click="searchCtrl.search(term)">search</button>
+    <div class="search-bar" ng-show="!searchCtrl.showData">
+      <div class="searchInput"><input ng-model="searchTerm" placeholder="enter term"></input></div>
+      <button class="searchButton" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
     </div>
 
     <div class="chart" ng-show="searchCtrl.showData">
