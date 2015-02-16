@@ -1,4 +1,5 @@
 var Promise = require('bluebird');
+var ent = require('ent');
 
 var config = require('config');
 var request = Promise.promisify(require('request'));
@@ -7,6 +8,10 @@ var spellCheckerController = {};
 spellCheckerController.correctSentence = correctSentence;
 
 function correctSentence(sentence) {
+  console.log('prehtml', sentence);
+  sentence = removeHTML(sentence);
+  sentence = removeSpecial(sentence);
+  console.log('posthml', sentence);
   var options = {
     method: "GET",
     url: generateQuery(sentence),
@@ -18,7 +23,7 @@ function correctSentence(sentence) {
 
   return request(options)
     .spread(function(response, body) {
-
+      console.log('final', JSON.parse(body).suggestion);
       return JSON.parse(body).suggestion;
     });
 }
@@ -29,6 +34,14 @@ function generateQuery(sentence) {
   var words = sentence.split(" ").join("+");
 
   return query + words;
+}
+
+function removeHTML(sentence) {
+  return ent.decode(sentence);
+}
+
+function removeSpecial(sentence) {
+  return sentence.replace(/ *\<[^)]*\> */g, "").replace(/[^A-Z0-9., ]/gi,'')
 }
 
 module.exports = spellCheckerController;
