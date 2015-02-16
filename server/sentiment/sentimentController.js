@@ -4,6 +4,7 @@ sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
+sentimentController.deleteSentiments = deleteSentiments;
 
 function addSentiment(sentiment) {
 
@@ -16,7 +17,8 @@ function addSentiment(sentiment) {
 function getSentimentsFromKeyword(keyword, callback) {
   var days = 30;
   var time = Date.now()/1000 - days * 24 * 60 * 60;
-  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')}, date: { $gte: time }}, callback);
+  console.log('getting sentiments');
+  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')} , time: { $gte: time }}, callback);
 }
 
 function getSentimentById(id, callback) {
@@ -39,6 +41,11 @@ function getCommentIdsFromSavedSentiments(callback) {
     .then(null, function(err) {
       console.log('error getting commentIds from saved sentiments', err);
     });
+}
+
+function deleteSentiments() {
+  return Sentiment.remove({})
+    .exec();
 }
 
 module.exports = sentimentController;

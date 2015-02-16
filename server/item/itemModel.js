@@ -2,9 +2,12 @@ var mongoose = require('mongoose'),
     Schema   = mongoose.Schema;
 
 // define message schema
-var storySchema = new Schema({
-  storyId: { type: Number, unique: true, required: true },
+var itemSchema = new Schema({
+  id: { type: Number, unique: true, required: true },
+  parent: Number,
   title: String,
+  text: String
+  type: String,
   by: String,
   time: Number,
   score: Number,
@@ -12,4 +15,4 @@ var storySchema = new Schema({
 });
 
 // compile message schema into a message model
-module.exports = mongoose.model('Story', storySchema);
+module.exports = mongoose.model('Item', itemSchema);
