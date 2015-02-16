@@ -13,6 +13,7 @@ function getSentimentsSync(comment) {
 
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
+      console.log('correct', correctSentence);
       var options = {
         uri: "https://japerk-text-processing.p.mashape.com/sentiment/",
         method: "POST",
@@ -46,7 +47,6 @@ function processSentiment(sentiment, comment) {
   sentimentObj.commentId = comment.commentId;
   sentimentObj.time = comment.time;
   sentimentObj.by = comment.by;
-  console.log('sentiment', sentimentObj);
   return sentimentObj;
 }
 

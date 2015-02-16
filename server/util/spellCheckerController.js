@@ -8,10 +8,9 @@ var spellCheckerController = {};
 spellCheckerController.correctSentence = correctSentence;
 
 function correctSentence(sentence) {
-  console.log('prehtml', sentence);
   sentence = removeHTML(sentence);
   sentence = removeSpecial(sentence);
-  console.log('posthml', sentence);
+
   var options = {
     method: "GET",
     url: generateQuery(sentence),
@@ -41,7 +40,7 @@ function removeHTML(sentence) {
 }
 
 function removeSpecial(sentence) {
-  return sentence.replace(/ *\<[^)]*\> */g, "").replace(/[^A-Z0-9., ]/gi,'')
+  return sentence.replace(/ *\<[^)]*\> */g, "").replace(/[^A-Z0-9.,' ]/gi,'')
 }
 
 module.exports = spellCheckerController;
