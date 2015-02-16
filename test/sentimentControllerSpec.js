@@ -26,11 +26,11 @@ describe('Sentiment Controller', function() {
       });
   });
 
-  // it('should retrive', function(done) {
-  //   sentimentController.getSentimentsFromKeyword('Docker', function(err, foundSentiments) {
-  //     console.log(foundSentiments);
-  //     done();
-  //   });
-  // });
+  it('should retrive', function(done) {
+    sentimentController.getSentimentsFromKeyword('Network', function(err, foundSentiments) {
+      console.log(foundSentiments);
+      done();
+    });
+  });
 });
 

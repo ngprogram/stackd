@@ -6,9 +6,17 @@ var storyController = {};
 storyController.addStory = addStory;
 storyController.getAllStoryIds = getAllStoryIds;
 storyController.getAllStories = getAllStories;
+storyController.deleteStories = deleteStories;
 
 function addStory(story) {
-  return Story.create(story);
+  return Story.create(story)
+    .then(null, function(err) {
+
+      //if not dup key error
+      if (err.code !== 11000) {
+        console.log('error creating story', err);
+      }
+    });
 }
 
 function getAllStoryIds(callback) {
@@ -21,12 +29,19 @@ function getAllStoryIds(callback) {
         return storyIds;
     })
     .then(null, function(err) {
+
+      return;
       console.log('error getting all storyIds', err);
     });
 }
 
 function getAllStories(callback) {
   Story.find({}, callback);
+}
+
+function deleteStories() {
+  return Story.remove({})
+    .exec();
 }
 
 module.exports = storyController;

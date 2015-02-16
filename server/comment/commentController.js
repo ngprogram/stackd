@@ -5,18 +5,25 @@ var commentController = {};
 commentController.addComment = addComment;
 commentController.getAllCommentIds = getAllCommentIds;
 commentController.getComments = getComments;
+commentController.deleteComments = deleteComments;
 
-function addComment(comment, callback) {
-  Comment.create(comment, function(err, createdComment) {
-    if (err) {
-      console.log('error adding comment to db', err);
-    }
-  });
+function addComment(comment) {
+  return Comment.create(comment)
+    .then(null, function(err) {
+      console.log('error creating comment', err);
+    });
 }
 
-function getAllCommentIds(callback) {
+function findStoryId(commentId) {
+  return Comment.find({commentId: commentId})
+    .exec()
+    .then(function(foundComment) {
+
+    })
+}
+
+function getAllCommentIds() {
   var commentIds = [];
-  // console.log(Comment.find().exec());
   return Comment.find()
     .exec()
     .then(function(foundComments) {
@@ -36,6 +43,11 @@ function getComments() {
     .then(null, function(err) {
       console.log('error getting comments', err);
     });
+}
+
+function deleteComments() {
+  return Comment.remove({})
+    .exec();
 }
 
 module.exports = commentController;
