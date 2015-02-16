@@ -1,4 +1,5 @@
 {
   "mongo": "mongodb://azai91:$hackreactor&@ds027758.mongolab.com:27758/Stackd_MongoDB",
-  "nltk": "LEMO91Zl97mshGgThdGqTXHwqigwp1DiqZWjsn8losIqlebSuX"
+  "nltk": "LEMO91Zl97mshGgThdGqTXHwqigwp1DiqZWjsn8losIqlebSuX",
+  "spellcheck" : "LEMO91Zl97mshGgThdGqTXHwqigwp1DiqZWjsn8losIqlebSuX"
 }
