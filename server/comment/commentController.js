@@ -8,10 +8,21 @@ commentController.getComments = getComments;
 commentController.deleteComments = deleteComments;
 
 function addComment(comment) {
-  return Comment.create(comment);
+  return Comment.create(comment)
+    .then(null, function(err) {
+      console.log('error creating comment', err);
+    });
 }
 
-function getAllCommentIds(callback) {
+function findStoryId(commentId) {
+  return Comment.find({commentId: commentId})
+    .exec()
+    .then(function(foundComment) {
+
+    })
+}
+
+function getAllCommentIds() {
   var commentIds = [];
   return Comment.find()
     .exec()

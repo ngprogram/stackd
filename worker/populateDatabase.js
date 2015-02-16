@@ -9,83 +9,71 @@ var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
 var request = Promise.promisify(require('request'));
 
+var itemController = Promise.promisifyAll(require('../server/item/itemController'));
+
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var numberToScrape = 50;
+var numberToScrape = 500;
+var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
+var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
 function populateDBWithStories() {
-  var temp = request('https://hacker-news.firebaseio.com/v0/topstories.json')
+  var temp = request(maxItemUrl)
     .spread(function(response, body) {
-      var topID = JSON.parse(body)[99];
-
+      console.log(body);
+      var topID = JSON.parse(body);
       return topID;
     });
 
   var promiseArray = [];
   promiseArray.push(temp);
-  promiseArray.push(commentController.getAllCommentIds());
-  promiseArray.push(storyController.getAllStoryIds());
+  promiseArray.push(itemController.getAllItemIds());
+  // promiseArray.push(storyController.getAllStoryIds());
 
   Promise.all(promiseArray)
     .then(function(results) {
       console.log('step 1');
-      var higher = results[0];
-      var commentIds = results[1];
-      var storyIds = results[2];
+      var topID = results[0];
+      var itemIds = results[1];
+      // var storyIds = results[2];
 
-      var requestsForStories = [];
-      for (var i = higher - numberToScrape; i < higher; i++) {
-        if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
+      var requestsForItems = [];
+      for (var i = topID - numberToScrape; i < topID; i++) {
+        if (itemIds.indexOf(i) < 0) {
           var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
             .spread(function(response, body) {
               return JSON.parse(body);
             });
-          requestsForStories.push(temp);
+          requestsForItems.push(temp);
         }
       }
 
-      return Promise.all(requestsForStories);
+      return Promise.all(requestsForItems);
     })
     // finds stories from hacker news items
     .then(function(hackerNewsItems) {
       console.log('step 2');
-      var stories = [];
+      var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
-        if (item && item.type === 'story') {
-          stories.push(storyController.addStory(createStoryForDB(item)));
+        if (item && !item.deleted) {
+          items.push(itemContorller.addItem(createItemForDB(item)));
         }
       }
 
-      return Promise.all(stories);
+      return Promise.all(items);
     })
     // get comments from stories
-    .then(function(stories) {
+    .then(function(items) {
       var commentRequests = [];
-      var count = 0;
-      function createComment(commentId, title) {
-        return request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
-          .spread(function(response, body) {
-            if (JSON.parse(body)) {
-              var comment = createCommentForDB(JSON.parse(body), title);
-              var tempArray = [];
-              tempArray.push(commentController.addComment(comment));
+      console.log('step 3');
 
-              for (var i = 0; i < comment.kids.length; i++) {
-                tempArray.push(createComment(comment.kids[i], title));
-              }
-              return Promise.all(tempArray);
-            }
-          })
-          .catch(function(err) {
-            console.log('error with creating commment', err);
-          });
-      }
 
-      for (var i = 0; i < stories.length; i++) {
-        for (var j = 0; j < stories[i].kids.length; j++) {
-          commentRequests.push(createComment(stories[i].kids[j], stories[i].title));
+      for (var i = 0; i < items.length; i++) {
+        // some stories have no comments
+        if (items[i] && items[i].type === 'comment' && items[i].parent) {
+          commentRequests.push(itemController.updateTitle(items[i].id));
         }
       }
 
@@ -113,9 +101,28 @@ function populateDBWithStories() {
 
       console.log('done');
     })
+    .catch(function(err) {
+      console.log('timeout', err);
+    })
     .then(null, function(err) {
       console.log('error getting new comments', err);
     });
+}
+
+function createItemForDB(itemFromAPI) {
+  var item = {};
+  item.id = itemFromAPI.id;
+  item.type = itemFromAPI.type;
+  item.title = itemFromAPI.title || null;
+  item.kids = itemFromAPI.kids || [];
+  item.time = itemFromAPI.time;
+  item.by = itemFromAPI.by;
+  item.score = itemFromAPI.score;
+  if (item.type !== story) {
+    item.parent = itemFromAPI.parent;
+  }
+
+  return item;
 }
 
 function createStoryForDB(storyFromAPI) {

@@ -1,10 +1,8 @@
 /*jshint node:true*/
 var express = require('express');
-var hackerController = require('./server/hacker/hackerController');
 var bodyParser = require('body-parser');
 var aggregatorController = require('./server/aggregator/aggregatorController');
 var config = require('config');
-
 
 var mongoose = require('mongoose');
 
@@ -29,7 +27,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/search/:term', aggregatorController.aggregate);
-app.get('/update', hackerController.gatherSentiments);
+// app.get('/update', hackerController.gatherSentiments);
 
 
 // There are many useful environment variables available in process.env.
