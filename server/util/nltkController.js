@@ -3,8 +3,6 @@ var request = Promise.promisify(require('request'));
 var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
 var config = require('config');
 var _apiKey = config.get('nltk');
-var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
-var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
 var nltkController = {};
 nltkController.getSentimentsSync = getSentimentsSync;
