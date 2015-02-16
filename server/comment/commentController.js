@@ -6,17 +6,12 @@ commentController.addComment = addComment;
 commentController.getAllCommentIds = getAllCommentIds;
 commentController.getComments = getComments;
 
-function addComment(comment, callback) {
-  Comment.create(comment, function(err, createdComment) {
-    if (err) {
-      console.log('error adding comment to db', err);
-    }
-  });
+function addComment(comment) {
+  return Comment.create(comment);
 }
 
 function getAllCommentIds(callback) {
   var commentIds = [];
-  // console.log(Comment.find().exec());
   return Comment.find()
     .exec()
     .then(function(foundComments) {

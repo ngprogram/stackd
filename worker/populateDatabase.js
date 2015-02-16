@@ -11,25 +11,35 @@ var request = Promise.promisify(require('request'));
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
+var numberToScrape = 100;
+
 function populateDBWithStories() {
-  request('https://hacker-news.firebaseio.com/v0/topstories.json')
+
+  var temp = request('https://hacker-news.firebaseio.com/v0/topstories.json')
     .spread(function(response, body) {
       var topID = JSON.parse(body)[99];
-      getNewStories(topID-100, topID);
-    }).catch(function(err) {
-      console.log('error with request', err);
-    });
-}
 
-function getNewStories(lower, higher) {
-  Promise.join(commentController.getAllCommentIds(), storyController.getAllStoryIds(),
-   function(commentIds, storyIds) {
+      return topID;
+    });
+
+  var promiseArray = [];
+  promiseArray.push(temp);
+  promiseArray.push(commentController.getAllCommentIds());
+  promiseArray.push(storyController.getAllStoryIds());
+
+  Promise.all(promiseArray)
+    .then(function(results) {
+      var higher = results[0];
+      var commentIds = results[1];
+      var storyIds = results[2];
+
       var requestsForStories = [];
-      for (var i = lower; i < higher; i++) {
+      for (var i = higher - numberToScrape; i < higher; i++) {
         if (commentIds.indexOf(i) < 0 && storyIds.indexOf(i) < 0) {
           requestsForStories.push(request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json'));
         }
       }
+
       return Promise.all(requestsForStories);
     })
     // finds stories from hacker news items
@@ -38,51 +48,70 @@ function getNewStories(lower, higher) {
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = JSON.parse(hackerNewsItems[i][0].body);
         if (item.type === 'story') {
-          // console.log('hello');
           stories.push(storyController.addStory(createStoryForDB(item)));
         }
       }
+
       return Promise.all(stories);
     })
     // get comments from stories
     .then(function(stories) {
       var array = [];
-      for (var i =0 ; i < stories.length; i++) {
+
+      function createComment(commentId, title) {
+        return request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
+          .spread(function(response, body) {
+            if (JSON.parse(body)) {
+              var comment = createCommentForDB(JSON.parse(body), title);
+              if (comment.kids.length > 0) {
+                for (var i = 0; i < comment.kids.length; i++) {
+                  array.push(createComment(comment.kids[i], title));
+                }
+              }
+              return commentController.addComment(comment);
+            }
+          })
+          .catch(function(err) {
+            console.log('error creating comment');
+          });
+      }
+
+      for (var i = 0; i < stories.length; i++) {
         for (var j = 0; j < stories[i].kids.length; j++) {
-          createComment(stories[i].kids[j], stories[i].title);
+          array.push(createComment(stories[i].kids[j], stories[i].title))
         }
       }
 
-      // return Promise.all(array);
+      return Promise.all(array);
+    })
+    .then(function(comments) {
+      console.log('comments', comments);
+      var sentimentsFromComments = [];
+      for (var i = 0; i < comments.length; i++) {
+        if (comments[i] && comments[i].text) {
+          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
+        }
+      }
+
+      return Promise.all(sentimentsFromComments);
+    })
+    .then(function(sentimentsFromComments) {
+      var sentiments = [];
+      for (var i = 0; i < sentimentsFromComments.length; i++) {
+        for (var j = 0; j < sentimentsFromComments[i].length; j++) {
+          sentiments.push(sentimentsFromComments[i][j]);
+        }
+      }
+
+      for (var i = 0; i < sentiments.length; i++) {
+        sentimentController.addSentiment(sentiments[i]);
+      }
+
+      console.log('done');
     })
     .then(null, function(err) {
       console.log('error getting new comments', err);
     });
-    // .then(function(comments) {
-
-    //   for (var i = 0; i < comments.length; i++) {
-
-    //   }
-
-    // })
-    // .then(function(sentiments) {
-    //   var allSentiments = [];
-    //   var promisedSentiments = [];
-    //   for (var i = 0; i < sentiments.length; i++) {
-    //     for (var j = 0; j < sentiments[i].length; j++) {
-    //       allSentiments.push(sentiments[i][j]);
-    //     }
-    //   }
-
-    //   for (var i = 0; i < allSentiments.length; i++) {
-    //     promisedSentiments.push(sentimentController.addSentiment(allSentiments[i]));
-    //   }
-
-    //   return Promise.all(promisedSentiments);
-    // })
-    // .then(null, function(err) {
-    //   console.log('error getting new story', err);
-    // });
 }
 
 function createStoryForDB(storyFromAPI) {
@@ -93,23 +122,23 @@ function createStoryForDB(storyFromAPI) {
   return story;
 }
 
-function createComment(commentId, title) {
-  request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
-    .spread(function(response, body) {
-      if (JSON.parse(body)) {
-        var comment = createCommentForDB(JSON.parse(body), title);
-        commentController.addComment(comment);
-        if (comment.kids.length > 0) {
-          for (var i = 0; i < comment.kids.length; i++) {
-            createComment(comment.kids[i], title);
-          }
-        }
-      }
-    })
-    .catch(function(err) {
-      console.log('error creating comment');
-    });
-}
+// function createComment(commentId, title) {
+//   request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
+//     .spread(function(response, body) {
+//       if (JSON.parse(body)) {
+//         var comment = createCommentForDB(JSON.parse(body), title);
+//         commentController.addComment(comment);
+//         if (comment.kids.length > 0) {
+//           for (var i = 0; i < comment.kids.length; i++) {
+//             createComment(comment.kids[i], title);
+//           }
+//         }
+//       }
+//     })
+//     .catch(function(err) {
+//       console.log('error creating comment');
+//     });
+// }
 
 function createCommentForDB(commentFromAPI, title) {
   var comment = {};
@@ -154,7 +183,6 @@ function generateSentiments() {
     });
 }
 
-// populateDBWithStories();
-// getNewStories();
+populateDBWithStories();
 // updateCommentsWithTitle();
-generateSentiments();
+// generateSentiments();
