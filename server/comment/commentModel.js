@@ -7,7 +7,8 @@ var commentSchema = new Schema({
   commentId: { type: Number, unique: true, required: true },
   text: String,
   parentId: Number,
-  date: Number,
+  time: Number,
+  by: String,
   title: { type: String, default: null }
 });
 

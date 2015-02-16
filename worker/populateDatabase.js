@@ -94,8 +94,7 @@ function populateDBWithStories() {
     .then(function(comments) {
 
       comments = _.flattenDeep(comments);
-      console.log('length', comments.length);
-      // console.log('comments', comments);
+
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
         if (comments[i] && comments[i].text) {
@@ -129,6 +128,10 @@ function createStoryForDB(storyFromAPI) {
   story.storyId = storyFromAPI.id;
   story.title = storyFromAPI.title;
   story.kids = storyFromAPI.kids || [];
+  story.time = storyFromAPI.time;
+  story.by = storyFromAPI.by;
+  story.score = storyFromAPI.score;
+
   return story;
 }
 
@@ -137,45 +140,11 @@ function createCommentForDB(commentFromAPI, title) {
   comment.commentId = commentFromAPI.id;
   comment.kids = commentFromAPI.kids || [];
   comment.text = commentFromAPI.text;
-  comment.date = commentFromAPI.time;
+  comment.by = commentFromAPI.by;
+  comment.time = commentFromAPI.time;
   comment.title = title;
 
   return comment;
 }
 
-function generateSentiments() {
-  Promise.join(commentController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
-    function(comments, usedCommentIds) {
-      // array with contain nested arrays
-      var sentimentsFromComments = [];
-
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text && usedCommentIds.indexOf(comments[i].commentId) < 0) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-        }
-      }
-      return Promise.all(sentimentsFromComments);
-    })
-    //flattens array
-    .then(function(sentimentsFromComments) {
-      var sentiments = [];
-      for (var i = 0; i < sentimentsFromComments.length; i++) {
-        for (var j = 0; j < sentimentsFromComments[i].length; j++) {
-          sentiments.push(sentimentsFromComments[i][j]);
-        }
-      }
-
-      for (var i = 0; i < sentiments.length; i++) {
-        sentimentController.addSentiment(sentiments[i]);
-      }
-
-    })
-    .then(null, function(err) {
-      console.log('error generating sentiments', err);
-    });
-}
-
-
 populateDBWithStories();
-// updateCommentsWithTitle();
-// generateSentiments();

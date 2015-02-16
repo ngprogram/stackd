@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
 var storySchema = new Schema({
   storyId: { type: Number, unique: true, required: true },
   title: String,
+  by: String,
   time: Number,
   score: Number,
   kids: [Number]
