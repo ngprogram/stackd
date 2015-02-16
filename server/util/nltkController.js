@@ -26,8 +26,6 @@ function getSentimentsSync(comment) {
 
       return request(options)
         .spread(function (response, body) {
-          console.log('hello');
-          console.log(body);
           return processSentiment(JSON.parse(body), comment);
         })
     })
@@ -39,7 +37,6 @@ function getSentimentsSync(comment) {
 
 function processSentiment(sentiment, comment) {
   sentiment = sentiment.probability;
-  console.log(sentiment);
   var sentimentObj = {};
 
   sentimentObj.positive = sentiment.pos;
@@ -49,7 +46,7 @@ function processSentiment(sentiment, comment) {
   sentimentObj.commentId = comment.commentId;
   sentimentObj.time = comment.time;
   sentimentObj.by = comment.by;
-
+  console.log('sentiment', sentimentObj);
   return sentimentObj;
 }
 

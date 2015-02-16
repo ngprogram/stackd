@@ -4,7 +4,7 @@ var _ = require('lodash');
 var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
 var storyController = Promise.promisifyAll(require('../server/story/storyController'));
 
-var idolController = Promise.promisifyAll(require('../server/idol/idolController'));
+var nltkController = Promise.promisifyAll(require('../server/util/nltkController'));
 var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
 var request = Promise.promisify(require('request'));
@@ -12,10 +12,9 @@ var request = Promise.promisify(require('request'));
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var numberToScrape = 500;
+var numberToScrape = 50;
 
 function populateDBWithStories() {
-
   var temp = request('https://hacker-news.firebaseio.com/v0/topstories.json')
     .spread(function(response, body) {
       var topID = JSON.parse(body)[99];
@@ -30,6 +29,7 @@ function populateDBWithStories() {
 
   Promise.all(promiseArray)
     .then(function(results) {
+      console.log('step 1');
       var higher = results[0];
       var commentIds = results[1];
       var storyIds = results[2];
@@ -49,6 +49,7 @@ function populateDBWithStories() {
     })
     // finds stories from hacker news items
     .then(function(hackerNewsItems) {
+      console.log('step 2');
       var stories = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
@@ -64,7 +65,6 @@ function populateDBWithStories() {
       var commentRequests = [];
       var count = 0;
       function createComment(commentId, title) {
-        console.log(++count);
         return request('https://hacker-news.firebaseio.com/v0/item/' +commentId +'.json')
           .spread(function(response, body) {
             if (JSON.parse(body)) {
@@ -92,25 +92,20 @@ function populateDBWithStories() {
       return Promise.all(commentRequests);
     })
     .then(function(comments) {
-
+      console.log('getting sentiments from comments');
       comments = _.flattenDeep(comments);
 
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
         if (comments[i] && comments[i].text) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
+          sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
         }
       }
 
       return Promise.all(sentimentsFromComments);
     })
-    .then(function(sentimentsFromComments) {
-      var sentiments = [];
-      for (var i = 0; i < sentimentsFromComments.length; i++) {
-        for (var j = 0; j < sentimentsFromComments[i].length; j++) {
-          sentiments.push(sentimentsFromComments[i][j]);
-        }
-      }
+    .then(function(sentiments) {
+       console.log('running thorugh sentiments');
 
       for (var i = 0; i < sentiments.length; i++) {
         sentimentController.addSentiment(sentiments[i]);
