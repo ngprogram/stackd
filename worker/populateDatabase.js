@@ -1,8 +1,8 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
 
-var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
-var storyController = Promise.promisifyAll(require('../server/story/storyController'));
+// var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
+// var storyController = Promise.promisifyAll(require('../server/story/storyController'));
 
 var nltkController = Promise.promisifyAll(require('../server/util/nltkController'));
 var sentimentController = require('../server/sentiment/sentimentController');
@@ -14,30 +14,29 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var numberToScrape = 100;
+var chunkSize = 20;
+var count = 0;
+var limit = 100;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
-function populateDBWithStories() {
-  var temp = request(maxItemUrl)
+function populateDBWithStories(n) {
+
+  request(maxItemUrl)
     .spread(function(response, body) {
-      console.log(body);
       var topID = JSON.parse(body);
-      return topID;
+
+      getChunk(topID);
     });
+}
 
-  var promiseArray = [];
-  promiseArray.push(temp);
-  promiseArray.push(itemController.getAllItemIds());
-
-  Promise.all(promiseArray)
-    .then(function(results) {
+function getChunk(n) {
+  count++;
+  itemController.getAllItemIds()
+    .then(function(itemIds) {
       console.log('step 1');
-      var topID = results[0];
-      var itemIds = results[1];
-
       var requestsForItems = [];
-      for (var i = topID - numberToScrape; i < topID; i++) {
+      for (var i = n - chunkSize; i < n; i++) {
         if (itemIds.indexOf(i) < 0) {
           var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
             .spread(function(response, body) {
@@ -77,31 +76,27 @@ function populateDBWithStories() {
       return Promise.all(commentRequests);
     })
     .then(function(comments) {
-
       comments = _.flattenDeep(comments);
-      console.log('getting sentiments from comments', comments);
-
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
-        // console.log(comments[i]);
+
         if (comments[i] && comments[i].text) {
-          console.log('running thorugh for loop');
           sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
+        }
+        else {
+          console.log('skipped');
         }
       }
 
       return Promise.all(sentimentsFromComments);
     })
-    .then(function(sentiments) {
-       console.log('running through sentiments', sentiments);
-
-      for (var i = 0; i < sentiments.length; i++) {
-        sentimentController.addSentiment(sentiments[i]);
+    .then(function() {
+      console.log('done', count);
+      if (count < limit) {
+        getChunk(n-chunkSize);
       }
-
-      console.log('done');
     })
-    .catch(function(err) {
+    .error(function(err) {
       console.log('timeout', err);
     })
     .then(null, function(err) {
@@ -111,30 +106,24 @@ function populateDBWithStories() {
 
 function updateSentiments() {
 
-  itemController.getComments()
-    .then(function(comments) {
+  Promise.join(itemController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
+    function(comments, commentIds) {
 
       comments = _.flattenDeep(comments);
-      console.log('getting sentiments from comments', comments);
-
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
         // console.log(comments[i]);
-        if (comments[i] && comments[i].text) {
-          console.log('running thorugh for loop');
+        if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
           sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
+        }
+        else {
+          console.log('skipped');
         }
       }
 
       return Promise.all(sentimentsFromComments);
     })
-    .then(function(sentiments) {
-       console.log('running through sentiments', sentiments);
-
-      for (var i = 0; i < sentiments.length; i++) {
-        sentimentController.addSentiment(sentiments[i]);
-      }
-
+    .then(function() {
       console.log('done');
     })
     .then(null, function(err) {
@@ -186,5 +175,5 @@ function createCommentForDB(commentFromAPI, title) {
   return comment;
 }
 
-// populateDBWithStories();
-updateSentiments();
+populateDBWithStories();
+// updateSentiments();

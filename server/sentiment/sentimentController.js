@@ -34,8 +34,9 @@ function getCommentIdsFromSavedSentiments() {
     .then(function(foundSentiments) {
       var commentIds = [];
       for (var i = 0; i < foundSentiments.length; i++) {
-        commentIds.push(foundSentiments[i].commentId);
+        commentIds.push(foundSentiments[i].id);
       }
+
       return commentIds;
     })
     .then(null, function(err) {

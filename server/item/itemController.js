@@ -48,10 +48,8 @@ function updateTitle(commentId) {
     return Item.findOne({id: id}).exec()
       .then(function(foundItem) {
 
-        console.log('foundItem', foundItem);
         if (foundItem) {
 
-          console.log(foundItem);
           if (foundItem && foundItem.title) {
             return updateTitles(itemsWithoutTitles, foundItem.title);
           }
@@ -66,7 +64,6 @@ function updateTitle(commentId) {
                   .then(function(createdItem) {
 
                     if (createdItem && createdItem.title) {
-                      console.log('created Item', createdItem);
                       return updateTitles(itemsWithoutTitles, createdItem.title);
                     }
 
