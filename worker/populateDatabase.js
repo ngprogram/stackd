@@ -1,9 +1,6 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
 
-// var commentController = Promise.promisifyAll(require('../server/comment/commentController'));
-// var storyController = Promise.promisifyAll(require('../server/story/storyController'));
-
 var nltkController = Promise.promisifyAll(require('../server/util/nltkController'));
 var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
@@ -16,7 +13,7 @@ mongoose.connect(config.get('mongo'));
 
 var chunkSize = 20;
 var count = 0;
-var limit = 100;
+var limit = 1000;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -96,9 +93,6 @@ function getChunk(n) {
         getChunk(n-chunkSize);
       }
     })
-    .error(function(err) {
-      console.log('timeout', err);
-    })
     .then(null, function(err) {
       console.log('error getting new comments', err);
     });
@@ -141,6 +135,7 @@ function createItemForDB(itemFromAPI) {
   item.time = itemFromAPI.time;
   item.by = itemFromAPI.by;
   item.score = itemFromAPI.score;
+  item.source = "Hacker News";
   if (item.type !== 'story') {
     item.parent = itemFromAPI.parent;
   }
@@ -151,29 +146,4 @@ function createItemForDB(itemFromAPI) {
   return item;
 }
 
-function createStoryForDB(storyFromAPI) {
-  var story = {};
-  story.storyId = storyFromAPI.id;
-  story.title = storyFromAPI.title;
-  story.kids = storyFromAPI.kids || [];
-  story.time = storyFromAPI.time;
-  story.by = storyFromAPI.by;
-  story.score = storyFromAPI.score;
-
-  return story;
-}
-
-function createCommentForDB(commentFromAPI, title) {
-  var comment = {};
-  comment.commentId = commentFromAPI.id;
-  comment.kids = commentFromAPI.kids || [];
-  comment.text = commentFromAPI.text;
-  comment.by = commentFromAPI.by;
-  comment.time = commentFromAPI.time;
-  comment.title = title;
-
-  return comment;
-}
-
 populateDBWithStories();
-// updateSentiments();
