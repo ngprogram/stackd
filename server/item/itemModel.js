@@ -7,6 +7,7 @@ var itemSchema = new Schema({
   parent: Number,
   title: String,
   text: String,
+  source: String,
   type: String,
   by: String,
   time: Number,
