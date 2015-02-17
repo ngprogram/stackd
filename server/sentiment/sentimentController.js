@@ -29,7 +29,7 @@ function getAllSentiments(callback) {
   Sentiment.find({}, callback);
 }
 
-function getCommentIdsFromSavedSentiments(callback) {
+function getCommentIdsFromSavedSentiments() {
   return Sentiment.find({}).exec()
     .then(function(foundSentiments) {
       var commentIds = [];

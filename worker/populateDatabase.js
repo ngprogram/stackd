@@ -14,7 +14,7 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var numberToScrape = 500;
+var numberToScrape = 100;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -29,14 +29,12 @@ function populateDBWithStories() {
   var promiseArray = [];
   promiseArray.push(temp);
   promiseArray.push(itemController.getAllItemIds());
-  // promiseArray.push(storyController.getAllStoryIds());
 
   Promise.all(promiseArray)
     .then(function(results) {
       console.log('step 1');
       var topID = results[0];
       var itemIds = results[1];
-      // var storyIds = results[2];
 
       var requestsForItems = [];
       for (var i = topID - numberToScrape; i < topID; i++) {
@@ -51,24 +49,23 @@ function populateDBWithStories() {
 
       return Promise.all(requestsForItems);
     })
-    // finds stories from hacker news items
+    // saves all items from hacker news
     .then(function(hackerNewsItems) {
       console.log('step 2');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
         if (item && !item.deleted) {
-          items.push(itemContorller.addItem(createItemForDB(item)));
+          items.push(itemController.addItem(createItemForDB(item)));
         }
       }
 
       return Promise.all(items);
     })
-    // get comments from stories
+    // get update all comments with text
     .then(function(items) {
       var commentRequests = [];
       console.log('step 3');
-
 
       for (var i = 0; i < items.length; i++) {
         // some stories have no comments
@@ -80,12 +77,15 @@ function populateDBWithStories() {
       return Promise.all(commentRequests);
     })
     .then(function(comments) {
-      console.log('getting sentiments from comments');
+
       comments = _.flattenDeep(comments);
+      console.log('getting sentiments from comments', comments);
 
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
+        // console.log(comments[i]);
         if (comments[i] && comments[i].text) {
+          console.log('running thorugh for loop');
           sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
         }
       }
@@ -93,7 +93,7 @@ function populateDBWithStories() {
       return Promise.all(sentimentsFromComments);
     })
     .then(function(sentiments) {
-       console.log('running thorugh sentiments');
+       console.log('running through sentiments', sentiments);
 
       for (var i = 0; i < sentiments.length; i++) {
         sentimentController.addSentiment(sentiments[i]);
@@ -109,6 +109,40 @@ function populateDBWithStories() {
     });
 }
 
+function updateSentiments() {
+
+  itemController.getComments()
+    .then(function(comments) {
+
+      comments = _.flattenDeep(comments);
+      console.log('getting sentiments from comments', comments);
+
+      var sentimentsFromComments = [];
+      for (var i = 0; i < comments.length; i++) {
+        // console.log(comments[i]);
+        if (comments[i] && comments[i].text) {
+          console.log('running thorugh for loop');
+          sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
+        }
+      }
+
+      return Promise.all(sentimentsFromComments);
+    })
+    .then(function(sentiments) {
+       console.log('running through sentiments', sentiments);
+
+      for (var i = 0; i < sentiments.length; i++) {
+        sentimentController.addSentiment(sentiments[i]);
+      }
+
+      console.log('done');
+    })
+    .then(null, function(err) {
+      console.log('error getting new comments', err);
+    });
+
+}
+
 function createItemForDB(itemFromAPI) {
   var item = {};
   item.id = itemFromAPI.id;
@@ -118,8 +152,11 @@ function createItemForDB(itemFromAPI) {
   item.time = itemFromAPI.time;
   item.by = itemFromAPI.by;
   item.score = itemFromAPI.score;
-  if (item.type !== story) {
+  if (item.type !== 'story') {
     item.parent = itemFromAPI.parent;
+  }
+  if (item.type === 'comment') {
+    item.text = itemFromAPI.text;
   }
 
   return item;
@@ -149,4 +186,5 @@ function createCommentForDB(commentFromAPI, title) {
   return comment;
 }
 
-populateDBWithStories();
+// populateDBWithStories();
+updateSentiments();
