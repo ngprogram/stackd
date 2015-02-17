@@ -6,6 +6,15 @@ var request = Promise.promisify(require('request'));
 var itemController = {};
 itemController.getAllItemIds = getAllItemIds;
 itemController.addItem = addItem;
+itemController.deleteItems = deleteItems;
+itemController.updateTitle = updateTitle;
+itemController.getComments = getComments;
+
+function deleteItems() {
+  return Item.remove({})
+    .exec();
+
+}
 
 function addItem(item) {
   return Item.create(item)
@@ -16,12 +25,12 @@ function addItem(item) {
 
 function getAllItemIds() {
   var itemIds = [];
-  return Comment.find()
+  return Item.find()
     .exec()
     .then(function(foundItems) {
 
       for (var i = 0; i < foundItems.length; i++) {
-        commentIds.push(foundItems[i].id);
+        itemIds.push(foundItems[i].id);
       }
       return itemIds;
     })
@@ -30,32 +39,87 @@ function getAllItemIds() {
     });
 }
 
-function updateTitle(id) {
+function updateTitle(commentId) {
+
+  var itemsWithoutTitles = [];
+  itemsWithoutTitles.push(commentId);
 
   function findTitle(id) {
-    return Item.findById(id).exec()
+    return Item.findOne({id: id}).exec()
       .then(function(foundItem) {
 
-        // if title
-        if (foundItem.title) {
-          return foundItem.title;
-        }
+        if (foundItem) {
 
-        return findTitle(foundItem.parent);
+          if (foundItem && foundItem.title) {
+            return updateTitles(itemsWithoutTitles, foundItem.title);
+          }
+
+          return findTitle(foundItem.parent);
+        }
+        return request('https://hacker-news.firebaseio.com/v0/item/' +id +'.json')
+        .spread(function(response, body) {
+          var item = createItemForDB(JSON.parse(body));
+
+          return addItem(item)
+                  .then(function(createdItem) {
+
+                    if (createdItem && createdItem.title) {
+                      return updateTitles(itemsWithoutTitles, createdItem.title);
+                    }
+
+                    itemsWithoutTitles.push(createdItem.id);
+                    return findTitle(createdItem.parent)
+                  });
+
       })
+      //could not find comment in db
       .then(null, function(err) {
-        return request('https://hacker-news.firebaseio.com/v0/item/' +foundItem.parent +'.json')
-        .spread(response, body) {
-
-
-
-
-        }
+          console.log('error with finding title', err);
+        })
       })
   }
 
+  return findTitle(commentId);
+}
+
+function updateTitles(array, title) {
+  console.log('updating');
+  var updatingArray = [];
+  for (var i = 0; i < array.length; i++) {
+    updatingArray.push((function(id) {
+      return Item.update({id: id}, {title: title}).exec()
+        .then(function() {
+          console.log('id', id);
+          return Item.findOne({id: id}).exec();
+        })
+    })(array[i]));
+  }
+
+  return Promise.all(updatingArray);
+}
+
+function getComments() {
+  return Item.find({type: 'comment'}).exec();
+}
 
 
+function createItemForDB(itemFromAPI) {
+  var item = {};
+  item.id = itemFromAPI.id;
+  item.type = itemFromAPI.type;
+  item.title = itemFromAPI.title || null;
+  item.kids = itemFromAPI.kids || [];
+  item.time = itemFromAPI.time;
+  item.by = itemFromAPI.by;
+  item.score = itemFromAPI.score;
+  if (item.type !== 'story') {
+    item.parent = itemFromAPI.parent;
+  }
+  if (item.type === 'comment') {
+    item.text = itemFromAPI.text;
+  }
+
+  return item;
 }
 
 module.exports = itemController;

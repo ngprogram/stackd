@@ -10,10 +10,8 @@ nltkController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
-
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
-      console.log('correct', correctSentence);
       var options = {
         uri: "https://japerk-text-processing.p.mashape.com/sentiment/",
         method: "POST",
@@ -27,8 +25,9 @@ function getSentimentsSync(comment) {
 
       return request(options)
         .spread(function (response, body) {
-          return processSentiment(JSON.parse(body), comment);
+          return sentimentController.addSentiment(createSentimentForDB(JSON.parse(body), comment));
         })
+
     })
     .then(null, function(err) {
       console.log('error with nltk request', err);
@@ -36,17 +35,15 @@ function getSentimentsSync(comment) {
 
 }
 
-function processSentiment(sentiment, comment) {
+function createSentimentForDB(sentiment, comment) {
   sentiment = sentiment.probability;
   var sentimentObj = {};
-
   sentimentObj.positive = sentiment.pos;
   sentimentObj.neutral = sentiment.neutral;
   sentimentObj.title = comment.title;
-  sentimentObj.comment = comment.text;
-  sentimentObj.commentId = comment.commentId;
+  sentimentObj.id = comment.id;
   sentimentObj.time = comment.time;
-  sentimentObj.by = comment.by;
+  console.log('sentiment', sentimentObj);
   return sentimentObj;
 }
 
