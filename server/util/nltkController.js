@@ -10,7 +10,6 @@ nltkController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
-
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
       console.log('correct', correctSentence);
