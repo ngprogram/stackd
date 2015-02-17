@@ -22,8 +22,10 @@ function correctSentence(sentence) {
 
   return request(options)
     .spread(function(response, body) {
-      console.log('final', JSON.parse(body).suggestion);
       return JSON.parse(body).suggestion;
+    })
+    .catch(function(err) {
+      console.log('error with spellchecker', err);
     });
 }
 

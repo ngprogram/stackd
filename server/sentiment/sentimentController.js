@@ -29,13 +29,14 @@ function getAllSentiments(callback) {
   Sentiment.find({}, callback);
 }
 
-function getCommentIdsFromSavedSentiments(callback) {
+function getCommentIdsFromSavedSentiments() {
   return Sentiment.find({}).exec()
     .then(function(foundSentiments) {
       var commentIds = [];
       for (var i = 0; i < foundSentiments.length; i++) {
-        commentIds.push(foundSentiments[i].commentId);
+        commentIds.push(foundSentiments[i].id);
       }
+
       return commentIds;
     })
     .then(null, function(err) {
