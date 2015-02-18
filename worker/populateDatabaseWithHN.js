@@ -14,7 +14,7 @@ mongoose.connect(config.get('mongo'));
 var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 100;
+var limit = 1;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -36,15 +36,15 @@ function getChunk(n) {
       var requestsForItems = [];
       for (var i = n - chunkSize; i < n; i++) {
         if (itemIds.indexOf(i) < 0) {
+          console.log('i', i);
           var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
             .spread(function(response, body) {
+              console.log('hello');
               return JSON.parse(body);
             });
-            console.log('temp', temp);
           requestsForItems.push(temp);
         }
       }
-      console.log('requestsForItems', requestsForItems);
       return Promise.all(requestsForItems);
     })
     // saves all items from hacker news
@@ -77,7 +77,6 @@ function getChunk(n) {
     })
     .then(function(comments) {
       comments = _.flattenDeep(comments);
-        // console.log('comments', comments);
 
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
