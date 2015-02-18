@@ -9,13 +9,11 @@ function aggregate(req,res) {
   var term = req.params.term;
   console.log('aggregate called');
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
-    console.log('total', total);
+    // console.log('total', total);
     if (total.length === 0) {
       res.send([]);
       return;
     }
-
-    var topThreeCommentsArray = getRedditCommentsWithMostUpvotes(term);
 
     total.forEach(function(obj) {
       avgRating += obj.positive;
@@ -23,14 +21,36 @@ function aggregate(req,res) {
     var origStore = storage;
     var topVals = sortObjectByCount(storage);
 
+    var topThreeCommentsArray = [];
+
+    // function getRedditCommentsWithMostUpvotes(term) {
+    //   var topThreeComments = [];
+    //   var commentsSortedByUpvotes = [];
+
+      sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
+        console.log('RESULTS', results);
+        var upperBound = (results.length < 3) ? results.length : 3;
+        for (var i = 0; i < upperBound; i++) {
+          topThreeCommentsArray.push(results[i].comment);
+        }
+
+        console.log('i work!', topThreeCommentsArray);
+        // new aggregetor spans from 0-1. 0.5 is neutral.
+        res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
+
+      });
+      
+    // }
+
+
+
+
+
     // var topScores = sortObjectByScore(storage);
     // console.log('storage', topScores);
     // console.log('topval', storage[topScores[0].key].id, term);
     // TO DO, if not sentiments, then do not use topVals[0].key
 
-
-    // new aggregetor spans from 0-1. 0.5 is neutral.
-    res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
 
     // if (topVals.length > 0) {
     //   //get top comment
@@ -118,16 +138,20 @@ function aggregate(req,res) {
 };
 
 
-function getRedditCommentsWithMostUpvotes(term) {
-  var topThreeComments = [];
-  var commentsSortedByUpvotes = [];
-  sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
-    for (var i = 0; i < ((results.length < 3) ? results.length : 3); i++) {
-      topThreeComments.push(results[i].comment);
-    }
-  });
-  return topThreeComments;
-}
+// function getRedditCommentsWithMostUpvotes(term) {
+//   var topThreeComments = [];
+//   var commentsSortedByUpvotes = [];
+//   sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
+//     console.log('RESULTS', results);
+//     var upperBound = (results.length < 3) ? results.length : 3;
+//     for (var i = 0; i < upperBound; i++) {
+//       topThreeComments.push(results[i].comment);
+//     }
+
+//     console.log('topThreeComments', topThreeComments);
+//     return topThreeComments;
+//   });
+// }
 
 function sortObjectByCount(obj) {
   var arr = [];
