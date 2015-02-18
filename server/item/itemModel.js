@@ -11,7 +11,7 @@ var itemSchema = new Schema({
   text: String,
   by: String,
   time: Number,
-  upvotes: Number,
+  score: Number,
   kids: [Number]
 });
 

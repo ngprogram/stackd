@@ -19,20 +19,26 @@ function correctSentence(sentence) {
       "Accept" : "application/json"
     }
   }
+  return (function(query) {
+    return request(query)
+      .spread(function(response, body) {
+        console.log('query', query);
+        console.log('spell body', body);
 
-  return request(options)
-    .spread(function(response, body) {
-      return JSON.parse(body).suggestion;
-    })
-    .catch(function(err) {
-      console.log('error with spellchecker', err);
-    });
+        return JSON.parse(body).suggestion;
+      })
+      .catch(function(err) {
+        console.log('error with spellchecker', err);
+      });
+
+  })(options);
+
 }
 
 
 function generateQuery(sentence) {
   var query = "https://montanaflynn-spellcheck.p.mashape.com/check/?text=";
-  var words = sentence.split(" ").join("+");
+  var words = sentence.replace(/ /g, "+");
 
   return query + words;
 }
