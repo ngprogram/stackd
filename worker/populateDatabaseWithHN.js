@@ -11,7 +11,7 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var chunkSize = 5;
+var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
 var limit = 1;
@@ -75,9 +75,10 @@ function getChunk(n) {
     })
     .then(function(comments) {
       comments = _.flattenDeep(comments);
+        // console.log('comments', comments);
+
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
-
         if (comments[i] && comments[i].text) {
           sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
         }
