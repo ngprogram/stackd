@@ -24,7 +24,8 @@
     "clean": "export NODE_ENV='test'; node worker/deleteDB.js",
     "clean-dev": "node worker/deleteDB.js; node worker/populateDatabaseWithHN.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
-    "fillReddit": "node worker/populateDatabaseReddit.js"
+    "fillReddit": "node worker/populateDatabaseReddit.js",
+    "migrate" : "export NODE_ENV='test'; node worker/moveToElasticsearch.js"
   },
   "repository": {},
   "devDependencies": {
