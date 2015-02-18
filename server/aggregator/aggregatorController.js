@@ -9,14 +9,14 @@ function aggregate(req,res) {
   var term = req.params.term;
   console.log('aggregate called');
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
-    // console.log('total', total);
+    console.log('total', total[0]);
     if (total.length === 0) {
       res.send([]);
       return;
     }
 
     total.forEach(function(obj) {
-      avgRating += obj.positive;
+      avgRating += obj.score;
     });
     var origStore = storage;
     var topVals = sortObjectByCount(storage);
@@ -34,7 +34,7 @@ function aggregate(req,res) {
           topThreeCommentsArray.push(results[i].comment);
         }
 
-        console.log('i work!', topThreeCommentsArray);
+        console.log('i work!',  avgRating, topThreeCommentsArray);
         // new aggregetor spans from 0-1. 0.5 is neutral.
         res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
 

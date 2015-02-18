@@ -15,8 +15,19 @@
   </head>
 
   <body class="container" ng-controller="SearchController as searchCtrl">
-    <div class="title">
-      stat
+    <div class="navBar"> 
+      <div class="title">
+        stat
+      </div>
+        <div class="search-again-bar" ng-show="searchCtrl.showData">
+            <form>
+            <div class="searchInput"><input ng-model="searchTerm" class="againInput" placeholder="enter term"></input></div>
+            <button class="searchButton searchAgain" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
+             <!--   <button class="searchButton" ng-click="searchCtrl.showData = !searchCtrl.showData"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button> -->
+          </form>
+       
+        </div>
+      </div>
     </div>
 
     <div class="top-container" ng-show="searchCtrl.showData">
@@ -24,14 +35,13 @@
         {{searchCtrl.newData.topic}}
       </div>
 
-      <div class="search-again-button">
-        <button class="searchButton" ng-click="searchCtrl.showData = !searchCtrl.showData"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
-      </div>
     </div>
 
     <div class="search-bar" ng-show="!searchCtrl.showData">
+      <form>
       <div class="searchInput"><input ng-model="searchTerm" placeholder="enter term"></input></div>
       <button class="searchButton" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
+    </form>
     </div>
 
     <div class="chart" ng-show="searchCtrl.showData">
