@@ -1,7 +1,7 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
 
-var nltkController = Promise.promisifyAll(require('../server/util/nltkController'));
+var idolController = Promise.promisifyAll(require('../server/util/idolController'));
 var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
 var request = Promise.promisify(require('request'));
@@ -11,9 +11,10 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var chunkSize = 20;
+var chunkSize = 5;
+var source = "Hacker News";
 var count = 0;
-var limit = 1000;
+var limit = 1;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -52,7 +53,7 @@ function getChunk(n) {
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
         if (item && !item.deleted) {
-          items.push(itemController.addItem(createItemForDB(item)));
+          items.push(itemController.addItem(item, source));
         }
       }
 
@@ -66,7 +67,7 @@ function getChunk(n) {
       for (var i = 0; i < items.length; i++) {
         // some stories have no comments
         if (items[i] && items[i].type === 'comment' && items[i].parent) {
-          commentRequests.push(itemController.updateTitle(items[i].id));
+          commentRequests.push(itemController.updateTitle(items[i].id, source));
         }
       }
 
@@ -78,7 +79,7 @@ function getChunk(n) {
       for (var i = 0; i < comments.length; i++) {
 
         if (comments[i] && comments[i].text) {
-          sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
+          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
         }
         else {
           console.log('skipped');
@@ -108,7 +109,7 @@ function updateSentiments() {
       for (var i = 0; i < comments.length; i++) {
         // console.log(comments[i]);
         if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
-          sentimentsFromComments.push(nltkController.getSentimentsSync(comments[i]));
+          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
         }
         else {
           console.log('skipped');
@@ -124,26 +125,6 @@ function updateSentiments() {
       console.log('error getting new comments', err);
     });
 
-}
-
-function createItemForDB(itemFromAPI) {
-  var item = {};
-  item.id = itemFromAPI.id;
-  item.type = itemFromAPI.type;
-  item.title = itemFromAPI.title || null;
-  item.kids = itemFromAPI.kids || [];
-  item.time = itemFromAPI.time;
-  item.by = itemFromAPI.by;
-  item.score = itemFromAPI.score;
-  item.source = "Hacker News";
-  if (item.type !== 'story') {
-    item.parent = itemFromAPI.parent;
-  }
-  if (item.type === 'comment') {
-    item.text = itemFromAPI.text;
-  }
-
-  return item;
 }
 
 populateDBWithStories();

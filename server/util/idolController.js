@@ -1,8 +1,11 @@
-var request = require('request');
+var Promise = require('bluebird');
+var request = Promise.promisify(require('request'));
+var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
 var config = require('config');
-var sentimentController = require('../sentiment/sentimentController');
+var spellCheckerController = Promise.promisifyAll(require('./spellCheckerController'));
 
 var _apiKey = config.get('idol');
+console.log('apiKey', _apiKey);
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
@@ -14,19 +17,21 @@ function getSentimentsSync(comment) {
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
       var parameters = {text: text, language: 'eng', apikey: _apiKey};
-      var queryString = generateQuery(text);
-
+      var queryString = generateQuery(correctSentence);
+      console.log('queryString', _syncUrl + queryString);
       return request(_syncUrl + queryString)
         .spread(function (response, body) {
-
-          console.log('body', body);
-          var sentiments = JSON.parse(response.body);
-          return parseSentiments(sentiments, comment);
+          console.log('BODY', body);
+          return parseSentiments(JSON.parse(body), comment);
         })
 
     })
+    .catch(function(err) {
+      console.log('catching');
+      console.log(err);
+    })
     .then(null, function(err) {
-      console.log('error with nltk request', err);
+      console.log('error with idol request', err);
     });
 
 }
@@ -35,70 +40,43 @@ function getSentimentsSync(comment) {
 
 function generateQuery(text) {
   var queryString = '?text=';
-  var textArray = text.split(' ');
-
-  for (var i = 0; i < textArray.length; i++) {
-    queryString += ('+' + textArray[i]);
-  }
-
+  queryString += text.replace(/ /g, '+');
   queryString += ('&apikey=' + _apiKey);
   return queryString;
 }
 
-function parseSentiments(sentiments, comment, title, time, commentId) {
+function parseSentiments(sentiments, comment) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
 
-  if (positiveSentiments && positiveSentiments.length > 0) {
-    for (var i = 0; i < positiveSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(positiveSentiments[i], 'positive', comment, title, time, commentId));
-    }
+  for (var i = 0; i < positiveSentiments.length; i++) {
+    sentimentsArr.push(sentimentController.addSentiment(createSentimentForDB(positiveSentiments[i], 'positive', comment)));
   }
-  if (negativeSentiments && negativeSentiments.length > 0) {
-    for (var i = 0; i < negativeSentiments.length; i++) {
-      sentimentController.addSentiment(processSentiment(negativeSentiments[i], 'negative', comment, title, time, commentId));
-    }
+  for (var i = 0; i < negativeSentiments.length; i++) {
+    sentimentsArr(sentimentController.addSentiment(createSentimentForDB(negativeSentiments[i], 'negative', comment)));
   }
 
-  return sentimentsArr;
+  return Promise.all(sentimentsArr)
+    .then(null, function(err) {
+      console.log('error with parsing sentiments', err);
+    });
 }
 
-function processSentiment(sentiment, rating, comment, title, time, commentId) {
+function createSentimentForDB(sentiment, positiveOrNegative, comment) {
   var sentimentObj = {};
 
-  sentimentObj.sentiment = sentiment.sentiment;
   sentimentObj.score = sentiment.score;
-
-  if (rating === 'negative') {
+  if (positiveOrNegative === 'negative') {
     sentimentObj.score = -sentiment.score;
   }
-
-  sentimentObj.title = title;
-  sentimentObj.comment = comment.text;
-  sentimentObj.commentId = commentId;
-  sentimentObj.date = time;
-  sentimentObj.author = comment.by;
-
-  return sentimentObj;
-}
-
-function createSentimentForDB(sentiment, comment) {
-  var sentimentObj = {};
   sentimentObj.commentId = comment.id;
-
-  sentimentObj.score = sentiment.score;
-
-  if (rating === 'negative') {
-    sentimentObj.score = -sentiment.score;
-  }
-
   sentimentObj.upvotes = comment.upvotes || 0;
-
-
   sentimentObj.title = comment.title;
   sentimentObj.time = comment.time;
-  console.log('sentiment', sentimentObj);
+  sentimentObj.source = comment.source;
+  sentimentObj.sentiment = sentiment.sentiment;
+  sentimentObj.comment = comment.text;
 
   return sentimentObj;
 }
