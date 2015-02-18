@@ -6,7 +6,9 @@ var request = Promise.promisify(require('request'));
 
 var itemController = {};
 itemController.getAllItemIds = getAllItemIds;
+itemController.getAllLinkIds = getAllLinkIds;
 itemController.addItem = addItem;
+itemController.addRedditItem = addRedditItem;
 itemController.deleteItems = deleteItems;
 itemController.updateTitle = updateTitle;
 itemController.getComments = getComments;
@@ -23,9 +25,33 @@ function addItem(item, source) {
     });
 }
 
+function addRedditItem(item) {
+  return Item.create(item)
+    .then(null, function(err) {
+      console.log('error creating item', err);
+    });
+}
+
 function getAllItemIds() {
   var itemIds = [];
   return Item.find()
+    .exec()
+    .then(function(foundItems) {
+
+      for (var i = 0; i < foundItems.length; i++) {
+        itemIds.push(foundItems[i].id);
+      }
+      return itemIds;
+    })
+    .then(null, function(err) {
+      console.log('error getting all itemIds', err);
+    });
+}
+
+//takes in source as parameter and only checks for that source
+function getAllLinkIds(source) {
+  var itemIds = [];
+  return Item.find({source: source, type: 'link'})
     .exec()
     .then(function(foundItems) {
 

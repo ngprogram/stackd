@@ -1,5 +1,6 @@
 var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
+var _ = require('lodash');
 aggregatorController.aggregate = aggregate;
 
 function aggregate(req,res) {
@@ -8,12 +9,13 @@ function aggregate(req,res) {
   var term = req.params.term;
   console.log('aggregate called');
   sentimentController.getSentimentsFromKeyword(term, function(err, total) {
-    console.log(total);
+    console.log('total', total);
     if (total.length === 0) {
       res.send([]);
       return;
     }
 
+    var topThreeCommentsArray = getRedditCommentsWithMostUpvotes(term);
 
     total.forEach(function(obj) {
       avgRating += obj.positive;
@@ -28,7 +30,7 @@ function aggregate(req,res) {
 
 
     // new aggregetor spans from 0-1. 0.5 is neutral.
-    res.send({avg: (avgRating/total.length - 0.50) * 2});
+    res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
 
     // if (topVals.length > 0) {
     //   //get top comment
@@ -115,6 +117,17 @@ function aggregate(req,res) {
   });
 };
 
+
+function getRedditCommentsWithMostUpvotes(term) {
+  var topThreeComments = [];
+  var commentsSortedByUpvotes = [];
+  sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
+    for (var i = 0; i < ((results.length < 3) ? results.length : 3); i++) {
+      topThreeComments.push(results[i].comment);
+    }
+  });
+  return topThreeComments;
+}
 
 function sortObjectByCount(obj) {
   var arr = [];
