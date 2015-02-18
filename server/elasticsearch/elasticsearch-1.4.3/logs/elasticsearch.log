@@ -1,0 +1,61 @@
+[2015-02-18 10:22:42,395][INFO ][node                     ] [Shaman] version[1.4.3], pid[35511], build[36a29a7/2015-02-11T14:23:15Z]
+[2015-02-18 10:22:42,396][INFO ][node                     ] [Shaman] initializing ...
+[2015-02-18 10:22:42,401][INFO ][plugins                  ] [Shaman] loaded [], sites []
+[2015-02-18 10:22:45,183][INFO ][node                     ] [Shaman] initialized
+[2015-02-18 10:22:45,184][INFO ][node                     ] [Shaman] starting ...
+[2015-02-18 10:22:45,288][INFO ][transport                ] [Shaman] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/10.0.0.3:9300]}
+[2015-02-18 10:22:45,310][INFO ][discovery                ] [Shaman] elasticsearch/ct0-GmkBSM2Aaa5lgKm0JA
+[2015-02-18 10:22:49,097][INFO ][cluster.service          ] [Shaman] new_master [Shaman][ct0-GmkBSM2Aaa5lgKm0JA][MacBook-Pro.local][inet[/10.0.0.3:9300]], reason: zen-disco-join (elected_as_master)
+[2015-02-18 10:22:49,118][INFO ][http                     ] [Shaman] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/10.0.0.3:9200]}
+[2015-02-18 10:22:49,119][INFO ][node                     ] [Shaman] started
+[2015-02-18 10:22:49,130][INFO ][gateway                  ] [Shaman] recovered [0] indices into cluster_state
+[2015-02-18 10:27:01,765][INFO ][node                     ] [Shaman] stopping ...
+[2015-02-18 10:27:01,786][INFO ][node                     ] [Shaman] stopped
+[2015-02-18 10:27:01,786][INFO ][node                     ] [Shaman] closing ...
+[2015-02-18 10:27:01,791][INFO ][node                     ] [Shaman] closed
+[2015-02-18 10:29:54,690][INFO ][node                     ] [Rl'nnd] version[1.4.3], pid[35771], build[36a29a7/2015-02-11T14:23:15Z]
+[2015-02-18 10:29:54,690][INFO ][node                     ] [Rl'nnd] initializing ...
+[2015-02-18 10:29:54,695][INFO ][plugins                  ] [Rl'nnd] loaded [], sites []
+[2015-02-18 10:29:57,466][INFO ][node                     ] [Rl'nnd] initialized
+[2015-02-18 10:29:57,468][INFO ][node                     ] [Rl'nnd] starting ...
+[2015-02-18 10:29:57,569][INFO ][transport                ] [Rl'nnd] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/10.0.0.3:9300]}
+[2015-02-18 10:29:57,593][INFO ][discovery                ] [Rl'nnd] elasticsearch/B3SlwKrCTmWXcdUul26nvQ
+[2015-02-18 10:30:01,098][INFO ][node                     ] [Rl'nnd] stopping ...
+[2015-02-18 10:30:01,119][INFO ][node                     ] [Rl'nnd] stopped
+[2015-02-18 10:30:01,119][INFO ][node                     ] [Rl'nnd] closing ...
+[2015-02-18 10:30:01,124][INFO ][node                     ] [Rl'nnd] closed
+[2015-02-18 10:30:02,929][INFO ][node                     ] [Rachel van Helsing] version[1.4.3], pid[35792], build[36a29a7/2015-02-11T14:23:15Z]
+[2015-02-18 10:30:02,930][INFO ][node                     ] [Rachel van Helsing] initializing ...
+[2015-02-18 10:30:02,934][INFO ][plugins                  ] [Rachel van Helsing] loaded [], sites []
+[2015-02-18 10:30:05,048][INFO ][node                     ] [Rachel van Helsing] initialized
+[2015-02-18 10:30:05,048][INFO ][node                     ] [Rachel van Helsing] starting ...
+[2015-02-18 10:30:05,145][INFO ][transport                ] [Rachel van Helsing] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/10.0.0.3:9300]}
+[2015-02-18 10:30:05,163][INFO ][discovery                ] [Rachel van Helsing] elasticsearch/wHgW07gEQ6CRZnPRnPBP4w
+[2015-02-18 10:30:08,941][INFO ][cluster.service          ] [Rachel van Helsing] new_master [Rachel van Helsing][wHgW07gEQ6CRZnPRnPBP4w][MacBook-Pro.local][inet[/10.0.0.3:9300]], reason: zen-disco-join (elected_as_master)
+[2015-02-18 10:30:08,964][INFO ][http                     ] [Rachel van Helsing] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/10.0.0.3:9200]}
+[2015-02-18 10:30:08,964][INFO ][node                     ] [Rachel van Helsing] started
+[2015-02-18 10:30:08,970][INFO ][gateway                  ] [Rachel van Helsing] recovered [0] indices into cluster_state
+[2015-02-18 12:00:00,191][INFO ][node                     ] [Richard Parker] version[1.4.3], pid[36190], build[36a29a7/2015-02-11T14:23:15Z]
+[2015-02-18 12:00:00,192][INFO ][node                     ] [Richard Parker] initializing ...
+[2015-02-18 12:00:00,197][INFO ][plugins                  ] [Richard Parker] loaded [], sites []
+[2015-02-18 12:00:02,927][INFO ][node                     ] [Richard Parker] initialized
+[2015-02-18 12:00:02,930][INFO ][node                     ] [Richard Parker] starting ...
+[2015-02-18 12:00:03,029][INFO ][transport                ] [Richard Parker] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/10.0.0.3:9300]}
+[2015-02-18 12:00:03,052][INFO ][discovery                ] [Richard Parker] elasticsearch/EPHKJ-y-RtSBQMwtK0o_xw
+[2015-02-18 12:00:06,834][INFO ][cluster.service          ] [Richard Parker] new_master [Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]], reason: zen-disco-join (elected_as_master)
+[2015-02-18 12:00:06,858][INFO ][http                     ] [Richard Parker] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/10.0.0.3:9200]}
+[2015-02-18 12:00:06,858][INFO ][node                     ] [Richard Parker] started
+[2015-02-18 12:00:06,864][INFO ][gateway                  ] [Richard Parker] recovered [0] indices into cluster_state
+[2015-02-18 12:01:24,482][INFO ][node                     ] [Bonita Juarez] version[1.4.3], pid[36214], build[36a29a7/2015-02-11T14:23:15Z]
+[2015-02-18 12:01:24,483][INFO ][node                     ] [Bonita Juarez] initializing ...
+[2015-02-18 12:01:24,488][INFO ][plugins                  ] [Bonita Juarez] loaded [], sites []
+[2015-02-18 12:01:26,632][INFO ][node                     ] [Bonita Juarez] initialized
+[2015-02-18 12:01:26,632][INFO ][node                     ] [Bonita Juarez] starting ...
+[2015-02-18 12:01:26,709][INFO ][transport                ] [Bonita Juarez] bound_address {inet[/0:0:0:0:0:0:0:0:9301]}, publish_address {inet[/10.0.0.3:9301]}
+[2015-02-18 12:01:26,726][INFO ][discovery                ] [Bonita Juarez] elasticsearch/oeEX22OVQca0_bkstXfR9Q
+[2015-02-18 12:01:29,753][WARN ][discovery.zen.ping.multicast] [Bonita Juarez] received ping response ping_response{node [[Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]]], id[12], master [[Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]]], hasJoinedOnce [true], cluster_name[elasticsearch]} with no matching id [1]
+[2015-02-18 12:01:29,766][INFO ][cluster.service          ] [Richard Parker] added {[Bonita Juarez][oeEX22OVQca0_bkstXfR9Q][MacBook-Pro.local][inet[/10.0.0.3:9301]],}, reason: zen-disco-receive(join from node[[Bonita Juarez][oeEX22OVQca0_bkstXfR9Q][MacBook-Pro.local][inet[/10.0.0.3:9301]]])
+[2015-02-18 12:01:29,782][INFO ][cluster.service          ] [Bonita Juarez] detected_master [Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]], added {[Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]],}, reason: zen-disco-receive(from master [[Richard Parker][EPHKJ-y-RtSBQMwtK0o_xw][MacBook-Pro.local][inet[/10.0.0.3:9300]]])
+[2015-02-18 12:01:29,807][INFO ][http                     ] [Bonita Juarez] bound_address {inet[/0:0:0:0:0:0:0:0:9201]}, publish_address {inet[/10.0.0.3:9201]}
+[2015-02-18 12:01:29,808][INFO ][node                     ] [Bonita Juarez] started
+[2015-02-18 12:01:42,623][INFO ][cluster.service          ] [Richard Parker] removed {[Bonita Juarez][oeEX22OVQca0_bkstXfR9Q][MacBook-Pro.local][inet[/10.0.0.3:9301]],}, reason: zen-disco-node_failed([Bonita Juarez][oeEX22OVQca0_bkstXfR9Q][MacBook-Pro.local][inet[/10.0.0.3:9301]]), reason transport disconnected

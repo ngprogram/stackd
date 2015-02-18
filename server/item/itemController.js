@@ -90,6 +90,9 @@ function updateTitle(commentId, source) {
               return (function(input) {
                 return addItem(input, source)
                         .then(function(createdItem) {
+
+                          // uses input instead of createdItem because dup key would
+                          // leaves createdItem as null
                           if (input.title) {
                             return updateTitles(itemsWithoutTitles, input.title);
                           }
