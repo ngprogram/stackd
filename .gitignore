@@ -1,3 +1,4 @@
 node_modules
-public/bower_components
+bower_components
 npm-debug.log
+server/elasticsearch/elasticsearch-1.4.3
