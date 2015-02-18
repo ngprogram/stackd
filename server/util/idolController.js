@@ -5,7 +5,6 @@ var config = require('config');
 var spellCheckerController = Promise.promisifyAll(require('./spellCheckerController'));
 
 var _apiKey = config.get('idol');
-console.log('apiKey', _apiKey);
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
 
@@ -18,20 +17,24 @@ function getSentimentsSync(comment) {
     .then(function(correctSentence) {
       var parameters = {text: text, language: 'eng', apikey: _apiKey};
       var queryString = generateQuery(correctSentence);
-      console.log('queryString', _syncUrl + queryString);
+
       return request(_syncUrl + queryString)
-        .spread(function (response, body) {
-          console.log('BODY', body);
-          return parseSentiments(JSON.parse(body), comment);
-        })
+      .spread(function (response, body) {
+
+        return parseSentiments(JSON.parse(body), comment);
+      })
+      .then(null, function(err) {
+        console.log('error with idol request', err);
+      })
+
 
     })
     .catch(function(err) {
-      console.log('catching');
-      console.log(err);
+
+      console.log('catching', err);
     })
     .then(null, function(err) {
-      console.log('error with idol request', err);
+      console.log('error with spellChecker request', err);
     });
 
 }
@@ -49,12 +52,11 @@ function parseSentiments(sentiments, comment) {
   var sentimentsArr = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
-
   for (var i = 0; i < positiveSentiments.length; i++) {
     sentimentsArr.push(sentimentController.addSentiment(createSentimentForDB(positiveSentiments[i], 'positive', comment)));
   }
   for (var i = 0; i < negativeSentiments.length; i++) {
-    sentimentsArr(sentimentController.addSentiment(createSentimentForDB(negativeSentiments[i], 'negative', comment)));
+    sentimentsArr.push(sentimentController.addSentiment(createSentimentForDB(negativeSentiments[i], 'negative', comment)));
   }
 
   return Promise.all(sentimentsArr)
