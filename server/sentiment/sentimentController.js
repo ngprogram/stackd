@@ -54,8 +54,10 @@ function getCommentIdsFromSavedSentiments() {
 }
 
 function getAllSentiments() {
-
-  return Sentiment.find({}).exec();
+  return Sentiment.find({}).exec()
+    .then(null, function(err) {
+      console.log('error getting all sentiments', err);
+    });
 }
 
 function deleteSentiments() {
