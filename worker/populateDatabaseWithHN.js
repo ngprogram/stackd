@@ -40,14 +40,16 @@ function getChunk(n) {
             .spread(function(response, body) {
               return JSON.parse(body);
             });
+            console.log('temp', temp);
           requestsForItems.push(temp);
         }
       }
-
+      console.log('requestsForItems', requestsForItems);
       return Promise.all(requestsForItems);
     })
     // saves all items from hacker news
     .then(function(hackerNewsItems) {
+      console.log('hackerNewsItems', hackerNewsItems);
       console.log('step 2');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {

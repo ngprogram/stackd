@@ -19,10 +19,12 @@
   },
   "scripts": {
     "start": "nodemon app.js",
-    "fill": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
+    "fill": "node worker/populateDatabaseWithHN.js",
     "test": "export NODE_ENV='test'; mocha test/storyControllerSpec.js",
     "clean": "export NODE_ENV='test'; node worker/deleteDB.js",
-    "clean-dev": "node worker/deleteDB.js; node worker/populateDatabaseWithHN.js"
+    "clean-dev": "node worker/deleteDB.js; node worker/populateDatabaseWithHN.js",
+    "fillGithubRepos": "node worker/populateDatabaseGithub.js",
+    "fillReddit": "node worker/populateDatabaseReddit.js"
   },
   "repository": {},
   "devDependencies": {
