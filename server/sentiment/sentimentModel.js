@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var sentimentSchema = new Schema({
-  commentId: Number,
+  commentId: String,
   score: Number, //rating from -1 to 1
   upvotes: Number, // for reddit
   title: String,

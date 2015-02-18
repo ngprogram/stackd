@@ -2,6 +2,7 @@ var Sentiment = require('./sentimentModel');
 var sentimentController = {};
 sentimentController.addSentiment = addSentiment;
 sentimentController.getSentimentsFromKeyword = getSentimentsFromKeyword;
+sentimentController.getRedditSentimentsSortedByUpvotes = getRedditSentimentsSortedByUpvotes;
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 sentimentController.deleteSentiments = deleteSentiments;
@@ -19,6 +20,13 @@ function getSentimentsFromKeyword(keyword, callback) {
   var time = Date.now()/1000 - days * 24 * 60 * 60;
   console.log('getting sentiments');
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')} , time: { $gte: time }}, callback);
+}
+
+function getRedditSentimentsSortedByUpvotes(keyword, callback) {
+  var days = 30;
+  var time = Date.now()/1000 - days * 24 * 60 * 60;
+  console.log('getting reddit comments');
+  Sentiment.find({title: { $regex: new RegExp(keyword, 'i')} , time: { $gte: time }, source: 'reddit'}).sort('-upvotes').exec(callback);
 }
 
 function getSentimentById(id, callback) {

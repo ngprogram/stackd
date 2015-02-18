@@ -3,11 +3,11 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var itemSchema = new Schema({
-  id: { type: Number, required: true },
+  id: { type: String, required: true },
   type: { type: String, required: true },
   title: String,
   source: { type: String, required: true },
-  parent: Number,
+  parent: String,
   text: String,
   by: String,
   time: Number,
