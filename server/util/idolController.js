@@ -13,9 +13,10 @@ idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
+  // console.log('comment', comment);
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
-      var parameters = {text: text, language: 'eng', apikey: _apiKey};
+      console.log('correctSentence', correctSentence);
       var queryString = generateQuery(correctSentence);
 
       return request(_syncUrl + queryString)
