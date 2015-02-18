@@ -1,5 +1,6 @@
 var Item = require('./itemModel');
 var Promise = require('bluebird');
+var _ = require('lodash');
 
 var request = Promise.promisify(require('request'));
 
@@ -16,7 +17,6 @@ function deleteItems() {
 }
 
 function addItem(item, source) {
-
   return Item.create(createItemForDB(item, source))
     .then(null, function(err) {
       console.log('error creating item', err);
@@ -40,7 +40,6 @@ function getAllItemIds() {
 }
 
 function updateTitle(commentId, source) {
-  console.log('source', source);
   var itemsWithoutTitles = [];
   itemsWithoutTitles.push(commentId);
 
@@ -56,27 +55,32 @@ function updateTitle(commentId, source) {
 
           return findTitle(foundItem.parent);
         }
-        return request('https://hacker-news.firebaseio.com/v0/item/' +id +'.json')
-        .spread(function(response, body) {
-          var item = createItemForDB(JSON.parse(body), source);
 
-          return addItem(item, source)
-                  .then(function(createdItem) {
+        return (function(itemId) {
+            return request('https://hacker-news.firebaseio.com/v0/item/' +itemId +'.json')
+            .spread(function(response, body) {
+              var item = createItemForDB(JSON.parse(body), source);
 
-                    if (createdItem && createdItem.title) {
-                      return updateTitles(itemsWithoutTitles, createdItem.title);
-                    }
+              return (function(input) {
+                return addItem(input, source)
+                        .then(function(createdItem) {
+                          if (input.title) {
+                            return updateTitles(itemsWithoutTitles, input.title);
+                          }
+                          itemsWithoutTitles.push(input.id);
+                          return findTitle(input.parent);
+                        });
+              })(item);
 
-                    itemsWithoutTitles.push(createdItem.id);
-                    return findTitle(createdItem.parent)
-                  });
+          })
+          //could not find comment in db
+          .then(null, function(err) {
+              console.log('error with finding title', err);
+            })
+        })(id);
 
-      })
-      //could not find comment in db
-      .then(null, function(err) {
-          console.log('error with finding title', err);
-        })
-      })
+
+        });
   }
 
   return findTitle(commentId);
@@ -89,8 +93,10 @@ function updateTitles(array, title) {
     updatingArray.push((function(id) {
       return Item.update({id: id}, {title: title}).exec()
         .then(function() {
-          console.log('id', id);
           return Item.findOne({id: id}).exec();
+        })
+        .then(null, function(err) {
+          console.log('error updating', err);
         })
     })(array[i]));
   }
@@ -105,6 +111,10 @@ function getComments() {
 
 function createItemForDB(itemFromAPI, source) {
   var item = {};
+  if (!itemFromAPI) {
+    console.log('this is broken');
+  }
+
   item.id = itemFromAPI.id;
   item.type = itemFromAPI.type;
   item.title = itemFromAPI.title || null;
@@ -113,12 +123,8 @@ function createItemForDB(itemFromAPI, source) {
   item.source = source;
   item.score = itemFromAPI.score;
   item.kids = itemFromAPI.kids || [];
-  if (item.type !== 'story') {
-    item.parent = itemFromAPI.parent;
-  }
-  if (item.type === 'comment') {
-    item.text = itemFromAPI.text;
-  }
+  item.parent = itemFromAPI.parent;
+  item.text = itemFromAPI.text;
 
   return item;
 }
