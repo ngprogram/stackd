@@ -3,9 +3,9 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var sentimentSchema = new Schema({
-  commentId: Number
+  commentId: Number,
   score: Number, //rating from -1 to 1
-  upvotes: Number // for reddit
+  upvotes: Number, // for reddit
   title: String,
   time: Number,
   source: String,
