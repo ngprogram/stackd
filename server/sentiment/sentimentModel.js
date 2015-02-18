@@ -3,11 +3,14 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var sentimentSchema = new Schema({
-  id: { type: Number, unique: true }, //same as commentId
-  positive: Number, // 0-1. Less than 0.5 means negative
-  neutral: Number, // 0 - 0.5. Lower number -> less neutral
+  commentId: Number,
+  score: Number, //rating from -1 to 1
+  upvotes: Number, // for reddit
   title: String,
-  time: Number
+  time: Number,
+  source: String,
+  sentiment: String,
+  comment: String
 });
 
 module.exports = mongoose.model('Sentiments', sentimentSchema);

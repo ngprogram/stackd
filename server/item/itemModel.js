@@ -3,17 +3,19 @@ var mongoose = require('mongoose'),
 
 // define message schema
 var itemSchema = new Schema({
-  id: { type: Number, unique: true, required: true },
-  parent: Number,
+  id: { type: Number, required: true },
+  type: { type: String, required: true },
   title: String,
+  source: { type: String, required: true },
+  parent: Number,
   text: String,
-  source: String,
-  type: String,
   by: String,
   time: Number,
-  score: Number,
+  upvotes: Number,
   kids: [Number]
 });
+
+itemSchema.index({ "id": 1, "source": 1 }, { unique: true });
 
 // compile message schema into a message model
 module.exports = mongoose.model('Item', itemSchema);

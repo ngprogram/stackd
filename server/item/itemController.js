@@ -13,11 +13,11 @@ itemController.getComments = getComments;
 function deleteItems() {
   return Item.remove({})
     .exec();
-
 }
 
-function addItem(item) {
-  return Item.create(item)
+function addItem(item, source) {
+
+  return Item.create(createItemForDB(item, source))
     .then(null, function(err) {
       console.log('error creating item', err);
     });
@@ -39,8 +39,8 @@ function getAllItemIds() {
     });
 }
 
-function updateTitle(commentId) {
-
+function updateTitle(commentId, source) {
+  console.log('source', source);
   var itemsWithoutTitles = [];
   itemsWithoutTitles.push(commentId);
 
@@ -58,9 +58,9 @@ function updateTitle(commentId) {
         }
         return request('https://hacker-news.firebaseio.com/v0/item/' +id +'.json')
         .spread(function(response, body) {
-          var item = createItemForDB(JSON.parse(body));
+          var item = createItemForDB(JSON.parse(body), source);
 
-          return addItem(item)
+          return addItem(item, source)
                   .then(function(createdItem) {
 
                     if (createdItem && createdItem.title) {
@@ -103,15 +103,16 @@ function getComments() {
 }
 
 
-function createItemForDB(itemFromAPI) {
+function createItemForDB(itemFromAPI, source) {
   var item = {};
   item.id = itemFromAPI.id;
   item.type = itemFromAPI.type;
   item.title = itemFromAPI.title || null;
-  item.kids = itemFromAPI.kids || [];
   item.time = itemFromAPI.time;
   item.by = itemFromAPI.by;
+  item.source = source;
   item.score = itemFromAPI.score;
+  item.kids = itemFromAPI.kids || [];
   if (item.type !== 'story') {
     item.parent = itemFromAPI.parent;
   }
