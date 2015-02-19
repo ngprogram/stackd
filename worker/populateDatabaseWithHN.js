@@ -1,12 +1,11 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
-
-var idolController = Promise.promisifyAll(require('../server/util/idolController'));
+var idolController = require('../server/util/idolController');
 var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
 var request = Promise.promisify(require('request'));
 
-var itemController = Promise.promisifyAll(require('../server/item/itemController'));
+var itemController = require('../server/item/itemController');
 
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
@@ -14,7 +13,7 @@ mongoose.connect(config.get('mongo'));
 var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 100;
+var limit = 200;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 

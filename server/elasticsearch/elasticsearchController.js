@@ -49,14 +49,19 @@ function migrate(array) {
     bulkArray.push(array[i]);
   }
 
+  console.log('bulkArray', bulkArray);
+
   return client.bulk({
     body: bulkArray
+  })
+  .then(null, function(err) {
+    console.log('error migrating', err);
   });
 
 }
 
 function searchInTitle(query) {
-
+  console.log('query', query);
   return client.search({
     index: 'stat',
     body: {

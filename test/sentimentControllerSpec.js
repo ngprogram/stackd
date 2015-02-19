@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var expect = require('chai').expect;
-var sentimentController = Promise.promisifyAll(require('../server/sentiment/sentimentController'));
+var sentimentController = require('../server/sentiment/sentimentController');
 var config = require('config');
 
 var mongoose = require('mongoose');
