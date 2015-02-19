@@ -10,6 +10,7 @@ var itemSchema = new Schema({
   parent: String,
   text: String,
   by: String,
+  replies: Number,
   time: Number,
   score: Number,
   kids: [Number]
