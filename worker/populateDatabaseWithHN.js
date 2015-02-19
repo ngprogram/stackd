@@ -107,7 +107,6 @@ function updateSentiments() {
       comments = _.flattenDeep(comments);
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
-        // console.log(comments[i]);
         if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
           sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
         }
