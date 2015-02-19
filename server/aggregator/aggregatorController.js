@@ -29,9 +29,13 @@ function aggregate(req,res) {
 
       sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
         console.log('RESULTS', results);
-        var upperBound = (results.length < 3) ? results.length : 3;
+        var resultsComments = _.map(results, function(result) {return result.comment;});
+        console.log('resultsComments', resultsComments);
+        var uniqueComments = _.uniq(resultsComments);
+        console.log('uniqueComments', uniqueComments);
+        var upperBound = (uniqueComments.length < 3) ? uniqueComments.length : 3;
         for (var i = 0; i < upperBound; i++) {
-          topThreeCommentsArray.push(results[i].comment);
+          topThreeCommentsArray.push(uniqueComments[i]);
         }
 
         console.log('i work!',  avgRating, topThreeCommentsArray);
