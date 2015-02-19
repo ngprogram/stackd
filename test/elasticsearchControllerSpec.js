@@ -1,14 +1,7 @@
 var request = require('supertest');
 var expect = require('chai').expect;
 var Promise = require('bluebird');
-var elasticsearchController = Promise.promisifyAll(require('../server/elasticsearch/elasticsearchController'));
-
-var express = require('express');
-var app = express();
-
-
-
-app.post('/search', elasticsearchController.search);
+var elasticsearchController = require('../server/elasticsearch/elasticsearchController');
 
 describe("Elasticsearch Spec", function() {
 
@@ -32,7 +25,7 @@ describe("Elasticsearch Spec", function() {
     elasticsearchController.migrate([sampleSentiment])
       .then(function(response) {
 
-        return elasticsearchController.search('audit')
+        return elasticsearchController.searchInTitle('audit')
       })
       .then(function(response) {
         console.log(response.hits.hits);
