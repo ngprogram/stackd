@@ -1,8 +1,9 @@
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
-var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
+var sentimentController = require('../sentiment/sentimentController');
 var config = require('config');
-var spellCheckerController = Promise.promisifyAll(require('./spellCheckerController'));
+var spellCheckerController = require('./spellCheckerController');
+var elasticsearchController = require('../elasticsearch/elasticsearchController');
 
 var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
@@ -13,7 +14,6 @@ idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
-  // console.log('comment', comment);
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
       var queryString = generateQuery(correctSentence);
@@ -27,18 +27,12 @@ function getSentimentsSync(comment) {
         console.log('error with idol request', err);
       })
 
-
-    })
-    .catch(function(err) {
-      console.log('catching', err);
     })
     .then(null, function(err) {
       console.log('error with spellChecker request', err);
     });
 
 }
-
-
 
 function generateQuery(text) {
   var queryString = '?text=';
@@ -48,35 +42,39 @@ function generateQuery(text) {
 }
 
 function parseSentiments(sentiments, comment) {
-  var sentimentsArr = [];
+  var sentimentArray = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
+  var totalRating = 0;
   for (var i = 0; i < positiveSentiments.length; i++) {
-    sentimentsArr.push(sentimentController.addSentiment(createSentimentForDB(positiveSentiments[i], 'positive', comment)));
+    totalRating += positiveSentiments[i].score;
+    sentimentArray.push(positiveSentiments[i].sentiment);
   }
   for (var i = 0; i < negativeSentiments.length; i++) {
-    sentimentsArr.push(sentimentController.addSentiment(createSentimentForDB(negativeSentiments[i], 'negative', comment)));
+    totalRating -= negativeSentiments[i].score;
+    sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  return Promise.all(sentimentsArr)
+  var averageRating = totalRating/(positiveSentiments.length + negativeSentiments.length);
+  return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
+    .then(function(createdSentiment) {
+      return elasticsearchController.create(createdSentiment);
+    })
     .then(null, function(err) {
       console.log('error with parsing sentiments', err);
     });
 }
 
-function createSentimentForDB(sentiment, positiveOrNegative, comment) {
+function createSentimentForDB(rating, sentimentArray, comment) {
   var sentimentObj = {};
 
-  sentimentObj.rating = sentiment.score; // -1 - 1
-  if (positiveOrNegative === 'negative') {
-    sentimentObj.score = -sentiment.score;
-  }
+  sentimentObj.rating = rating; // -1 - 1
   sentimentObj.commentId = comment.id;
-  sentimentObj.score = comment.score || 0;
+  sentimentObj.score = comment.score || 0; //number of upvotes
   sentimentObj.title = comment.title;
   sentimentObj.time = comment.time;
   sentimentObj.source = comment.source;
-  sentimentObj.sentiment = sentiment.sentiment;
+  sentimentObj.sentiment = sentimentArray;
   sentimentObj.comment = comment.text;
 
   return sentimentObj;
