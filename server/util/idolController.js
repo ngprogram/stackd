@@ -16,7 +16,6 @@ function getSentimentsSync(comment) {
   // console.log('comment', comment);
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
-      console.log('correctSentence', correctSentence);
       var queryString = generateQuery(correctSentence);
 
       return request(_syncUrl + queryString)
@@ -31,7 +30,6 @@ function getSentimentsSync(comment) {
 
     })
     .catch(function(err) {
-
       console.log('catching', err);
     })
     .then(null, function(err) {
@@ -69,12 +67,12 @@ function parseSentiments(sentiments, comment) {
 function createSentimentForDB(sentiment, positiveOrNegative, comment) {
   var sentimentObj = {};
 
-  sentimentObj.score = sentiment.score;
+  sentimentObj.rating = sentiment.score; // -1 - 1
   if (positiveOrNegative === 'negative') {
     sentimentObj.score = -sentiment.score;
   }
   sentimentObj.commentId = comment.id;
-  sentimentObj.upvotes = comment.upvotes || 0;
+  sentimentObj.score = comment.score || 0;
   sentimentObj.title = comment.title;
   sentimentObj.time = comment.time;
   sentimentObj.source = comment.source;

@@ -22,9 +22,6 @@ function correctSentence(sentence) {
   return (function(query) {
     return request(query)
       .spread(function(response, body) {
-        console.log('query', query);
-        console.log('spell body', body);
-
         return JSON.parse(body).suggestion;
       })
       .catch(function(err) {
