@@ -6,6 +6,7 @@ sentimentController.getRedditSentimentsSortedByUpvotes = getRedditSentimentsSort
 sentimentController.getSentimentById = getSentimentById;
 sentimentController.getCommentIdsFromSavedSentiments = getCommentIdsFromSavedSentiments;
 sentimentController.deleteSentiments = deleteSentiments;
+sentimentController.getAllSentiments = getAllSentiments;
 
 function addSentiment(sentiment) {
 
@@ -49,6 +50,13 @@ function getCommentIdsFromSavedSentiments() {
     })
     .then(null, function(err) {
       console.log('error getting commentIds from saved sentiments', err);
+    });
+}
+
+function getAllSentiments() {
+  return Sentiment.find({}).exec()
+    .then(null, function(err) {
+      console.log('error getting all sentiments', err);
     });
 }
 
