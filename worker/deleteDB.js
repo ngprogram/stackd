@@ -1,6 +1,6 @@
-var Promise = require('bluebird');
-var sentimentController = Promise.promisifyAll(require('../server/sentiment/sentimentController'));
-var itemController = Promise.promisifyAll(require('../server/item/itemController'));
+var sentimentController = require('../server/sentiment/sentimentController');
+var itemController = require('../server/item/itemController');
+var elasticsearchController = require('../server/elasticsearch/elasticsearchController');
 
 var config = require('config');
 var mongoose = require('mongoose');
@@ -14,6 +14,10 @@ sentimentController.deleteSentiments()
   .then(function() {
 
     return sentimentController.deleteSentiments();
+  })
+  .then(function() {
+
+    return elasticsearchController.deleteIndex('stat');
   })
   .then(function() {
     console.log('databases deleted');

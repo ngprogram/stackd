@@ -17,5 +17,4 @@ var itemSchema = new Schema({
 
 itemSchema.index({ "id": 1, "source": 1 }, { unique: true });
 
-// compile message schema into a message model
 module.exports = mongoose.model('Item', itemSchema);

@@ -36,20 +36,19 @@ function getChunk(n) {
       var requestsForItems = [];
       for (var i = n - chunkSize; i < n; i++) {
         if (itemIds.indexOf(i) < 0) {
+          console.log('i', i);
           var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
             .spread(function(response, body) {
+              console.log('hello');
               return JSON.parse(body);
             });
-            console.log('temp', temp);
           requestsForItems.push(temp);
         }
       }
-      console.log('requestsForItems', requestsForItems);
       return Promise.all(requestsForItems);
     })
     // saves all items from hacker news
     .then(function(hackerNewsItems) {
-      console.log('hackerNewsItems', hackerNewsItems);
       console.log('step 2');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
@@ -77,7 +76,6 @@ function getChunk(n) {
     })
     .then(function(comments) {
       comments = _.flattenDeep(comments);
-        // console.log('comments', comments);
 
       var sentimentsFromComments = [];
       for (var i = 0; i < comments.length; i++) {
