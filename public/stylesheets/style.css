@@ -6,7 +6,7 @@ del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
+fieldset, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed, 
 figure, figcaption, footer, header, hgroup, 
@@ -38,6 +38,7 @@ body {
   background-color: #FDFDFD;
 }
 
+
 ol, ul {
   list-style: none;
 }
@@ -54,17 +55,20 @@ table {
   border-spacing: 0;
 }
 
-
+.navBar {
+    background-color: #4374A8;
+    height: 60px;
+    padding: 10px;
+}
 /*Title*/
 .title {
-	padding-top: 20px;
-  padding-bottom: 15px;
-  
 	color: #FFFFFF;
-	text-align: center;
+	text-align: left;
 	font-size: 35px;
   font-family: 'Raleway', sans-serif;
-	background-color: #4374A8;
+  float: left;
+  padding: 10px 30px 0 10px;
+
 }
 
 /*Search Bar*/
@@ -76,6 +80,16 @@ table {
 	z-index: 1;
   font-size: 0;
 }
+
+.search-again-bar {
+  padding: 5px 50px 0 0;
+  margin: 0 auto;
+  text-align: left;
+  position: relative;
+  font-size: 0;
+}
+
+
 .searchInput {
   text-align: left;
   display: inline-block;
@@ -84,22 +98,37 @@ table {
 .searchButton {
   display: inline-block;
   border: none;
-  background: #4374A8;
+  background: #60bdc5;
   font-size: 18px; 
   font-weight: bold; 
   color: #ffffff;
   margin: 0 auto;
   vertical-align: middle;
   padding: 0 10px; 
-  height: 64px;
+  height: 59px;
   width: 70px;
+   -webkit-border-radius: 0 4px 4px 0;  
+  -moz-border-radius: 0 4px 4px 0;  
+  -ms-border-radius: 0 4px 4px 0;  
+  -o-border-radius: 0 4px 4px 0;  
+  border-radius: 0 4px 4px 0;  
 }
 
 /* The next blocks of code are for user actions on the buttons. */
 .searchButton:hover {
   text-decoration: none;
   color: #ffffff;
-  background-color: #60bdc5; 
+  background-color: rgba(96, 189, 197, 0.84); 
+}
+
+.searchAgain {
+  height: 49px;
+}
+
+.searchAgain:hover {
+  text-decoration: none;
+  color: #ffffff;
+  background-color: rgba(96, 189, 197, 0.84); 
 }
 
 button:focus {
@@ -109,21 +138,37 @@ button:focus {
 input {
   outline: none;
   color: #4374a8;
-  height: 30px;
+  height: 25px;
   width: 300px;
-  border: 2px solid #4374a8;
+  border: 2px solid #60bdc5;
   border-right: none;
+ 
   padding: 15px;
   font-size: 20px;
   text-align: left;
   margin: 0 auto;
   vertical-align: middle;
+  -webkit-border-radius: 4px 0 0 4px; 
+  -moz-border-radius: 4px 0 0 4px; 
+  -ms-border-radius: 4px 0 0 4px; 
+  -o-border-radius: 4px 0 0 4px; 
+  border-radius: 4px 0 0 4px;  
 }
 
-input:focus, input.focus.hover.active {
-  border: 2px solid #60bdc5;
+/*input:focus, input.focus.hover.active {
   border-right: none;
   color: #4374a8;
+}*/
+
+.againInput {
+  height: 15px;
+  width: 200px;
+  font-size: 20px;
+  border: 2px solid #ffffff;
+}
+
+.againInput:focus, .againInput.focus.hover.active {
+  border: 2px solid #ffffff;
 }
 
 text {
@@ -139,13 +184,10 @@ text {
   left: 0;
   right: 0;
   text-align: center;
-
   /*border: solid;*/
-
   margin-left: auto;
   margin-right: auto;
 	z-index: 2;
-	
 }
 
 /*Top Section*/
@@ -155,50 +197,31 @@ text {
 
 .topic {
 	float: left;
-  font-size: 40px;
-  color: white;
+  font-size: 35px;
   text-align: center;
   padding-left: 50px;
+  height: 50px;
 }
 
-.search-again-button {
-	width: 100px;
-  padding-right: 50px;
-	float: right;
-  background-color: ;
-}
 
 /*Bottom Section*/
 .bottom-container {
-  color: #60BDC5;
+  color: #55A9B0;
 	width: 90%;
-  margin:auto;
+  margin: 0 auto;
   margin-top: 300px;
   /*margin-left: 100px;*/
-  padding: 20px;
+  /*padding: 20px;*/
 	overflow: hidden; /* add this to contain floated children */
 }
 
-.section-1, .section-2, .section-3 {
-	width: 30%;
-	height: 100%;
-	float: left;
-  margin: 10px;
+.comment {
+  width: 33.33%;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 15px;
+  float: left;
+   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
-
-.section-1 {
-  width: 25%;
-}
-.section-2 {
-  padding-right: 70px;
-}
-
-
-
-li {
-  padding-top: 10px;
-  padding-bottom: 10px;
-
-}
-
-
