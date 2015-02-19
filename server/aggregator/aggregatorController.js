@@ -9,12 +9,13 @@ function aggregate(req,res) {
   var storage = {};
   var avgRating = 0;
   var term = req.params.term;
-  console.log('aggregate called');
-  elasticsearchController.searchInTitle(term)
-    .then(function(response) {
-      total = _.map(response.hits.hits, function(index) {
-        return index._source;
-      });
+  console.log('aggregate called', term);
+  // elasticsearchController.searchInTitle(term)
+  //   .then(function(response) {
+  sentimentController.getSentimentsFromKeyword(term, function(error, total) {
+      // total = _.map(response.hits.hits, function(index) {
+      //   return index._source;
+      // });
       console.log('total', total);
       if (total.length === 0) {
         res.send([]);
