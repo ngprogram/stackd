@@ -9,7 +9,7 @@ var sentimentSchema = new Schema({
   title: String,
   time: Number,
   source: String,
-  sentiment: String,
+  sentiment: [String],
   comment: String
 });
 
