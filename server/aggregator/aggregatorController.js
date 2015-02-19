@@ -15,7 +15,7 @@ function aggregate(req,res) {
       total = _.map(response.hits.hits, function(index) {
         return index._source;
       });
-      console.log('total', total);
+      console.log('total123', total);
       if (total.length === 0) {
         res.send([]);
         return;
@@ -27,32 +27,40 @@ function aggregate(req,res) {
       var origStore = storage;
       var topVals = sortObjectByCount(storage);
 
-      var topThreeCommentsArray = [];
+      var totalSortedByReplies = sortArrayByUpvotes(total);
+      var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
+      var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {return item.comment;});
+      console.log('twoCommentsWithMostReplies', twoCommentsWithMostReplies);
 
-      // function getRedditCommentsWithMostUpvotes(term) {
-      //   var topThreeComments = [];
-      //   var commentsSortedByUpvotes = [];
+      res.send({avg: (avgRating/total.length - 0.50) * 2, comments: twoCommentsWithMostReplies});
 
-      sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
-        console.log('RESULTS', results);
-        var resultsComments = _.map(results, function(result) {return result.comment;});
-        console.log('resultsComments', resultsComments);
-        var uniqueComments = _.uniq(resultsComments);
-        console.log('uniqueComments', uniqueComments);
-        var upperBound = (uniqueComments.length < 3) ? uniqueComments.length : 3;
-        for (var i = 0; i < upperBound; i++) {
-          topThreeCommentsArray.push(uniqueComments[i]);
-        }
 
-        console.log('i work!',  avgRating, topThreeCommentsArray);
-        // new aggregetor spans from 0-1. 0.5 is neutral.
-        res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
+      // sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
+      //   console.log('RESULTS', results);
+      //   var resultsComments = _.map(results, function(result) {return result.comment;});
+      //   console.log('resultsComments', resultsComments);
+      //   var uniqueComments = _.uniq(resultsComments);
+      //   console.log('uniqueComments', uniqueComments);
+      //   var upperBound = (uniqueComments.length < 3) ? uniqueComments.length : 3;
+      //   for (var i = 0; i < upperBound; i++) {
+      //     twoCommentsWithMostReplies.push(uniqueComments[i]);
+      //   }
 
-      });
+      //   console.log('i work!',  avgRating, twoCommentsWithMostReplies);
+      //   // new aggregetor spans from 0-1. 0.5 is neutral.
+
+      // });
 
     })
 
 };
+
+function sortArrayByUpvotes(array) {
+  var sortedArray = array.sort(function(a,b) {
+    return a.replies - b.replies;
+  });
+  return sortedArray;
+}
 
 function sortObjectByCount(obj) {
   var arr = [];
