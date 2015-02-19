@@ -8,23 +8,38 @@
     this.incomingData = {};
     this.showData = ChartFactory.showData;
     this.newData = ChartFactory.newData;
+    $scope.comments = [];
+    $scope.topic = '';
     this.search = function(val) {
+      $scope.comments = [];
       $http.get('/search/' + val)
       .success(function(data, status) {
+        if (data.length === 0) {
+          vm.showData = false;
+          //show no results popup
+          return;
+        }
+        data.comments.forEach(function(datum) {
+          $scope.comments.push(datum);
+        });
+        console.log($scope.comments);
+        vm.showData = true;
+        $scope.topic = $scope.searchTerm;
+        $scope.searchTerm = '';
+
         console.log('qwer',data,status);
         vm.incomingData = data;
         ChartFactory.newData = data;
         vm.newData = data;
-        console.log('hihi',ChartFactory.newData);
-        console.log('hoho', vm.newData);
-        console.log('success');
-        $scope.searchTerm = '';
-
+        // console.log('hihi',ChartFactory.newData);
+        // console.log('hoho', vm.newData);
+        
         // console.log(1234,vm.incomingData.avg);
-        vm.showData = true;
         ChartFactory.data[0].values[0].value = Math.round((vm.incomingData.avg * 100) * 100) / 100;
         if (vm.incomingData.avg < 0) {
-          ChartFactory.data[0].color = '#CF7273';
+          ChartFactory.data[0].color = '#B64949';
+        } else {
+          ChartFactory.data[0].color = '#4374A8';
         }
         console.log(3333,ChartFactory.data);
       })
@@ -79,42 +94,10 @@
       }
     };
 
-    // {
-    //   chart: {
-    //     type: 'discreteBarChart',
-    //     height: 450,
-    //     margin : {
-    //       top: 20,
-    //       right: 20,
-    //       bottom: 60,
-    //       left: 55
-    //     },
-    //     x: function(d){return d.label;},
-    //     y: function(d){return d.value;},
-    //     showValues: true,
-    //     valueFormat: function(d){
-    //       return d3.format(',.4f')(d);
-    //     },
-    //     transitionDuration: 500,
-    //     xAxis: {
-    //       axisLabel: 'X Axis'
-    //     },
-    //     yAxis: {
-    //       axisLabel: 'Y Axis',
-    //       axisLabelDistance: 30
-    //     },
-    //     showXAxis: false,
-    //     showYAxis: false,
-    //     tooltips: false,
-    //     yAxisRange: [-100,100],
-    //     forceY: [0,100]
-    //   }
-    // };
-
     var data = [
       {
         "key": "POSITIVE",
-        "color": "#728CCF",
+        "color": "#4374A8",
         "values": [
           {
             "label" : "Group A" ,

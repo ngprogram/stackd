@@ -38,6 +38,7 @@ body {
   background-color: #FDFDFD;
 }
 
+
 ol, ul {
   list-style: none;
 }
@@ -97,7 +98,7 @@ table {
 .searchButton {
   display: inline-block;
   border: none;
-  background: #4374A8;
+  background: #60bdc5;
   font-size: 18px; 
   font-weight: bold; 
   color: #ffffff;
@@ -117,12 +118,11 @@ table {
 .searchButton:hover {
   text-decoration: none;
   color: #ffffff;
-  background-color: #60bdc5; 
+  background-color: rgba(96, 189, 197, 0.84); 
 }
 
 .searchAgain {
   height: 49px;
-  background: #60bdc5;
 }
 
 .searchAgain:hover {
@@ -140,7 +140,7 @@ input {
   color: #4374a8;
   height: 25px;
   width: 300px;
-  border: 2px solid #4374a8;
+  border: 2px solid #60bdc5;
   border-right: none;
  
   padding: 15px;
@@ -155,11 +155,10 @@ input {
   border-radius: 4px 0 0 4px;  
 }
 
-input:focus, input.focus.hover.active {
-  border: 2px solid #60bdc5;
+/*input:focus, input.focus.hover.active {
   border-right: none;
   color: #4374a8;
-}
+}*/
 
 .againInput {
   height: 15px;
@@ -170,8 +169,6 @@ input:focus, input.focus.hover.active {
 
 .againInput:focus, .againInput.focus.hover.active {
   border: 2px solid #ffffff;
-  /*border-right: none;*/
-  /*color: #60bdc5;*/
 }
 
 text {
@@ -187,13 +184,10 @@ text {
   left: 0;
   right: 0;
   text-align: center;
-
   /*border: solid;*/
-
   margin-left: auto;
   margin-right: auto;
 	z-index: 2;
-	
 }
 
 /*Top Section*/
@@ -203,37 +197,31 @@ text {
 
 .topic {
 	float: left;
-  font-size: 40px;
-  color: white;
+  font-size: 35px;
   text-align: center;
   padding-left: 50px;
+  height: 50px;
 }
 
 
 /*Bottom Section*/
 .bottom-container {
-  color: #60BDC5;
+  color: #55A9B0;
 	width: 90%;
-  margin:auto;
+  margin: 0 auto;
   margin-top: 300px;
   /*margin-left: 100px;*/
-  padding: 20px;
+  /*padding: 20px;*/
 	overflow: hidden; /* add this to contain floated children */
 }
 
-.section-1, .section-2, .section-3 {
-	width: 30%;
-	height: 100%;
-	float: left;
-  margin: 10px;
+.comment {
+  width: 33.33%;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 15px;
+  float: left;
+   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
-
-
-
-li {
-  padding-top: 10px;
-  padding-bottom: 10px;
-
-}
-
-
