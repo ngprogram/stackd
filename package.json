@@ -19,13 +19,13 @@
   },
   "scripts": {
     "start": "nodemon app.js",
-    "fill": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
+    "fill": "node worker/populateDatabaseWithHN.js",
     "test": "export NODE_ENV='test'; nodemon app.js",
     "clean": "export NODE_ENV='test'; node worker/deleteDB.js",
     "clean-dev": "node worker/deleteDB.js; node worker/populateDatabaseWithHN.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
     "fillReddit": "node worker/populateDatabaseReddit.js",
-    "migrate" : "export NODE_ENV='test'; node worker/moveToElasticsearch.js"
+    "migrate" : "node worker/moveToElasticsearch.js"
   },
   "repository": {},
   "devDependencies": {
