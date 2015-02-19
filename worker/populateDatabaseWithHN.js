@@ -14,7 +14,7 @@ mongoose.connect(config.get('mongo'));
 var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 1;
+var limit = 100;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -49,7 +49,6 @@ function getChunk(n) {
     })
     // saves all items from hacker news
     .then(function(hackerNewsItems) {
-      console.log('hackerNewsItems', hackerNewsItems);
       console.log('step 2');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {

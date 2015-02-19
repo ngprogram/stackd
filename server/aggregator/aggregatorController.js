@@ -12,15 +12,19 @@ function aggregate(req,res) {
   console.log('aggregate called');
   elasticsearchController.searchInTitle(term)
     .then(function(response) {
-      total = response.hits.hits;
+      total = _.map(response.hits.hits, function(index) {
+        return index._source;
+      });
+      console.log('total', total);
       if (total.length === 0) {
         res.send([]);
         return;
       }
 
       total.forEach(function(obj) {
-        avgRating += obj.positive;
+        avgRating += obj.rating;
       });
+
       var origStore = storage;
       var topVals = sortObjectByCount(storage);
 
@@ -46,14 +50,6 @@ function aggregate(req,res) {
         res.send({avg: (avgRating/total.length - 0.50) * 2, comments: topThreeCommentsArray});
 
       });
-
-      var topThreeCommentsArray = getRedditCommentsWithMostUpvotes(term);
-
-      total.forEach(function(obj) {
-        avgRating += obj.positive;
-      });
-      var origStore = storage;
-      var topVals = sortObjectByCount(storage);
 
     })
 
