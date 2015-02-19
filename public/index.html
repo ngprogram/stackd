@@ -32,7 +32,7 @@
 
     <div class="top-container" ng-show="searchCtrl.showData">
       <div class="topic">
-        {{searchCtrl.newData.topic}}
+        {{topic}}
       </div>
 
     </div>
@@ -49,42 +49,10 @@
     </div>
 
     <div class="bottom-container">
-      <div class="dashboard section-1" ng-show="searchCtrl.showData">
-        
-        <div>
-          <h3>Top Values</h3>
-          <ul>
-            <li ng-repeat="value in searchCtrl.newData.topValues track by $index">{{value.key}}</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="top-values section-2" ng-show="searchCtrl.showData">
-
-        <div>
-          <h3>Percentage:</h3> {{searchCtrl.data[0].values[0].value}}%
-        </div>
-        <div class="top-comment">
-          <h3>Top Comment</h3>
-          <p>{{searchCtrl.newData.topComment}}</p>
-        </div>
-        
-      </div>
-
-      <div class="comments section-3" ng-show="searchCtrl.showData">
-        <div class="positive-comments">
-          <h3>Positive Comments</h3>
-          <ul>
-            <li ng-repeat="comment in searchCtrl.newData.posComments track by $index">{{comment}}</li>
-          </ul>
-        </div>
-        <div class="negative-comments">
-          <h3>Negative Comments</h3>
-          <ul>
-            <li ng-repeat="comment in searchCtrl.newData.negComments track by $index">{{comment}}</li>
-          </ul>
-        </div>
-      </div>
+      <div class="section-1" ng-show="searchCtrl.showData">
+        <div class="comment" ng-repeat="comm in comments">
+          {{comm}}
+        </div>       
     </div>
 
   </body>
