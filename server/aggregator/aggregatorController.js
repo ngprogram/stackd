@@ -9,7 +9,7 @@ function aggregate(req,res) {
   var storage = {};
   var avgRating = 0;
   var term = req.params.term;
-  console.log('aggregate called');
+  console.log('aggregate called', term);
   elasticsearchController.searchInTitle(term)
     .then(function(response) {
       total = _.map(response.hits.hits, function(index) {
@@ -20,7 +20,6 @@ function aggregate(req,res) {
         res.send([]);
         return;
       }
-
       total.forEach(function(obj) {
         avgRating += obj.rating;
       });

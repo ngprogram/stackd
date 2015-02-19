@@ -140,10 +140,6 @@ function getComments() {
 
 function createItemForDB(itemFromAPI, source) {
   var item = {};
-  if (!itemFromAPI) {
-    console.log('this is broken');
-  }
-
   item.id = itemFromAPI.id;
   item.type = itemFromAPI.type;
   item.title = itemFromAPI.title || null;
@@ -154,6 +150,10 @@ function createItemForDB(itemFromAPI, source) {
   item.kids = itemFromAPI.kids || [];
   item.parent = itemFromAPI.parent;
   item.text = itemFromAPI.text;
+
+  if (source === 'Hacker News') {
+    item.replies = item.kids.length;
+  }
 
   return item;
 }
