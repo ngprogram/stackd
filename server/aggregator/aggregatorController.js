@@ -4,6 +4,8 @@ var _ = require('lodash');
 
 var elasticsearchController = require('../elasticsearch/elasticsearchController');
 aggregatorController.aggregate = aggregate;
+var stdev_days = 30;
+var stdev = stdevDays * 24 * 60 * 60; // in days
 
 function aggregate(req,res) {
   var storage = {};
@@ -20,9 +22,18 @@ function aggregate(req,res) {
         res.send([]);
         return;
       }
+
+
+      var totalWeight = 0;
+
       total.forEach(function(obj) {
-        avgRating += obj.rating;
+        var x = obj.time;
+        var weight = Math.exp(-x*x/(2stdev*stdev));
+        totalWeight += weight;
+        avgRating += obj.rating * weight;
       });
+
+      avgRating = avgRating/totalWeight;
 
       var origStore = storage;
       var topVals = sortObjectByCount(storage);
@@ -30,26 +41,8 @@ function aggregate(req,res) {
       var totalSortedByReplies = sortArrayByUpvotes(total);
       var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
       var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {return item.comment;});
-      console.log('twoCommentsWithMostReplies', twoCommentsWithMostReplies);
 
-      res.send({avg: (avgRating/total.length - 0.50) * 2, comments: twoCommentsWithMostReplies});
-
-
-      // sentimentController.getRedditSentimentsSortedByUpvotes(term, function(err, results) {
-      //   console.log('RESULTS', results);
-      //   var resultsComments = _.map(results, function(result) {return result.comment;});
-      //   console.log('resultsComments', resultsComments);
-      //   var uniqueComments = _.uniq(resultsComments);
-      //   console.log('uniqueComments', uniqueComments);
-      //   var upperBound = (uniqueComments.length < 3) ? uniqueComments.length : 3;
-      //   for (var i = 0; i < upperBound; i++) {
-      //     twoCommentsWithMostReplies.push(uniqueComments[i]);
-      //   }
-
-      //   console.log('i work!',  avgRating, twoCommentsWithMostReplies);
-      //   // new aggregetor spans from 0-1. 0.5 is neutral.
-
-      // });
+      res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
 
     })
 

@@ -11,7 +11,7 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-// var chunkSize = 20;
+var chunkSize = 20;
 var count = 0;
 var limit = 5;
 var after = '';
@@ -25,7 +25,7 @@ var after = '';
 
 function startPopulateDBFromSubreddit(subreddit) {
   var startUrl = 'http://www.reddit.com/r/' + subreddit + '/new.json?limit=29';
-  
+
   throttledPopulateDBFromPageUrl(startUrl, subreddit);
 }
 
@@ -49,7 +49,7 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
       // console.log('linkIdArray', linkIdArray);
       var linksArray = incomingData.data.children;
       // console.log('linksArray', linksArray);
-      
+
       //after will always exist but will be null on the last page
       after = incomingData.data.after;
 

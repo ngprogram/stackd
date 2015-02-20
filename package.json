@@ -20,8 +20,10 @@
   },
   "scripts": {
     "start": "nodemon app.js",
+    "start-dev" : "export NODE_ENV='test'; nodemon app.js",
     "fill": "node worker/populateDatabaseWithHN.js",
     "fill-dev": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
+    "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
     "test": "export NODE_ENV='test'; nodemon app.js",
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
