@@ -12,6 +12,12 @@ itemController.addRedditItem = addRedditItem;
 itemController.deleteItems = deleteItems;
 itemController.updateTitle = updateTitle;
 itemController.getComments = getComments;
+itemController.getAllStories = getAllStories;
+
+function getAllStories() {
+  return Item.find({type: 'story'})
+    .exec();
+}
 
 function deleteItems() {
   return Item.remove({})

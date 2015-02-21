@@ -1,6 +1,7 @@
 var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
 var _ = require('lodash');
+var Promise = require('bluebird');
 
 var elasticsearchController = require('../elasticsearch/elasticsearchController');
 aggregatorController.aggregate = aggregate;
@@ -11,51 +12,56 @@ function aggregate(req,res) {
 
   var term = req.params.term;
   console.log('aggregate called', term);
-  elasticsearchController.searchInTitle(term)
-    .then(function(response) {
 
-      total = returnHits(response);
+  Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
+    function() {
+      elasticsearchController.searchInTitle(term)
+        .then(function(response, topLinks) {
 
-      if (total.length === 0) {
-        res.send([]);
-        return;
-      }
+          total = returnHits(response);
 
-      var totalRating = 0;
-      var avgRating = 0;
-      var totalWeight = 0;
-      // console.log('total', total);
-      total.forEach(function(obj) {
-        var x = Date.now()/1000 - obj.time;
-        var weight = Math.exp(-x*x/(2*stdev*stdev));
+          if (total.length === 0) {
+            res.send([]);
+            return;
+          }
 
-        // if date is from long time ago, weight no longer is a number
-        // assign weight to 0
-        if (isNaN(weight)) {
-          weight = 0;
-        }
-        totalWeight += weight;
-        totalRating += obj.rating * weight;
-      });
+          var totalRating = 0;
+          var avgRating = 0;
+          var totalWeight = 0;
+          // console.log('total', total);
+          total.forEach(function(obj) {
+            var x = Date.now()/1000 - obj.time;
+            var weight = Math.exp(-x*x/(2*stdev*stdev));
 
-      avgRating = totalRating/totalWeight;
-      // var topVals = sortObjectByCount(total);
+            // if date is from long time ago, weight no longer is a number
+            // assign weight to 0
+            if (isNaN(weight)) {
+              weight = 0;
+            }
+            totalWeight += weight;
+            totalRating += obj.rating * weight;
+          });
 
-      // TODO: make score link to replies
-      // var totalSortedByReplies = sortArrayByUpvotes(total);
-      var twoWithMostReplies = countSentiments(total);
-      // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
-      var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {
-        return {
-          comment: item.comment,
-          time: item.time,
-          author: "placeholder" //should be item.by when we add
-        };
-      });
+          avgRating = totalRating/totalWeight;
+          // var topVals = sortObjectByCount(total);
 
-      res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
+          // TODO: make score link to replies
+          // var totalSortedByReplies = sortArrayByUpvotes(total);
+          var twoWithMostReplies = countSentiments(total);
+          // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
+          var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {
+            return {
+              comment: item.comment,
+              time: item.time,
+              author: "placeholder" //should be item.by when we add
+            };
+          });
 
-    })
+          res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
+
+        })
+
+    });
 
 };
 
