@@ -20,12 +20,15 @@
   },
   "scripts": {
     "start": "nodemon app.js",
+    "start-dev" : "export NODE_ENV='test'; nodemon app.js",
     "fill": "node worker/populateDatabaseWithHN.js",
     "fill-dev": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
-    "test": "export NODE_ENV='test'; nodemon app.js",
+    "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
+    "test": "export NODE_ENV='test'; mocha test/sentimentControllerSpec.js",
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
+    "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
     "fillReddit": "node worker/populateDatabaseReddit.js",
     "migrate": "node worker/moveToElasticsearch.js"
   },

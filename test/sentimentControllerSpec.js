@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
 describe('Sentiment Controller', function() {
-  it('should save a user', function(done) {
+  xit('should save a user', function(done) {
     var sample = {
       sentiment: "good",
       commentId: 34534,
@@ -26,11 +26,20 @@ describe('Sentiment Controller', function() {
       });
   });
 
-  it('should retrive', function(done) {
+  xit('should retrive', function(done) {
     sentimentController.getSentimentsFromKeyword('React', function(err, foundSentiments) {
       console.log(foundSentiments);
       done();
     });
+  });
+
+  it('should get all commentIds from sentiemtns', function(done) {
+    sentimentController.getCommentIdsFromSavedSentiments()
+      .then(function(commentIds) {
+        console.log(commentIds);
+        done();
+      })
+
   });
 });
 

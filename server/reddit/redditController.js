@@ -36,7 +36,7 @@ function getCommentTreeForArticle(article) {
 
 
 // getNewLinksFromSubreddit('javascript');
-getCommentTreeForArticle('2w68gq');
+// getCommentTreeForArticle('2w68gq');
 
 
 module.exports = redditController;

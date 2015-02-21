@@ -13,7 +13,7 @@ mongoose.connect(config.get('mongo'));
 var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 200;
+var limit = 500;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -35,10 +35,8 @@ function getChunk(n) {
       var requestsForItems = [];
       for (var i = n - chunkSize; i < n; i++) {
         if (itemIds.indexOf(i) < 0) {
-          console.log('i', i);
           var temp = request('https://hacker-news.firebaseio.com/v0/item/' +i +'.json')
             .spread(function(response, body) {
-              console.log('hello');
               return JSON.parse(body);
             });
           requestsForItems.push(temp);
@@ -48,7 +46,6 @@ function getChunk(n) {
     })
     // saves all items from hacker news
     .then(function(hackerNewsItems) {
-      console.log('step 2');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
