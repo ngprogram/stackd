@@ -43,7 +43,6 @@ function generateQuery(text) {
 
 function parseSentiments(sentiments, comment) {
   var sentimentArray = [];
-  console.log(sentiments);
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
   var totalRating = 0;
@@ -61,6 +60,8 @@ function parseSentiments(sentiments, comment) {
     totalRating -= negativeSentiments[i].score;
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
+
+  averageRating = totalRating/totalSentiments;
 
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {

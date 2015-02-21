@@ -25,16 +25,21 @@ function aggregate(req,res) {
       var totalRating = 0;
       var avgRating = 0;
       var totalWeight = 0;
-
+      // console.log('total', total);
       total.forEach(function(obj) {
-        var x = obj.time;
+        var x = Date.now()/1000 - obj.time;
         var weight = Math.exp(-x*x/(2*stdev*stdev));
+
+        // if date is from long time ago, weight no longer is a number
+        // assign weight to 0
+        if (isNaN(weight)) {
+          weight = 0;
+        }
         totalWeight += weight;
         totalRating += obj.rating * weight;
       });
 
       avgRating = totalRating/totalWeight;
-
       var origStore = storage;
       var topVals = sortObjectByCount(storage);
 

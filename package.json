@@ -28,6 +28,7 @@
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
+    "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
     "fillReddit": "node worker/populateDatabaseReddit.js",
     "migrate": "node worker/moveToElasticsearch.js"
   },
