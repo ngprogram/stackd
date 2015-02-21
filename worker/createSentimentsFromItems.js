@@ -34,7 +34,7 @@ function getChunk(start) {
   console.log('starting', count);
   var sentimentsFromComments = [];
 
-  for (var i = start; i < start + chunkSize && i < globalCommentIds.length; i++) {
+  for (var i = start; i < start + chunkSize && i < globalComments.length; i++) {
     if (globalComments[i] && globalComments[i].text && globalCommentIds.indexOf(globalComments[i].id) < 0) {
       sentimentsFromComments.push(idolController.getSentimentsSync(globalComments[i]));
     } else if (!globalComments[i].text) {
@@ -47,6 +47,7 @@ function getChunk(start) {
 
   return Promise.all(sentimentsFromComments)
     .then(function(response) {
+      console.log('response', response);
       count = count + chunkSize;
       if (count + chunkSize < globalComments.length) {
         throttledGetChunk(count);
