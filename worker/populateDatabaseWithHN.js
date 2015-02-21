@@ -10,10 +10,10 @@ var itemController = require('../server/item/itemController');
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var chunkSize = 10;
+var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 1;
+var limit = 500;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 

@@ -15,18 +15,6 @@ elasticsearchController.create = create;
 elasticsearchController.deleteIndex = deleteIndex;
 elasticsearchController.migrate = migrate;
 
-// client.ping({
-//   requestTimeout: 1000,
-//   // undocumented params are appended to the query string
-//   hello: "elasticsearch!"
-// }, function (error) {
-//   if (error) {
-//     console.error('elasticsearch cluster is down!');
-//   } else {
-//     console.log('All is well');
-//   }
-// });
-
 function create(body) {
     return client.create({
         index: 'stat',
@@ -64,6 +52,9 @@ function searchInTitle(query) {
   console.log('query', query);
   return client.search({
     index: 'stat',
+
+    // TODO: change to scan
+    size: 1000,
     body: {
       query: {
         match: {
