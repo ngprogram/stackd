@@ -8,9 +8,12 @@ var spellCheckerController = {};
 spellCheckerController.correctSentence = correctSentence;
 
 function correctSentence(sentence) {
+  // TODO: Figure out cause of undefined sentence
+  if (!sentence) {
+    return;
+  }
   sentence = removeHTML(sentence);
   sentence = removeSpecial(sentence);
-
   var options = {
     method: "GET",
     url: generateQuery(sentence),

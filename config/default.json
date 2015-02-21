@@ -1,8 +1,6 @@
 {
   "mongo": "mongodb://azai91:$hackreactor&@ds027758.mongolab.com:27758/Stackd_MongoDB",
-  "nltk": "LEMO91Zl97mshGgThdGqTXHwqigwp1DiqZWjsn8losIqlebSuX",
   "spellcheck" : "LEMO91Zl97mshGgThdGqTXHwqigwp1DiqZWjsn8losIqlebSuX",
   "idol": "53b0f751-6ddb-4aba-b169-a3971bbcffe1",
   "es": "getstat.cloudapp.net:9200"
-   // "es": "localhost:9200"
 }
