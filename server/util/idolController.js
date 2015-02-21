@@ -22,7 +22,6 @@ function getSentimentsSync(comment) {
 
         return request(_syncUrl + queryString)
         .spread(function (response, body) {
-
           return parseSentiments(JSON.parse(body), comment);
         })
         .then(null, function(err) {
@@ -55,9 +54,6 @@ function parseSentiments(sentiments, comment) {
   var totalRating = 0;
   var averageRating = 0;
   var totalSentiments = positiveSentiments.length + negativeSentiments.length;
-  if (totalSentiments === 0) {
-    return;
-  }
 
   for (var i = 0; i < positiveSentiments.length; i++) {
     totalRating += positiveSentiments[i].score;
@@ -68,8 +64,9 @@ function parseSentiments(sentiments, comment) {
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  averageRating = totalRating/totalSentiments || 0;
-
+  if (totalSentiments !== 0) {
+    averageRating = totalRating/totalSentiments || 0;
+  }
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
       console.log('added sentiment');
