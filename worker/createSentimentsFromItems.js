@@ -7,38 +7,52 @@ var mongoose = require('mongoose');
 var config = require('config');
 
 mongoose.connect(config.get('mongo'));
+var chunkSize = 20;
+var count = 0;
+var globalCommentIds;
+var globalComments;
 
-
-var throttledGetSentiments = _.throttle(idolController.getSentimentsSync, 500);
+var throttledGetChunk = _.throttle(getChunk, 2000);
 
 function updateSentiments() {
 
   Promise.join(itemController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
     function(comments, commentIds) {
 
-      console.log(comments.length);
-      var sentimentsFromComments = [];
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
-          console.log('entering');
-          sentimentsFromComments.push(throttledGetSentiments(comments[i]));
-        } else if (!comments[i].text) {
-          console.log('comment' +comments[i].id +' missing comment');
-        }
-        else {
-          console.log('skipped');
-        }
-      }
+      globalCommentIds = commentIds;
+      globalComments = comments;
+      getChunk(0);
 
-      return Promise.all(sentimentsFromComments);
     })
-    .then(function() {
-      console.log('done');
-    })
-    .then(null, function(err) {
+    .catch(function(err) {
       console.log('error getting new comments', err);
     });
 
 }
+
+function getChunk(start) {
+  console.log('starting', count);
+  var sentimentsFromComments = [];
+
+  for (var i = start; i < start + chunkSize && i < globalCommentIds.length; i++) {
+    if (globalComments[i] && globalComments[i].text && globalCommentIds.indexOf(globalComments[i].id) < 0) {
+      sentimentsFromComments.push(idolController.getSentimentsSync(globalComments[i]));
+    } else if (!globalComments[i].text) {
+      console.log('comment' +globalComments[i].id +' missing comment');
+    }
+    else {
+      console.log('skipped');
+    }
+  }
+
+  return Promise.all(sentimentsFromComments)
+    .then(function(response) {
+      count = count + chunkSize;
+      if (count + chunkSize < globalComments.length) {
+        throttledGetChunk(count);
+      }
+    });
+}
+
 
 updateSentiments();

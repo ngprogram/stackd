@@ -12,12 +12,8 @@ function correctSentence(sentence) {
   if (!sentence) {
     return;
   }
-  console.log('sentence before', sentence);
   sentence = removeHTML(sentence);
-  console.log('sentence after', sentence);
   sentence = removeSpecial(sentence);
-  console.log('sentence final', sentence);
-
   var options = {
     method: "GET",
     url: generateQuery(sentence),
@@ -29,7 +25,6 @@ function correctSentence(sentence) {
   return (function(query) {
     return request(query)
       .spread(function(response, body) {
-
         if (!JSON.parse(body).suggestion) {
           console.log(JSON.parse(body));
         }

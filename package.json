@@ -24,7 +24,7 @@
     "fill": "node worker/populateDatabaseWithHN.js",
     "fill-dev": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
     "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
-    "test": "export NODE_ENV='test'; mocha test/sentimentControllerSpec.js",
+    "test": "export NODE_ENV='test'; mocha test/elasticsearchControllerSpec.js",
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
