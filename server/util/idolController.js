@@ -13,7 +13,9 @@ idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
-  return spellCheckerController.correctSentence(text)
+
+  (function(incorrectText) {
+    return spellCheckerController.correctSentence(incorrectText)
     .then(function(correctSentence) {
       if (correctSentence) {
         var queryString = generateQuery(correctSentence);
@@ -26,12 +28,15 @@ function getSentimentsSync(comment) {
         .then(null, function(err) {
           console.log('error with idol request', err);
         })
+      } else {
+        console.log('incorrect sentence', incorrectText, correctSentence);
       }
 
     })
     .then(null, function(err) {
       console.log('error with spellChecker request', err);
     });
+  })(text);
 
 }
 
@@ -73,7 +78,7 @@ function parseSentiments(sentiments, comment) {
 
 function createSentimentForDB(rating, sentimentArray, comment) {
   var sentimentObj = {};
-  console.log('testingrating', rating);
+
   sentimentObj.rating = rating; // -1 - 1
   sentimentObj.commentId = comment.id;
   sentimentObj.score = comment.score || 0; //number of upvotes

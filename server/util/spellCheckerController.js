@@ -12,8 +12,12 @@ function correctSentence(sentence) {
   if (!sentence) {
     return;
   }
+  console.log('sentence before', sentence);
   sentence = removeHTML(sentence);
+  console.log('sentence after', sentence);
   sentence = removeSpecial(sentence);
+  console.log('sentence final', sentence);
+
   var options = {
     method: "GET",
     url: generateQuery(sentence),
@@ -53,7 +57,7 @@ function removeHTML(sentence) {
 }
 
 function removeSpecial(sentence) {
-  return sentence.replace(/ *\<[^)]*\> */g, "").replace(/[^A-Z0-9.,' ]/gi,'')
+  return sentence.replace(/\<[^>]+\>/g, "").replace(/[^A-Z0-9.,' ]/gi,'')
 }
 
 module.exports = spellCheckerController;
