@@ -32,16 +32,20 @@
 
     <div class="top-container" ng-show="searchCtrl.showData">
       <div class="topic">
-        {{topic}}
+        {{topic | uppercase}}
       </div>
 
     </div>
 
     <div class="search-bar" ng-show="!searchCtrl.showData">
       <form>
-      <div class="searchInput"><input ng-model="searchTerm" placeholder="enter term"></input></div>
-      <button class="searchButton" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
-    </form>
+        <div class="searchInput">
+          <input ng-model="searchTerm" placeholder="enter term"></input>
+        </div>
+        <button class="searchButton" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%">
+        </button>
+      </form>
+    <div ng-show="showSlider" class="slider">No results found. Please search again.</div>
     </div>
 
     <div class="chart" ng-show="searchCtrl.showData">
@@ -50,9 +54,9 @@
 
     <div class="bottom-container">
       <div class="section-1" ng-show="searchCtrl.showData">
-        <div class="comment" ng-repeat="comm in comments">
+        <i class="comment" ng-repeat="comm in comments">
           {{comm}}
-        </div>       
+        </i>       
     </div>
 
   </body>
