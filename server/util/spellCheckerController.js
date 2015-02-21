@@ -25,6 +25,11 @@ function correctSentence(sentence) {
   return (function(query) {
     return request(query)
       .spread(function(response, body) {
+
+        if (!JSON.parse(body).suggestion) {
+          console.log(JSON.parse(body));
+        }
+
         return JSON.parse(body).suggestion;
       })
       .catch(function(err) {

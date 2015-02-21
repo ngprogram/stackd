@@ -65,7 +65,7 @@ function searchInTitle(query) {
     }
   })
   .then(null, function(err) {
-    console.log('error searching', err);
+    console.log('error searching for top sentiments', err);
   });
 
 }
@@ -84,7 +84,7 @@ function getTopLinks(query) {
     }
   })
   .then(null, function(err) {
-    console.log('error searching', err);
+    console.log('error searching for top link', err);
   });
 
 
