@@ -44,20 +44,8 @@ function aggregate(req,res) {
 
           avgRating = totalRating/totalWeight;
           // var topVals = sortObjectByCount(total);
-
-          // TODO: make score link to replies
-          // var totalSortedByReplies = sortArrayByUpvotes(total);
-          var twoWithMostReplies = countSentiments(total);
-          // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
-          var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {
-            return {
-              comment: item.comment,
-              time: item.time,
-              author: "placeholder" //should be item.by when we add
-            };
-          });
-
-          res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
+          console.log(topLinks);
+          res.send({avg: avgRating, topLinks: topLinks});
 
         })
 

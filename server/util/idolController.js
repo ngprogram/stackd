@@ -3,7 +3,6 @@ var request = Promise.promisify(require('request'));
 var sentimentController = require('../sentiment/sentimentController');
 var config = require('config');
 var spellCheckerController = require('./spellCheckerController');
-var elasticsearchController = require('../elasticsearch/elasticsearchController');
 
 var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
@@ -16,16 +15,18 @@ function getSentimentsSync(comment) {
   var text = comment.text;
   return spellCheckerController.correctSentence(text)
     .then(function(correctSentence) {
-      var queryString = generateQuery(correctSentence);
+      if (correctSentence) {
+        var queryString = generateQuery(correctSentence);
 
-      return request(_syncUrl + queryString)
-      .spread(function (response, body) {
+        return request(_syncUrl + queryString)
+        .spread(function (response, body) {
 
-        return parseSentiments(JSON.parse(body), comment);
-      })
-      .then(null, function(err) {
-        console.log('error with idol request', err);
-      })
+          return parseSentiments(JSON.parse(body), comment);
+        })
+        .then(null, function(err) {
+          console.log('error with idol request', err);
+        })
+      }
 
     })
     .then(null, function(err) {
@@ -65,9 +66,6 @@ function parseSentiments(sentiments, comment) {
   averageRating = totalRating/totalSentiments || 0;
 
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
-    .then(function(createdSentiment) {
-      return elasticsearchController.create(createdSentiment);
-    })
     .then(null, function(err) {
       console.log('error with parsing sentiments', err);
     });
