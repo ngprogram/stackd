@@ -54,7 +54,7 @@ function searchInTitle(query) {
     index: 'stat',
 
     // TODO: change to scan
-    size: 1000,
+    size: 20,
     body: {
       query: {
         match: {

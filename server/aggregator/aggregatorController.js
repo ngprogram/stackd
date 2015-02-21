@@ -21,7 +21,6 @@ function aggregate(req,res) {
         return;
       }
 
-      var storage = {};
       var totalRating = 0;
       var avgRating = 0;
       var totalWeight = 0;
@@ -40,11 +39,12 @@ function aggregate(req,res) {
       });
 
       avgRating = totalRating/totalWeight;
-      var origStore = storage;
-      var topVals = sortObjectByCount(storage);
+      // var topVals = sortObjectByCount(total);
 
-      var totalSortedByReplies = sortArrayByUpvotes(total);
-      var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
+      // TODO: make score link to replies
+      // var totalSortedByReplies = sortArrayByUpvotes(total);
+      var twoWithMostReplies = countSentiments(total);
+      // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
       var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {return item.comment;});
 
       res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
@@ -60,11 +60,60 @@ function sortArrayByUpvotes(array) {
   return sortedArray;
 }
 
+// adds up top sentiments
+// Make more general "great comment" and "great" should be considered same sentiment
+function countSentiments(sentiments) {
+  var sentimentCounter = {};
+  var topSentiment;
+  var secondSentiment;
+  var topCounter = 0;
+  for (var i = 0; i < sentiments.length; i++)  {
+    for (var j = 0; j < sentiments[i].sentiment.length; j++) {
+      if (sentimentCounter[sentiments[i].sentiment[j]] === undefined) {
+        sentimentCounter[sentiments[i].sentiment[j]] = 0;
+      }
+      sentimentCounter[sentiments[i].sentiment[j]]++;
+    }
+  }
+
+  // finds top sentiment
+  for (var sentiment in sentimentCounter) {
+    if (sentimentCounter[sentiment] > topCounter) {
+      secondSentiment = topSentiment;
+      topSentiment = sentiment;
+      topCounter = sentimentCounter[sentiment];
+    }
+  }
+
+  console.log(sentimentCounter);
+
+  return [findTopComment(sentiments, topSentiment), findTopComment(sentiments, secondSentiment)];
+
+}
+
+function findTopComment(sentiments, topSentiment) {
+  var relevantSentiments = [];
+  for (var i = 0; i < sentiments.length; i++)  {
+    for (var j = 0; j < sentiments[i].sentiment.length; j++) {
+      if (sentiments[i].sentiment[j] === topSentiment) {
+       relevantSentiments.push(sentiments[i]);
+      }
+    }
+  }
+
+  // sort by score
+  relevantSentiments.sort(function(a,b) {
+    return a.score - b.score;
+  })
+
+  return relevantSentiments[0];
+}
+
+
 function sortObjectByCount(obj) {
   var arr = [];
   for (var prop in obj) {
     if (obj.hasOwnProperty(prop)) {
-      console.log('prop', prop);
       arr.push({
         'key': prop,
         'value': obj[prop]
