@@ -102,7 +102,7 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
                 }
               }
 
-              // console.log('AFterincomingCommentTree', incomingCommentTree);
+              console.log('recurseToAddTitle', incomingCommentTree);
               return incomingCommentTree;
             })
           commentTrees.push(commentTree);
@@ -225,7 +225,7 @@ function createItemForDB(itemFromAPI) {
   if (itemFromAPI.kind === 't1') {
     type = 'comment';
   } else if (itemFromAPI.kind === 't3') {
-    type = 'link';
+    type = 'story';
   }
 
   var itemData = itemFromAPI.data;
@@ -244,8 +244,12 @@ function createItemForDB(itemFromAPI) {
   } else if (type === 'comment') {
     item.text = itemData.body;
     item.parent = itemData.parent_id;
-    console.log('REPLIES', itemData.replies, itemData.replies.data.children)
-    item.replies = itemData.replies.data.children.length || 0;
+    // console.log('REPLIES', itemData.replies, itemData.replies.data.children);
+    if (itemData.replies) {
+      item.replies = itemData.replies.data.children.length;
+    } else {
+      item.replies = 0;
+    }
   }
 
   console.log('created item', item);
