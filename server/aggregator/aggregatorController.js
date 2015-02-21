@@ -5,35 +5,35 @@ var _ = require('lodash');
 var elasticsearchController = require('../elasticsearch/elasticsearchController');
 aggregatorController.aggregate = aggregate;
 var stdev_days = 30;
-var stdev = stdevDays * 24 * 60 * 60; // in days
+var stdev = stdev_days * 24 * 60 * 60; // in days
 
 function aggregate(req,res) {
-  var storage = {};
-  var avgRating = 0;
+
   var term = req.params.term;
   console.log('aggregate called', term);
   elasticsearchController.searchInTitle(term)
     .then(function(response) {
-      total = _.map(response.hits.hits, function(index) {
-        return index._source;
-      });
-      console.log('total123', total);
+
+      total = returnHits(response);
+
       if (total.length === 0) {
         res.send([]);
         return;
       }
 
-
+      var storage = {};
+      var totalRating = 0;
+      var avgRating = 0;
       var totalWeight = 0;
 
       total.forEach(function(obj) {
         var x = obj.time;
-        var weight = Math.exp(-x*x/(2stdev*stdev));
+        var weight = Math.exp(-x*x/(2*stdev*stdev));
         totalWeight += weight;
-        avgRating += obj.rating * weight;
+        totalRating += obj.rating * weight;
       });
 
-      avgRating = avgRating/totalWeight;
+      avgRating = totalRating/totalWeight;
 
       var origStore = storage;
       var topVals = sortObjectByCount(storage);
@@ -86,8 +86,13 @@ function sortObjectByScore(obj) {
   arr.sort(function(a, b) {
     return b.value.score - a.value.score;
   });
-  // console.log('arrScore', arr);
   return arr;
+}
+
+function returnHits(array) {
+  return _.map(array.hits.hits, function(index) {
+        return index._source;
+      });
 }
 
 module.exports = aggregatorController;

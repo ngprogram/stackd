@@ -43,9 +43,16 @@ function generateQuery(text) {
 
 function parseSentiments(sentiments, comment) {
   var sentimentArray = [];
+  console.log(sentiments);
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
   var totalRating = 0;
+  var averageRating = 0;
+  var totalSentiments = positiveSentiments.length + negativeSentiments.length;
+  if (totalSentiments === 0) {
+    return;
+  }
+
   for (var i = 0; i < positiveSentiments.length; i++) {
     totalRating += positiveSentiments[i].score;
     sentimentArray.push(positiveSentiments[i].sentiment);
@@ -55,7 +62,6 @@ function parseSentiments(sentiments, comment) {
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  var averageRating = totalRating/(positiveSentiments.length + negativeSentiments.length);
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
       return elasticsearchController.create(createdSentiment);
@@ -76,7 +82,6 @@ function createSentimentForDB(rating, sentimentArray, comment) {
   sentimentObj.source = comment.source;
   sentimentObj.sentiment = sentimentArray;
   sentimentObj.comment = comment.text;
-
   return sentimentObj;
 }
 
