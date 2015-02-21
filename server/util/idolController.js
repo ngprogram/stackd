@@ -61,7 +61,7 @@ function parseSentiments(sentiments, comment) {
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  averageRating = totalRating/totalSentiments;
+  averageRating = totalRating/totalSentiments || 0;
 
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
@@ -74,7 +74,7 @@ function parseSentiments(sentiments, comment) {
 
 function createSentimentForDB(rating, sentimentArray, comment) {
   var sentimentObj = {};
-
+  console.log('testingrating', rating);
   sentimentObj.rating = rating; // -1 - 1
   sentimentObj.commentId = comment.id;
   sentimentObj.score = comment.score || 0; //number of upvotes

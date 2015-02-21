@@ -13,7 +13,7 @@ mongoose.connect(config.get('mongo'));
 
 var chunkSize = 20;
 var count = 0;
-var limit = 500;
+var limit = 40;
 var after = '';
 
 
@@ -24,8 +24,8 @@ var after = '';
 
 
 function startPopulateDBFromSubreddit(subreddit) {
-  var startUrl = 'http://www.reddit.com/r/' + subreddit + '/new.json?limit=29';
-
+  var startUrl = 'http://www.reddit.com/r/' + subreddit + '/hot.json?limit=29';
+  
   throttledPopulateDBFromPageUrl(startUrl, subreddit);
 }
 
@@ -76,8 +76,7 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
       for (var i = 0; i < links.length; i++) {
         var linkTitle = '';
 
-        // TODO: better error handling for duplicate comments
-        if (links[i]) {
+        // if (links[i]) {
           var endpoint = 'http://www.reddit.com/comments/' + links[i].id + '.json';
           var commentTree = request(endpoint)
             .spread(function(response, body) {
@@ -86,15 +85,30 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
               // console.log('linkTitle', linkTitle);
               var incomingCommentTree = JSON.parse(body)[1].data.children;
               // console.log('incomingCommentTree', incomingCommentTree);
-              for (var i = 0; i < incomingCommentTree.length; i ++) {
-                incomingCommentTree[i].data.title = linkTitle;
+
+              // //NEED TO MAKE RECURSIVE
+              // for (var i = 0; i < incomingCommentTree.length; i++) {
+              //   incomingCommentTree[i].data.title = linkTitle;
+              // }
+
+              recurseToAddTitle(incomingCommentTree);
+
+              function recurseToAddTitle (incomingCommentTree) {
+                for (var i = 0; i < incomingCommentTree.length; i++) {
+                  incomingCommentTree[i].data.title = linkTitle;
+                  if (incomingCommentTree[i].data.replies) {
+                    recurseToAddTitle(incomingCommentTree[i].data.replies.data.children);
+                  }
+                }
               }
+
               // console.log('AFterincomingCommentTree', incomingCommentTree);
               return incomingCommentTree;
             })
           commentTrees.push(commentTree);
-        }
-
+        // }
+          // console.log('commentTree', commentTree);
+          //saves all comments in the tree and returns an array with all comments from that tree
       }
       return Promise.all(commentTrees);
     })
@@ -143,11 +157,16 @@ function processCommentTree(commentTree) {
   function recurse (commentTree) {
     for (var i = 0; i < commentTree.length; i++) {
       var currentComment = commentTree[i];
-      console.log('currentComment', currentComment);
-      comments.push(itemController.addRedditItem(createItemForDB(currentComment)));
-      console.log('commentsArray', comments);
-      if (currentComment.data.replies) {
-        recurse(currentComment.data.replies.data.children);
+      if (currentComment.kind !== 'more') {
+        console.log('currentComment', currentComment);
+        comments.push(itemController.addRedditItem(createItemForDB(currentComment)));
+        console.log('commentsArray', comments);
+        if (currentComment.data.replies) {
+          recurse(currentComment.data.replies.data.children);
+        }
+        
+      } else {
+        console.log('MOREMORE', currentComment)
       }
     }
   }
@@ -216,7 +235,7 @@ function createItemForDB(itemFromAPI) {
   item.type = type,
   item.by = itemData.author,
   item.time = itemData.created,
-  item.upvotes = itemData.score;
+  item.score = itemData.score;
   // no item.kids
 
   if (item.type === 'link') {
@@ -225,6 +244,8 @@ function createItemForDB(itemFromAPI) {
   } else if (type === 'comment') {
     item.text = itemData.body;
     item.parent = itemData.parent_id;
+    console.log('REPLIES', itemData.replies, itemData.replies.data.children)
+    item.replies = itemData.replies.data.children.length || 0;
   }
 
   console.log('created item', item);
@@ -233,7 +254,7 @@ function createItemForDB(itemFromAPI) {
 }
 
 function generateNextUrl (subreddit, after) {
-  var nextUrl = 'http://www.reddit.com/r/' + subreddit + '/new.json?limit=29' + '&after=' + after;
+  var nextUrl = 'http://www.reddit.com/r/' + subreddit + '/hot.json?limit=29' + '&after=' + after;
   return nextUrl;
 }
 
