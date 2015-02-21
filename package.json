@@ -32,7 +32,7 @@
     "fillReddit": "node worker/populateDatabaseReddit.js",
     "convert" : "node worker/createSentimentsFromItems.js",
     "convert-dev" : "export NODE_ENV='test'; node worker/createSentimentsFromItems.js",
-    "migrate": "node worker/moveToElasticsearch.js"
+    "migrate-dev": "export NODE_ENV='test'; node worker/moveToElasticsearch.js"
   },
   "repository": {},
   "devDependencies": {
