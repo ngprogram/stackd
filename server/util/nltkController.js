@@ -1,9 +1,9 @@
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
-var sentimentController = Promise.promisifyAll(require('../sentiment/sentimentController'));
+var sentimentController = require('../sentiment/sentimentController');
 var config = require('config');
 var _apiKey = config.get('nltk');
-var spellCheckerController = Promise.promisifyAll(require('./spellCheckerController'));
+var spellCheckerController = require('./spellCheckerController');
 
 var nltkController = {};
 nltkController.getSentimentsSync = getSentimentsSync;

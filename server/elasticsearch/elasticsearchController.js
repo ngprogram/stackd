@@ -7,7 +7,7 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
-Promise.promisifyAll(client);
+// Promise.promisifyAll(client);
 
 var elasticsearchController = {};
 elasticsearchController.searchInTitle = searchInTitle;
