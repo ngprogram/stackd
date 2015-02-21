@@ -38,6 +38,7 @@ function generateQuery(text) {
   var queryString = '?text=';
   queryString += text.replace(/ /g, '+');
   queryString += ('&apikey=' + _apiKey);
+
   return queryString;
 }
 

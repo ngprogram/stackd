@@ -5,15 +5,16 @@ var mongoose = require('mongoose'),
 var itemSchema = new Schema({
   id: { type: String, required: true },
   type: { type: String, required: true },
-  title: String,
+  title: String, //story or comment
   source: { type: String, required: true },
   parent: String,
   text: String,
   by: String,
-  replies: Number,
+  link: String,
+  replies: Number, //used by reddit
   time: Number,
-  score: Number,
-  kids: [Number]
+  score: Number, // upvotes by reddit
+  kids: [Number] //used by HN
 });
 
 itemSchema.index({ "id": 1, "source": 1 }, { unique: true });
