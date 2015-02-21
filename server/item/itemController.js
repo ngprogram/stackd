@@ -26,10 +26,18 @@ function addItem(item, source) {
 }
 
 function addRedditItem(item) {
-  return Item.create(item)
-    .then(null, function(err) {
-      console.log('error creating item', err);
-    });
+  return Item.findOne({id: item.id}).exec()
+    .then(function(foundItem) {
+      console.log('foundItem', foundItem);
+      if (foundItem) {
+        return foundItem;
+      } else {
+        return Item.create(item)
+          .then(null, function(err) {
+            console.log('error creating item', err);
+          });
+      }
+    })
 }
 
 function getAllItemIds() {
