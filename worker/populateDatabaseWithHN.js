@@ -84,31 +84,4 @@ function getChunk(n) {
     });
 }
 
-function updateSentiments() {
-
-  Promise.join(itemController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
-    function(comments, commentIds) {
-
-      comments = _.flattenDeep(comments);
-      var sentimentsFromComments = [];
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-        }
-        else {
-          console.log('skipped');
-        }
-      }
-
-      return Promise.all(sentimentsFromComments);
-    })
-    .then(function() {
-      console.log('done');
-    })
-    .then(null, function(err) {
-      console.log('error getting new comments', err);
-    });
-
-}
-
 populateDBWithStories();
