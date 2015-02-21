@@ -84,7 +84,7 @@ function updateTitle(commentId, source) {
         if (foundItem) {
 
           if (foundItem && foundItem.title) {
-            return updateTitles(itemsWithoutTitles, foundItem.title);
+            return updateTitles(itemsWithoutTitles, foundItem);
           }
 
           return findTitle(foundItem.parent);
@@ -102,7 +102,7 @@ function updateTitle(commentId, source) {
                           // uses input instead of createdItem because dup key would
                           // leaves createdItem as null
                           if (input.title) {
-                            return updateTitles(itemsWithoutTitles, input.title);
+                            return updateTitles(itemsWithoutTitles, input);
                           }
                           itemsWithoutTitles.push(input.id);
                           return findTitle(input.parent);
@@ -123,12 +123,14 @@ function updateTitle(commentId, source) {
   return findTitle(commentId);
 }
 
-function updateTitles(array, title) {
+function updateTitles(array, input) {
+  var title = input.title;
+  var link = input.link;
   console.log('updating');
   var updatingArray = [];
   for (var i = 0; i < array.length; i++) {
     updatingArray.push((function(id) {
-      return Item.update({id: id}, {title: title}).exec()
+      return Item.update({id: id}, {title: title, link: link}).exec()
         .then(function() {
           return Item.findOne({id: id}).exec();
         })
@@ -158,6 +160,10 @@ function createItemForDB(itemFromAPI, source) {
   item.kids = itemFromAPI.kids || [];
   item.parent = itemFromAPI.parent;
   item.text = itemFromAPI.text;
+
+  if (item.type === 'story' && source === 'Hacker News') {
+    item.link = 'https://news.ycombinator.com/item?id=' + item.id;
+  }
 
   if (source === 'Hacker News') {
     item.replies = item.kids.length;
