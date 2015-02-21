@@ -23,7 +23,11 @@
           console.log('nothing', $scope.showSlider);
           return;
         }
-        data.comments.forEach(function(datum) {
+        data.comments.forEach(function(commentObj) {
+
+          //added this to handle new comment obj
+          datum = commentObj.comment;
+
           if (datum.length > 500) {
             datum = datum.slice(0, 500) + "...";
           }
@@ -41,7 +45,7 @@
         vm.newData = data;
         // console.log('hihi',ChartFactory.newData);
         // console.log('hoho', vm.newData);
-        
+
         // console.log(1234,vm.incomingData.avg);
         ChartFactory.data[0].values[0].value = Math.round((vm.incomingData.avg * 100) * 100) / 100;
         if (vm.incomingData.avg < 0) {
@@ -120,7 +124,7 @@
       data: data,
       showData: showData,
       newData: newData
-    }; 
+    };
   }
 
 })();

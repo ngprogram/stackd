@@ -5,9 +5,10 @@ var mongoose = require('mongoose'),
 var sentimentSchema = new Schema({
   commentId: String,
   rating: Number, //rating from -1 to 1
-  score: Number, // for reddit
+  score: Number, // for reddit, number of replies, for HN number of children
   title: String,
   time: Number,
+  by: String,
   source: String,
   sentiment: [String],
   comment: String
