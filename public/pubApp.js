@@ -10,16 +10,24 @@
     this.newData = ChartFactory.newData;
     $scope.comments = [];
     $scope.topic = '';
+    $scope.showSlider = false;
     this.search = function(val) {
+      $scope.showSlider = false;
       $scope.comments = [];
       $http.get('/search/' + val)
       .success(function(data, status) {
         if (data.length === 0) {
           vm.showData = false;
-          //show no results popup
+          $scope.searchTerm = '';
+          $scope.showSlider = true;
+          console.log('nothing', $scope.showSlider);
           return;
         }
         data.comments.forEach(function(datum) {
+          if (datum.length > 500) {
+            datum = datum.slice(0, 500) + "...";
+          }
+          datum = '" ' + datum + ' "';
           $scope.comments.push(datum);
         });
         console.log($scope.comments);
