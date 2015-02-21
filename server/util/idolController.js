@@ -14,7 +14,7 @@ idolController.getSentimentsSync = getSentimentsSync;
 function getSentimentsSync(comment) {
   var text = comment.text;
 
-  (function(incorrectText) {
+  return (function(incorrectText) {
     return spellCheckerController.correctSentence(incorrectText)
     .then(function(correctSentence) {
       if (correctSentence) {
@@ -71,6 +71,10 @@ function parseSentiments(sentiments, comment) {
   averageRating = totalRating/totalSentiments || 0;
 
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
+    .then(function(createdSentiment) {
+      console.log('added sentiment');
+      return createdSentiment;
+    })
     .then(null, function(err) {
       console.log('error with parsing sentiments', err);
     });

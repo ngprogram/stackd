@@ -14,40 +14,37 @@ function aggregate(req,res) {
   console.log('aggregate called', term);
 
   Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
-    function() {
-      elasticsearchController.searchInTitle(term)
-        .then(function(response, topLinks) {
+    function(response, topLinks) {
+      console.log('hello');
+      total = returnHits(response);
+      console.log('total', response);
+      if (total.length === 0) {
+        res.send([]);
+        return;
+      }
 
-          total = returnHits(response);
+      var totalRating = 0;
+      var avgRating = 0;
+      var totalWeight = 0;
+      // console.log('total', total);
+      total.forEach(function(obj) {
+        var x = Date.now()/1000 - obj.time;
+        var weight = Math.exp(-x*x/(2*stdev*stdev));
 
-          if (total.length === 0) {
-            res.send([]);
-            return;
-          }
+        // if date is from long time ago, weight no longer is a number
+        // assign weight to 0
+        if (isNaN(weight)) {
+          weight = 0;
+        }
+        totalWeight += weight;
+        totalRating += obj.rating * weight;
+      });
 
-          var totalRating = 0;
-          var avgRating = 0;
-          var totalWeight = 0;
-          // console.log('total', total);
-          total.forEach(function(obj) {
-            var x = Date.now()/1000 - obj.time;
-            var weight = Math.exp(-x*x/(2*stdev*stdev));
+      avgRating = totalRating/totalWeight;
+      // var topVals = sortObjectByCount(total);
+      console.log(topLinks);
+      res.send({avg: avgRating, topLinks: topLinks});
 
-            // if date is from long time ago, weight no longer is a number
-            // assign weight to 0
-            if (isNaN(weight)) {
-              weight = 0;
-            }
-            totalWeight += weight;
-            totalRating += obj.rating * weight;
-          });
-
-          avgRating = totalRating/totalWeight;
-          // var topVals = sortObjectByCount(total);
-          console.log(topLinks);
-          res.send({avg: avgRating, topLinks: topLinks});
-
-        })
 
     });
 

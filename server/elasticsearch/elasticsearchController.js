@@ -14,6 +14,7 @@ elasticsearchController.searchInTitle = searchInTitle;
 elasticsearchController.create = create;
 elasticsearchController.deleteIndex = deleteIndex;
 elasticsearchController.migrate = migrate;
+elasticsearchController.getTopLinks = getTopLinks;
 
 function create(body) {
     return client.create({
@@ -60,7 +61,9 @@ function searchInTitle(query) {
     size: 20,
     body: {
       query: {
-        title: query
+        match: {
+          title: query
+        }
       }
     }
   })
@@ -71,6 +74,7 @@ function searchInTitle(query) {
 }
 
 function getTopLinks(query) {
+  console.log('getting top');
   return client.search({
     index: 'stat',
     type: 'stories',
@@ -79,7 +83,9 @@ function getTopLinks(query) {
     fields: ['links'],
     body: {
       query: {
-        title: query
+        match: {
+          title: query
+        }
       }
     }
   })
