@@ -5,7 +5,7 @@ var _ = require('lodash');
 var request = Promise.promisify(require('request'));
 
 var itemController = {};
-itemController.getAllItemIds = getAllItemIds;
+itemController.getAllHNItemIds = getAllHNItemIds;
 itemController.getAllLinkIds = getAllLinkIds;
 itemController.addItem = addItem;
 itemController.addRedditItem = addRedditItem;
@@ -40,9 +40,9 @@ function addRedditItem(item) {
     })
 }
 
-function getAllItemIds() {
+function getAllHNItemIds() {
   var itemIds = [];
-  return Item.find()
+  return Item.find({source: "Hacker News"})
     .exec()
     .then(function(foundItems) {
 
