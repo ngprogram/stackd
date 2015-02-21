@@ -45,7 +45,13 @@ function aggregate(req,res) {
       // var totalSortedByReplies = sortArrayByUpvotes(total);
       var twoWithMostReplies = countSentiments(total);
       // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
-      var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {return item.comment;});
+      var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {
+        return {
+          comment: item.comment,
+          time: item.time,
+          author: "placeholder" //should be item.by when we add
+        };
+      });
 
       res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
 
