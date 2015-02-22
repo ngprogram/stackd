@@ -7,6 +7,9 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
+var stdev_days = 30;
+var stdev = stdev_days * 24 * 60 * 60; // in days
+
 // Promise.promisifyAll(client);
 
 var elasticsearchController = {};
@@ -91,6 +94,14 @@ function getTopLinks(query) {
         match: {
           title: query
         }
+      }
+    },
+    sort : "time:desc",
+    // need to test this
+    guass: {
+      time: {
+        origin: Date.now()/1000,
+        scale: stdev
       }
     }
   })

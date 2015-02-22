@@ -38,10 +38,9 @@ describe("Elasticsearch Spec", function() {
 
   });
 
-it('should return sentiments', function(done) {
+xit('should return sentiments', function(done) {
   elasticsearchController.searchInTitle('javascript')
     .then(function(response) {
-      console.log(response.hits.hits);
       expect(response.hits.hits).to.exist;
       done()
     });
@@ -51,8 +50,8 @@ it('should return sentiments', function(done) {
 it('should return link', function(done) {
   elasticsearchController.getTopLinks('javascript')
     .then(function(response) {
-      console.log(response);
-      expect(response.hits.hits).to.exist;
+      console.log(response.hits.hits);
+      expect(response.hits.hits).to.have.length.gte(5);
       done()
     });
 
