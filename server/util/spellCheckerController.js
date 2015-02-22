@@ -25,6 +25,10 @@ function correctSentence(sentence) {
   return (function(query) {
     return request(query)
       .spread(function(response, body) {
+        if (!JSON.parse(body).suggestion) {
+          console.log(JSON.parse(body));
+        }
+
         return JSON.parse(body).suggestion;
       })
       .catch(function(err) {
@@ -48,7 +52,7 @@ function removeHTML(sentence) {
 }
 
 function removeSpecial(sentence) {
-  return sentence.replace(/ *\<[^)]*\> */g, "").replace(/[^A-Z0-9.,' ]/gi,'')
+  return sentence.replace(/\<[^>]+\>/g, "").replace(/[^A-Z0-9.,' ]/gi,'')
 }
 
 module.exports = spellCheckerController;

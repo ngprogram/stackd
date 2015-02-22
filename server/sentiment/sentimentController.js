@@ -37,13 +37,12 @@ function getAllSentiments(callback) {
 }
 
 function getCommentIdsFromSavedSentiments() {
-  return Sentiment.find({}, {id: 1}).exec()
+  return Sentiment.find({}, {commentId: 1}).exec()
     .then(function(foundSentiments) {
       var commentIds = [];
       for (var i = 0; i < foundSentiments.length; i++) {
-        commentIds.push(foundSentiments[i].id);
+        commentIds.push(foundSentiments[i].commentId);
       }
-
       return commentIds;
     })
     .then(null, function(err) {

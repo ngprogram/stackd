@@ -1,6 +1,7 @@
 var sentimentController = require('../sentiment/sentimentController');
 var aggregatorController = {};
 var _ = require('lodash');
+var Promise = require('bluebird');
 
 var elasticsearchController = require('../elasticsearch/elasticsearchController');
 aggregatorController.aggregate = aggregate;
@@ -11,20 +12,23 @@ function aggregate(req,res) {
 
   var term = req.params.term;
   console.log('aggregate called', term);
-  elasticsearchController.searchInTitle(term)
-    .then(function(response) {
+
+  Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
+    function(response, topLinks) {
+      console.log(topLinks);
+      console.log(topLinks.hits.hits);
+
 
       total = returnHits(response);
-
+      topLinks = returnHits(topLinks);
       if (total.length === 0) {
         res.send([]);
         return;
       }
-
+      // console.log(total);
       var totalRating = 0;
       var avgRating = 0;
       var totalWeight = 0;
-      // console.log('total', total);
       total.forEach(function(obj) {
         var x = Date.now()/1000 - obj.time;
         var weight = Math.exp(-x*x/(2*stdev*stdev));
@@ -40,22 +44,11 @@ function aggregate(req,res) {
 
       avgRating = totalRating/totalWeight;
       // var topVals = sortObjectByCount(total);
+      console.log({avg: avgRating, topLinks: topLinks});
+      res.send({avg: avgRating, topLinks: topLinks});
 
-      // TODO: make score link to replies
-      // var totalSortedByReplies = sortArrayByUpvotes(total);
-      var twoWithMostReplies = countSentiments(total);
-      // var twoWithMostReplies = totalSortedByReplies.slice(0, 2);
-      var twoCommentsWithMostReplies = _.map(twoWithMostReplies, function(item) {
-        return {
-          comment: item.comment,
-          time: item.time,
-          author: "placeholder" //should be item.by when we add
-        };
-      });
 
-      res.send({avg: avgRating, comments: twoCommentsWithMostReplies});
-
-    })
+    });
 
 };
 

@@ -24,13 +24,16 @@
     "fill": "node worker/populateDatabaseWithHN.js",
     "fill-dev": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
     "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
-    "test": "export NODE_ENV='test'; mocha test/sentimentControllerSpec.js",
+    "test": "export NODE_ENV='test'; mocha test/elasticsearchControllerSpec.js",
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
     "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
     "fillReddit": "node worker/populateDatabaseReddit.js",
-    "migrate": "node worker/moveToElasticsearch.js"
+    "convert" : "node worker/createSentimentsFromItems.js",
+    "convert-dev" : "export NODE_ENV='test'; node worker/createSentimentsFromItems.js",
+    "migrate": "node worker/moveToElasticsearch.js",
+    "migrate-dev": "export NODE_ENV='test'; node worker/moveToElasticsearch.js"
   },
   "repository": {},
   "devDependencies": {
