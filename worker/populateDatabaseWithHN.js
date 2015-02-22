@@ -13,7 +13,7 @@ mongoose.connect(config.get('mongo'));
 var chunkSize = 20;
 var source = "Hacker News";
 var count = 0;
-var limit = 500;
+var limit = 5000;
 var topStoriesUrl = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 var maxItemUrl = 'https://hacker-news.firebaseio.com/v0/maxitem.json';
 
@@ -23,15 +23,17 @@ function populateDBWithStories(n) {
     .spread(function(response, body) {
       var topID = JSON.parse(body);
 
-      getChunk(topID);
+      throttledGetChunk(topID);
     });
 }
 
+var throttledGetChunk = _.throttle(getChunk, 5000);
+
 function getChunk(n) {
   count++;
-  itemController.getAllItemIds()
+  itemController.getAllHNItemIds()
     .then(function(itemIds) {
-      console.log('step 1');
+      console.log('fetching saved item');
       var requestsForItems = [];
       for (var i = n - chunkSize; i < n; i++) {
         if (itemIds.indexOf(i) < 0) {
@@ -46,6 +48,7 @@ function getChunk(n) {
     })
     // saves all items from hacker news
     .then(function(hackerNewsItems) {
+      console.log('saving new items');
       var items = [];
       for (var i = 0; i < hackerNewsItems.length; i++) {
         var item = hackerNewsItems[i];
@@ -59,7 +62,7 @@ function getChunk(n) {
     // get update all comments with text
     .then(function(items) {
       var commentRequests = [];
-      console.log('step 3');
+      console.log('updating comments with titles');
 
       for (var i = 0; i < items.length; i++) {
         // some stories have no comments
@@ -70,57 +73,15 @@ function getChunk(n) {
 
       return Promise.all(commentRequests);
     })
-    .then(function(comments) {
-      comments = _.flattenDeep(comments);
-
-      var sentimentsFromComments = [];
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-        }
-        else {
-          console.log('skipped');
-        }
-      }
-
-      return Promise.all(sentimentsFromComments);
-    })
     .then(function() {
       console.log('done', count);
       if (count < limit) {
-        getChunk(n-chunkSize);
+        throttledGetChunk(n-chunkSize);
       }
     })
     .then(null, function(err) {
       console.log('error getting new comments', err);
     });
-}
-
-function updateSentiments() {
-
-  Promise.join(itemController.getComments(), sentimentController.getCommentIdsFromSavedSentiments(),
-    function(comments, commentIds) {
-
-      comments = _.flattenDeep(comments);
-      var sentimentsFromComments = [];
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text && commentIds.indexOf(comments[i].id) < 0) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-        }
-        else {
-          console.log('skipped');
-        }
-      }
-
-      return Promise.all(sentimentsFromComments);
-    })
-    .then(function() {
-      console.log('done');
-    })
-    .then(null, function(err) {
-      console.log('error getting new comments', err);
-    });
-
 }
 
 populateDBWithStories();

@@ -3,7 +3,6 @@ var request = Promise.promisify(require('request'));
 var sentimentController = require('../sentiment/sentimentController');
 var config = require('config');
 var spellCheckerController = require('./spellCheckerController');
-var elasticsearchController = require('../elasticsearch/elasticsearchController');
 
 var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
@@ -14,23 +13,29 @@ idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
-  return spellCheckerController.correctSentence(text)
+
+  return (function(incorrectText) {
+    return spellCheckerController.correctSentence(incorrectText)
     .then(function(correctSentence) {
-      var queryString = generateQuery(correctSentence);
+      if (correctSentence) {
+        var queryString = generateQuery(correctSentence);
 
-      return request(_syncUrl + queryString)
-      .spread(function (response, body) {
-
-        return parseSentiments(JSON.parse(body), comment);
-      })
-      .then(null, function(err) {
-        console.log('error with idol request', err);
-      })
+        return request(_syncUrl + queryString)
+        .spread(function (response, body) {
+          return parseSentiments(JSON.parse(body), comment);
+        })
+        .then(null, function(err) {
+          console.log('error with idol request', err);
+        })
+      } else {
+        console.log('incorrect sentence', incorrectText, correctSentence);
+      }
 
     })
     .then(null, function(err) {
       console.log('error with spellChecker request', err);
     });
+  })(text);
 
 }
 
@@ -49,9 +54,6 @@ function parseSentiments(sentiments, comment) {
   var totalRating = 0;
   var averageRating = 0;
   var totalSentiments = positiveSentiments.length + negativeSentiments.length;
-  if (totalSentiments === 0) {
-    return;
-  }
 
   for (var i = 0; i < positiveSentiments.length; i++) {
     totalRating += positiveSentiments[i].score;
@@ -62,11 +64,13 @@ function parseSentiments(sentiments, comment) {
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  averageRating = totalRating/totalSentiments || 0;
-
+  if (totalSentiments !== 0) {
+    averageRating = totalRating/totalSentiments || 0;
+  }
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
-      return elasticsearchController.create(createdSentiment);
+      console.log('added sentiment');
+      return createdSentiment;
     })
     .then(null, function(err) {
       console.log('error with parsing sentiments', err);
@@ -75,7 +79,7 @@ function parseSentiments(sentiments, comment) {
 
 function createSentimentForDB(rating, sentimentArray, comment) {
   var sentimentObj = {};
-  console.log('testingrating', rating);
+
   sentimentObj.rating = rating; // -1 - 1
   sentimentObj.commentId = comment.id;
   sentimentObj.score = comment.score || 0; //number of upvotes
