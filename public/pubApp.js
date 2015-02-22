@@ -8,33 +8,31 @@
     this.incomingData = {};
     this.showData = ChartFactory.showData;
     this.newData = ChartFactory.newData;
-    $scope.comments = [];
+    $scope.lnks = [];
     $scope.topic = '';
     $scope.showSlider = false;
     this.search = function(val) {
       $scope.showSlider = false;
-      $scope.comments = [];
+      $scope.hnLinks = [];
+      $scope.redditLinks = [];
       $http.get('/search/' + val)
       .success(function(data, status) {
-        if (data.length === 0) {
+        console.log('data',data);
+        if (data.topLinks.length === 0) {
           vm.showData = false;
           $scope.searchTerm = '';
           $scope.showSlider = true;
-          console.log('nothing', $scope.showSlider);
+          console.log('nothing here', $scope.showSlider);
           return;
         }
-        data.comments.forEach(function(commentObj) {
-
-          //added this to handle new comment obj
-          datum = commentObj.comment;
-
-          if (datum.length > 500) {
-            datum = datum.slice(0, 500) + "...";
+        data.topLinks.forEach(function(datum) {
+          if (datum.source === 'Hacker News') {
+            $scope.hnLinks.push(datum);
           }
-          datum = '" ' + datum + ' "';
-          $scope.comments.push(datum);
+          else {
+            $scope.redditLinks.push(datum);
+          }
         });
-        console.log($scope.comments);
         vm.showData = true;
         $scope.topic = $scope.searchTerm;
         $scope.searchTerm = '';
