@@ -38,17 +38,17 @@ describe("Elasticsearch Spec", function() {
 
   });
 
-xit('should return sentiments', function(done) {
+it('should return sentiments', function(done) {
   elasticsearchController.searchInTitle('javascript')
     .then(function(response) {
-      console.log(response);
+      console.log(response.hits.hits);
       expect(response.hits.hits).to.exist;
       done()
     });
 
 });
 
-it('should return link', function(done) {
+xit('should return link', function(done) {
   elasticsearchController.getTopLinks('javascript')
     .then(function(response) {
       console.log(response);

@@ -15,18 +15,16 @@ function aggregate(req,res) {
 
   Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
     function(response, topLinks) {
-      console.log('hello');
+      console.log(response);
       total = returnHits(response);
-      console.log('total', response);
       if (total.length === 0) {
         res.send([]);
         return;
       }
-
+      // console.log(total);
       var totalRating = 0;
       var avgRating = 0;
       var totalWeight = 0;
-      // console.log('total', total);
       total.forEach(function(obj) {
         var x = Date.now()/1000 - obj.time;
         var weight = Math.exp(-x*x/(2*stdev*stdev));
@@ -42,7 +40,7 @@ function aggregate(req,res) {
 
       avgRating = totalRating/totalWeight;
       // var topVals = sortObjectByCount(total);
-      console.log(topLinks);
+      console.log({avg: avgRating, topLinks: topLinks});
       res.send({avg: avgRating, topLinks: topLinks});
 
 

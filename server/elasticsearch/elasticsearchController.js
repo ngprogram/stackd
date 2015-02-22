@@ -32,10 +32,16 @@ function migrate(array, type) {
 
   var bulkArray = [];
   for (var i = 0; i < array.length; i++) {
-    var id = array[i].id;
+    var id = array[i]._id;
     var query = { index:  { _index: 'stat', _type: type, _id: id } };
     bulkArray.push(query);
-    bulkArray.push(createStoryForES(array[i]));
+
+    if (type === 'story') {
+      bulkArray.push(createStoryForES(array[i]));
+    }
+    if (type === 'sentiment') {
+      bulkArray.push(createSentimentForES(array[i]));
+    }
   }
 
   console.log(bulkArray);
@@ -107,7 +113,7 @@ function deleteIndex(name) {
 
 function createStoryForES(story) {
   var storyObj = {};
-  storyObj.id = String(story._id);
+  storyObj.id = story.id;
   storyObj.title = story.title;
   storyObj.source = story.source;
   storyObj.link = story.link;
@@ -115,6 +121,22 @@ function createStoryForES(story) {
   storyObj.by = story.by;
 
   return storyObj;
+}
+
+function createSentimentForES(sentiment) {
+  var sentimentObj = {};
+  sentimentObj.id = sentiment.id;
+  sentimentObj.rating = sentiment.rating;
+  sentimentObj.score = sentiment.score;
+  sentimentObj.replies = sentiment.replies;
+  sentimentObj.title = sentiment.title;
+  sentimentObj.time = sentiment.time;
+  sentimentObj.by = sentiment.by;
+  sentimentObj.source = sentiment.source;
+  sentimentObj.sentiment = sentiment.sentiment;
+  sentimentObj.comment = sentiment.comment;
+
+  return sentimentObj;
 }
 
 module.exports = elasticsearchController
