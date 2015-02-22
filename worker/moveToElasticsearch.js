@@ -9,8 +9,8 @@ mongoose.connect(config.get('mongo'));
 
 function migrateSentiments() {
   sentimentController.getAllSentiments()
-    .then(function(response) {
-      console.log('success', response);
+    .then(function(sentiments) {
+      return elasticsearchController.migrate(sentiments, 'sentiments')
     })
     .then(null, function(err) {
       console.log('error migrating', err);
@@ -27,5 +27,6 @@ function migrateItems() {
     });
 }
 
-migrateItems();
+// migrateItems();
+migrateSentiments();
 
