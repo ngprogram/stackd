@@ -36,10 +36,10 @@ function migrate(array, type) {
     var query = { index:  { _index: 'stat', _type: type, _id: id } };
     bulkArray.push(query);
 
-    if (type === 'story') {
+    if (type === 'stories') {
       bulkArray.push(createStoryForES(array[i]));
     }
-    if (type === 'sentiment') {
+    if (type === 'sentiments') {
       bulkArray.push(createSentimentForES(array[i]));
     }
   }
@@ -86,7 +86,6 @@ function getTopLinks(query) {
     type: 'stories',
     // TODO: change to scan
     size: 5,
-    fields: ['links'],
     body: {
       query: {
         match: {
