@@ -15,8 +15,7 @@ function getSentimentsSync(comment) {
   var text = comment.text;
 
   return (function(incorrectText) {
-    return spellCheckerController.correctSentence(incorrectText)
-    .then(function(correctSentence) {
+    return spellCheckerController.correctSentence(incorrectText).then(function(correctSentence) {
       if (correctSentence) {
         var queryString = generateQuery(correctSentence);
 
@@ -51,22 +50,19 @@ function parseSentiments(sentiments, comment) {
   var sentimentArray = [];
   var positiveSentiments = sentiments.positive;
   var negativeSentiments = sentiments.negative;
-  var totalRating = 0;
   var averageRating = 0;
   var totalSentiments = positiveSentiments.length + negativeSentiments.length;
 
   for (var i = 0; i < positiveSentiments.length; i++) {
-    totalRating += positiveSentiments[i].score;
     sentimentArray.push(positiveSentiments[i].sentiment);
   }
   for (var i = 0; i < negativeSentiments.length; i++) {
-    totalRating -= negativeSentiments[i].score;
     sentimentArray.push(negativeSentiments[i].sentiment);
   }
 
-  if (totalSentiments !== 0) {
-    averageRating = totalRating/totalSentiments || 0;
-  }
+  averageRating = sentiments.aggregate.score;
+
+  console.log('average rating', averageRating);
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
       console.log('added sentiment');
