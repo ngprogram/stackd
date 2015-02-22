@@ -15,8 +15,12 @@ function aggregate(req,res) {
 
   Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
     function(response, topLinks) {
-      console.log(response);
+      console.log(topLinks);
+      console.log(topLinks.hits.hits);
+
+
       total = returnHits(response);
+      topLinks = returnHits(topLinks);
       if (total.length === 0) {
         res.send([]);
         return;

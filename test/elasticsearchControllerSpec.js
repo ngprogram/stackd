@@ -48,7 +48,7 @@ it('should return sentiments', function(done) {
 
 });
 
-xit('should return link', function(done) {
+it('should return link', function(done) {
   elasticsearchController.getTopLinks('javascript')
     .then(function(response) {
       console.log(response);
