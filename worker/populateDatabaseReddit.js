@@ -11,7 +11,7 @@ var itemController = Promise.promisifyAll(require('../server/item/itemController
 var mongoose = require('mongoose');
 mongoose.connect(config.get('mongo'));
 
-var chunkSize = 20;
+// var chunkSize = 20;
 var count = 0;
 var limit = 40;
 var after = '';
@@ -29,7 +29,7 @@ function startPopulateDBFromSubreddit(subreddit) {
   throttledPopulateDBFromPageUrl(startUrl, subreddit);
 }
 
-var throttledPopulateDBFromPageUrl = _.throttle(populateDBFromPageUrl, 6000);
+var throttledPopulateDBFromPageUrl = _.throttle(populateDBFromPageUrl, 60000);
 
 // NEED TO WORRY ABOUT DOUBLING RESULTS...
 //RECURSIVE TO GO THROUGH ALL PAGES
@@ -121,22 +121,22 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
 
       return Promise.all(comments);
     })
-    //do sentiment analysis stuff on each of the comments in the comments array and save to db
-    .then(function(comments) {
-      comments = _.flattenDeep(comments);
+    // //do sentiment analysis stuff on each of the comments in the comments array and save to db
+    // .then(function(comments) {
+    //   comments = _.flattenDeep(comments);
 
-      var sentimentsFromComments = [];
-      for (var i = 0; i < comments.length; i++) {
-        if (comments[i] && comments[i].text) {
-          sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-        }
-        else {
-          console.log('skipped');
-        }
-      }
+    //   var sentimentsFromComments = [];
+    //   for (var i = 0; i < comments.length; i++) {
+    //     if (comments[i] && comments[i].text) {
+    //       sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
+    //     }
+    //     else {
+    //       console.log('skipped');
+    //     }
+    //   }
 
-      return Promise.all(sentimentsFromComments);
-    })
+    //   return Promise.all(sentimentsFromComments);
+    // })
     .then(function() {
       console.log('done', count);
       if (count < limit) {
@@ -222,13 +222,15 @@ function processCommentTree(commentTree) {
 function createItemForDB(itemFromAPI) {
   var item = {};
   var type = '';
+  var itemData = itemFromAPI.data;
+
   if (itemFromAPI.kind === 't1') {
     type = 'comment';
   } else if (itemFromAPI.kind === 't3') {
     type = 'story';
+    item.link = 'http://www.reddit.com/comments/' + itemData.id;
   }
 
-  var itemData = itemFromAPI.data;
   item.id = itemData.id,
   item.title = itemData.title || null,
   item.source = 'reddit',
