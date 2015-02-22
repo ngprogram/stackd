@@ -17,7 +17,7 @@ function migrateSentiments() {
     });
 }
 
-function migrateItems() {
+function migrateStories() {
   itemController.getAllStories()
     .then(function(stories) {
       return elasticsearchController.migrate(stories, 'stories')
@@ -27,6 +27,6 @@ function migrateItems() {
     });
 }
 
-// migrateItems();
+migrateStories();
 migrateSentiments();
 
