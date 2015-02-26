@@ -8,21 +8,31 @@
     this.incomingData = {};
     this.showData = ChartFactory.showData;
     this.newData = ChartFactory.newData;
-    $scope.comments = [];
+    $scope.lnks = [];
     $scope.topic = '';
+    $scope.showSlider = false;
     this.search = function(val) {
-      $scope.comments = [];
+      $scope.showSlider = false;
+      $scope.hnLinks = [];
+      $scope.redditLinks = [];
       $http.get('/search/' + val)
       .success(function(data, status) {
-        if (data.length === 0) {
+        console.log('data',data);
+        if (data.topLinks.length === 0) {
           vm.showData = false;
-          //show no results popup
+          $scope.searchTerm = '';
+          $scope.showSlider = true;
+          console.log('nothing here', $scope.showSlider);
           return;
         }
-        data.comments.forEach(function(datum) {
-          $scope.comments.push(datum);
+        data.topLinks.forEach(function(datum) {
+          if (datum.source === 'Hacker News') {
+            $scope.hnLinks.push(datum);
+          }
+          else {
+            $scope.redditLinks.push(datum);
+          }
         });
-        console.log($scope.comments);
         vm.showData = true;
         $scope.topic = $scope.searchTerm;
         $scope.searchTerm = '';
@@ -33,7 +43,7 @@
         vm.newData = data;
         // console.log('hihi',ChartFactory.newData);
         // console.log('hoho', vm.newData);
-        
+
         // console.log(1234,vm.incomingData.avg);
         ChartFactory.data[0].values[0].value = Math.round((vm.incomingData.avg * 100) * 100) / 100;
         if (vm.incomingData.avg < 0) {
@@ -112,7 +122,7 @@
       data: data,
       showData: showData,
       newData: newData
-    }; 
+    };
   }
 
 })();

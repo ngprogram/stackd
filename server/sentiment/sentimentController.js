@@ -9,7 +9,6 @@ sentimentController.deleteSentiments = deleteSentiments;
 sentimentController.getAllSentiments = getAllSentiments;
 
 function addSentiment(sentiment) {
-
   return Sentiment.create(sentiment)
     .then(null, function(err) {
       console.log('error with adding sentiment', err);
@@ -26,7 +25,6 @@ function getSentimentsFromKeyword(keyword, callback) {
 function getRedditSentimentsSortedByUpvotes(keyword, callback) {
   var days = 30;
   var time = Date.now()/1000 - days * 24 * 60 * 60;
-  console.log('getting reddit comments');
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')} , time: { $gte: time }, source: 'reddit'}).sort('-upvotes').exec(callback);
 }
 
@@ -39,13 +37,12 @@ function getAllSentiments(callback) {
 }
 
 function getCommentIdsFromSavedSentiments() {
-  return Sentiment.find({}).exec()
+  return Sentiment.find({}, {commentId: 1}).exec()
     .then(function(foundSentiments) {
       var commentIds = [];
       for (var i = 0; i < foundSentiments.length; i++) {
-        commentIds.push(foundSentiments[i].id);
+        commentIds.push(foundSentiments[i].commentId);
       }
-
       return commentIds;
     })
     .then(null, function(err) {
