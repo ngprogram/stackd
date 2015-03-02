@@ -1,3 +1,4 @@
 node_modules
 npm-debug.log
 server/elasticsearch/elasticsearch-1.4.3
+config
