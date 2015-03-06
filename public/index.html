@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="stackdApp">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
@@ -15,7 +15,7 @@
   </head>
 
   <body class="container" ng-controller="SearchController as searchCtrl">
-    <div class="navBar"> 
+    <div class="navBar">
       <div class="title">
         stat
       </div>
@@ -25,7 +25,7 @@
             <button class="searchButton searchAgain" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
              <!--   <button class="searchButton" ng-click="searchCtrl.showData = !searchCtrl.showData"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button> -->
           </form>
-       
+
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
       <div class="section-1" ng-show="searchCtrl.showData">
         <i class="comment" ng-repeat="comm in hnLinks">
           {{comm}}
-        </i>       
+        </i>
     </div>
 
   </body>

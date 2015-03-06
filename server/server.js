@@ -1,7 +1,7 @@
 /*jshint node:true*/
 var express = require('express');
 var bodyParser = require('body-parser');
-var aggregatorController = require('./server/aggregator/aggregatorController');
+var aggregatorController = require('./aggregator/aggregatorController');
 var config = require('config');
 
 var mongoose = require('mongoose');
@@ -12,19 +12,9 @@ mongoose.connect(config.get('mongo'));
 var app = express();
 app.use(app.router);
 app.use(express.errorHandler());
-var routes = {
-  dir: __dirname + '/public'
-};
-app.use(express.static(__dirname)); //setup static public directory
+app.use(express.static(__dirname + '/../public')); //setup static public directory
 
 app.use(bodyParser.json());
-app.use(express.static(__dirname + '/public')); //setup static public directory
-app.set('views', __dirname + '/views'); //optional since express defaults to CWD/views
-
-// render index page
-app.get('/', function(req, res){
-  res.sendfile(routes.dir + '/index.html');
-});
 
 app.get('/search/:term', aggregatorController.aggregate);
 // app.get('/update', hackerController.gatherSentiments);
@@ -45,7 +35,7 @@ app.get('/search/:term', aggregatorController.aggregate);
 // The IP address of the Cloud Foundry DEA (Droplet Execution Agent) that hosts this application:
 // var host = (process.env.PORT || 'localhost');
 // The port on the DEA for communication with the application:
-var port = (process.env.PORT || 3000);
+var port = (process.env.PORT || 8000);
 // Start server
 app.listen(port);
 console.log('App started on port ' + port);
