@@ -84,4 +84,4 @@ function getChunk(n) {
     });
 }
 
-populateDBWithStories();
+module.exports = populateDBWithStories;

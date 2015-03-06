@@ -25,7 +25,7 @@ var after = '';
 
 function startPopulateDBFromSubreddit(subreddit) {
   var startUrl = 'http://www.reddit.com/r/' + subreddit + '/hot.json?limit=29';
-  
+
   throttledPopulateDBFromPageUrl(startUrl, subreddit);
 }
 
@@ -121,22 +121,7 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
 
       return Promise.all(comments);
     })
-    // //do sentiment analysis stuff on each of the comments in the comments array and save to db
-    // .then(function(comments) {
-    //   comments = _.flattenDeep(comments);
 
-    //   var sentimentsFromComments = [];
-    //   for (var i = 0; i < comments.length; i++) {
-    //     if (comments[i] && comments[i].text) {
-    //       sentimentsFromComments.push(idolController.getSentimentsSync(comments[i]));
-    //     }
-    //     else {
-    //       console.log('skipped');
-    //     }
-    //   }
-
-    //   return Promise.all(sentimentsFromComments);
-    // })
     .then(function() {
       console.log('done', count);
       if (count < limit) {
@@ -150,21 +135,17 @@ function populateDBFromPageUrl(pageUrl, subreddit) {
 
 //saves all comments in the tree and returns an array with all comments from that tree
 function processCommentTree(commentTree) {
-  console.log('IM WORKING');
-  console.log('starting to process comment tree', commentTree);
   var comments = [];
 
   function recurse (commentTree) {
     for (var i = 0; i < commentTree.length; i++) {
       var currentComment = commentTree[i];
       if (currentComment.kind !== 'more') {
-        console.log('currentComment', currentComment);
         comments.push(itemController.addRedditItem(createItemForDB(currentComment)));
-        console.log('commentsArray', comments);
         if (currentComment.data.replies) {
           recurse(currentComment.data.replies.data.children);
         }
-        
+
       } else {
         console.log('MOREMORE', currentComment)
       }
@@ -173,7 +154,6 @@ function processCommentTree(commentTree) {
 
   recurse(commentTree);
 
-  console.log('finalCommentsBeingReturned', comments);
   return Promise.all(comments);
 }
 
@@ -264,4 +244,4 @@ function generateNextUrl (subreddit, after) {
   return nextUrl;
 }
 
-startPopulateDBFromSubreddit('javascript');
+module.exports = startPopulateDBFromSubreddit;
