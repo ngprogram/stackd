@@ -2,7 +2,7 @@ var plan = require('flightplan');
 
 var appName = 'getstat';
 var username = 'azai91';
-var startFile = 'app.js';
+var startFile = 'server/app.js';
 
 var tmpDir = appName+'-' + new Date().getTime();
 
@@ -27,12 +27,14 @@ plan.target('production', [
 plan.local(function(local) {
   // uncomment these if you need to run a build on your machine first
   // local.log('Run build');
+  local.exec('git add -f config public/lib');
 
   local.log('Copy files to remote hosts');
   var filesToCopy = local.exec('git ls-files', {silent: true});
   // rsync files to all the destination's hosts
   local.transfer(filesToCopy, '/tmp/' + tmpDir);
-  // local.exec('git rm -rf --cached bower_components');
+
+  local.exec('git rm -rf --cached config public/lib');
 });
 
 // run commands on remote hosts (destinations)
