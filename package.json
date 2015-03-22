@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "nodemon server/server.js",
-    "start-dev" : "export NODE_ENV='test'; nodemon server/server.js",
+    "start-dev": "export NODE_ENV='test'; nodemon server/server.js",
     "fill": "node worker/populateDatabaseWithHN.js",
     "fill-dev": "export NODE_ENV='test'; node worker/populateDatabaseWithHN.js",
     "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
@@ -28,17 +28,16 @@
     "clean": "node worker/deleteDB.js",
     "clean-dev": "export NODE_ENV='test'; node worker/deleteDB.js",
     "fillGithubRepos": "node worker/populateDatabaseGithub.js",
-    "fillReddit-dev": "export NODE_ENV='test'; node worker/populateDatabaseReddit.js",
     "fillReddit": "node worker/populateDatabaseReddit.js",
-    "convert" : "node worker/createSentimentsFromItems.js",
-    "convert-dev" : "export NODE_ENV='test'; node worker/createSentimentsFromItems.js",
+    "convert": "node worker/createSentimentsFromItems.js",
+    "convert-dev": "export NODE_ENV='test'; node worker/createSentimentsFromItems.js",
     "migrate": "node worker/moveToElasticsearch.js",
     "migrate-dev": "export NODE_ENV='test'; node worker/moveToElasticsearch.js"
   },
   "repository": {},
   "devDependencies": {
     "angular": "^1.3.12",
-    "chai": "^1.10.0",
+    "chai": "^2.1.2",
     "mocha": "^2.1.0",
     "supertest": "^0.15.0"
   }
