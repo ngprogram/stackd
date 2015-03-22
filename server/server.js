@@ -11,7 +11,7 @@ var app = express();
 app.use(express.errorHandler());
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/../public')); //setup static public directory
+app.use(express.static(__dirname + '/../client')); //setup static public directory
 
 app.get('/search/:term', aggregatorController.aggregate);
 

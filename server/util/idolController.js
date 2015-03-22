@@ -1,9 +1,8 @@
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
-var sentimentController = require('../sentiment/sentimentController');
 var config = require('config');
+var sentimentController = require('../sentiment/sentimentController');
 var spellCheckerController = require('./spellCheckerController');
-
 var _apiKey = config.get('idol');
 var _syncUrl = 'https://api.idolondemand.com/1/api/sync/analyzesentiment/v1';
 var _asyncUrl = 'https://api.idolondemand.com/1/api/async/analyzesentiment/v1';
@@ -13,30 +12,26 @@ idolController.getSentimentsSync = getSentimentsSync;
 
 function getSentimentsSync(comment) {
   var text = comment.text;
+  return spellCheckerController.correctSentence(text)
+  .then(function(correctSentence) {
+    if (correctSentence) {
+      var queryString = generateQuery(correctSentence);
 
-  return (function(incorrectText) {
-    return spellCheckerController.correctSentence(incorrectText)
-    .then(function(correctSentence) {
-      if (correctSentence) {
-        var queryString = generateQuery(correctSentence);
+      return request(_syncUrl + queryString)
+      .spread(function (response, body) {
+        return parseSentiments(JSON.parse(body), comment);
+      })
+      .then(null, function(err) {
+        console.log('error with idol request', err);
+      })
+    } else {
+      console.log('incorrect sentence', incorrectText, correctSentence);
+    }
 
-        return request(_syncUrl + queryString)
-        .spread(function (response, body) {
-          return parseSentiments(JSON.parse(body), comment);
-        })
-        .then(null, function(err) {
-          console.log('error with idol request', err);
-        })
-      } else {
-        console.log('incorrect sentence', incorrectText, correctSentence);
-      }
-
-    })
-    .then(null, function(err) {
-      console.log('error with spellChecker request', err);
-    });
-  })(text);
-
+  })
+  .then(null, function(err) {
+    console.log('error with spellChecker request', err);
+  });
 }
 
 function generateQuery(text) {
@@ -69,7 +64,6 @@ function parseSentiments(sentiments, comment) {
   }
   return sentimentController.addSentiment(createSentimentForDB(averageRating, sentimentArray, comment))
     .then(function(createdSentiment) {
-      console.log('added sentiment');
       return createdSentiment;
     })
     .then(null, function(err) {
@@ -80,9 +74,9 @@ function parseSentiments(sentiments, comment) {
 function createSentimentForDB(rating, sentimentArray, comment) {
   var sentimentObj = {};
 
-  sentimentObj.rating = rating; // -1 - 1
+  sentimentObj.rating = rating;
   sentimentObj.commentId = comment.id;
-  sentimentObj.score = comment.score || 0; //number of upvotes
+  sentimentObj.score = comment.score || 0;
   sentimentObj.title = comment.title;
   sentimentObj.time = comment.time;
   sentimentObj.source = comment.source;

@@ -34,7 +34,6 @@ function addItem(item, source) {
 function addRedditItem(item) {
   return Item.findOne({id: item.id}).exec()
     .then(function(foundItem) {
-      console.log('foundItem', foundItem);
       if (foundItem) {
         return foundItem;
       } else {

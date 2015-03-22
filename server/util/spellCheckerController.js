@@ -8,7 +8,6 @@ var spellCheckerController = {};
 spellCheckerController.correctSentence = correctSentence;
 
 function correctSentence(sentence) {
-  // TODO: Figure out cause of undefined sentence
   if (!sentence) {
     return;
   }
@@ -38,7 +37,6 @@ function correctSentence(sentence) {
   })(options);
 
 }
-
 
 function generateQuery(sentence) {
   var query = "https://montanaflynn-spellcheck.p.mashape.com/check/?text=";

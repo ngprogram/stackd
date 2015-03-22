@@ -10,7 +10,6 @@ describe("Elasticsearch Spec", function() {
 
     elasticsearchController.create(sampleSentiment)
       .then(function(response) {
-        console.log('reponse on create', response);
         done();
       })
       .then(null, function(err) {
@@ -28,7 +27,6 @@ describe("Elasticsearch Spec", function() {
         return elasticsearchController.searchInTitle('audit')
       })
       .then(function(response) {
-        console.log(response.hits.hits);
         done();
       })
       .then(null, function(err) {
@@ -50,7 +48,6 @@ xit('should return sentiments', function(done) {
 it('should return link', function(done) {
   elasticsearchController.getTopLinks('javascript')
     .then(function(response) {
-      console.log(response.hits.hits);
       expect(response.hits.hits).to.have.length.gte(5);
       done()
     });

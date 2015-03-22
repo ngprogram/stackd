@@ -21,24 +21,19 @@ describe('Sentiment Controller', function() {
 
     sentimentController.addSentiment(sample)
       .then(function(createdSentiment) {
-        console.log(createdSentiment);
         done();
       });
   });
 
   xit('should retrive', function(done) {
     sentimentController.getSentimentsFromKeyword('React', function(err, foundSentiments) {
-      console.log(foundSentiments);
       done();
     });
   });
 
   it('should get all commentIds from sentiemtns', function(done) {
     sentimentController.getCommentIdsFromSavedSentiments()
-      .then(function(commentIds) {
-        console.log(commentIds);
-        done();
-      })
+      .then(done)
 
   });
 });

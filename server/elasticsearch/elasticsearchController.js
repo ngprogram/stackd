@@ -10,8 +10,6 @@ var client = new elasticsearch.Client({
 var stdev_days = 30;
 var stdev = stdev_days * 24 * 60 * 60; // in days
 
-// Promise.promisifyAll(client);
-
 var elasticsearchController = {};
 elasticsearchController.searchInTitle = searchInTitle;
 elasticsearchController.create = create;
@@ -47,9 +45,6 @@ function migrate(array, type) {
     }
   }
 
-  console.log(bulkArray);
-
-
   return client.bulk({
     indx: 'stat',
     type: type,
@@ -58,15 +53,12 @@ function migrate(array, type) {
   .then(null, function(err) {
     console.log('error migrating', err);
   });
-
 }
-
 
 function searchInTitle(query) {
   return client.search({
     index: 'stat',
     type: 'sentiments',
-    // TODO: change to scan
     size: 20,
     body: {
       query: {
@@ -83,7 +75,6 @@ function searchInTitle(query) {
 }
 
 function getTopLinks(query) {
-  console.log('getting top');
   return client.search({
     index: 'stat',
     type: 'stories',
@@ -97,7 +88,6 @@ function getTopLinks(query) {
       }
     },
     sort : "time:desc",
-    // need to test this
     guass: {
       time: {
         origin: Date.now()/1000,
@@ -108,8 +98,6 @@ function getTopLinks(query) {
   .then(null, function(err) {
     console.log('error searching for top link', err);
   });
-
-
 }
 
 function deleteIndex(name) {
