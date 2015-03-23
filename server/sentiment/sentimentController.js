@@ -18,7 +18,6 @@ function addSentiment(sentiment) {
 function getSentimentsFromKeyword(keyword, callback) {
   var days = 30;
   var time = Date.now()/1000 - days * 24 * 60 * 60;
-  console.log('getting sentiments');
   Sentiment.find({title: { $regex: new RegExp(keyword, 'i')} , time: { $gte: time }}, callback);
 }
 

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html ng-app="stackdApp">
   <head>
-    <meta charset="utf-8"> 
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/d3/d3.js"></script>
-    <script src="bower_components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
-    <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
-    <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css">
+    <meta charset="utf-8">
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
+    <script src="lib/angular-nvd3/dist/angular-nvd3.js"></script>
+    <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
     <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Raleway:700,400' rel='stylesheet' type='text/css'>
-    <link href="./public/stylesheets/style.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
 
-   <script src="./public/pubApp.js"></script>
+   <script src="pubApp.js"></script>
   </head>
 
   <body class="container" ng-controller="SearchController as searchCtrl">
-    <div class="navBar"> 
+    <div class="navBar">
       <div class="title">
         stat
       </div>
@@ -25,7 +25,7 @@
             <button class="searchButton searchAgain" ng-click="searchCtrl.search(searchTerm)"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button>
              <!--   <button class="searchButton" ng-click="searchCtrl.showData = !searchCtrl.showData"><img src="./images/magnifierwhitethick.png" alt="search" style="height:43%"></button> -->
           </form>
-       
+
         </div>
       </div>
     </div>
@@ -56,8 +56,9 @@
       <div class="section-1" ng-show="searchCtrl.showData">
         <i class="comment" ng-repeat="comm in hnLinks">
           {{comm}}
-        </i>       
+        </i>
     </div>
 
   </body>
 </html>
+

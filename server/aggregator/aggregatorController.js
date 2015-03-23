@@ -1,23 +1,17 @@
 var sentimentController = require('../sentiment/sentimentController');
-var aggregatorController = {};
 var _ = require('lodash');
 var Promise = require('bluebird');
-
 var elasticsearchController = require('../elasticsearch/elasticsearchController');
 aggregatorController.aggregate = aggregate;
+
+var aggregatorController = {};
 var stdev_days = 30;
 var stdev = stdev_days * 24 * 60 * 60; // in days
 
 function aggregate(req,res) {
-
   var term = req.params.term;
-  console.log('aggregate called', term);
-
   Promise.join(elasticsearchController.searchInTitle(term), elasticsearchController.getTopLinks(term),
     function(response, topLinks) {
-      console.log(topLinks);
-      console.log(topLinks.hits.hits);
-
 
       total = returnHits(response);
       topLinks = returnHits(topLinks);
@@ -25,7 +19,6 @@ function aggregate(req,res) {
         res.send([]);
         return;
       }
-      // console.log(total);
       var totalRating = 0;
       var avgRating = 0;
       var totalWeight = 0;
@@ -33,8 +26,6 @@ function aggregate(req,res) {
         var x = Date.now()/1000 - obj.time;
         var weight = Math.exp(-x*x/(2*stdev*stdev));
 
-        // if date is from long time ago, weight no longer is a number
-        // assign weight to 0
         if (isNaN(weight)) {
           weight = 0;
         }
@@ -43,13 +34,8 @@ function aggregate(req,res) {
       });
 
       avgRating = totalRating/totalWeight;
-      // var topVals = sortObjectByCount(total);
-      console.log({avg: avgRating, topLinks: topLinks});
       res.send({avg: avgRating, topLinks: topLinks});
-
-
     });
-
 };
 
 function sortArrayByUpvotes(array) {
@@ -59,8 +45,6 @@ function sortArrayByUpvotes(array) {
   return sortedArray;
 }
 
-// adds up top sentiments
-// Make more general "great comment" and "great" should be considered same sentiment
 function countSentiments(sentiments) {
   var sentimentCounter = {};
   var topSentiment;
@@ -75,7 +59,6 @@ function countSentiments(sentiments) {
     }
   }
 
-  // finds top sentiment
   for (var sentiment in sentimentCounter) {
     if (sentimentCounter[sentiment] > topCounter) {
       secondSentiment = topSentiment;
@@ -83,8 +66,6 @@ function countSentiments(sentiments) {
       topCounter = sentimentCounter[sentiment];
     }
   }
-
-  console.log(sentimentCounter);
 
   return [findTopComment(sentiments, topSentiment), findTopComment(sentiments, secondSentiment)];
 
@@ -100,7 +81,6 @@ function findTopComment(sentiments, topSentiment) {
     }
   }
 
-  // sort by score
   relevantSentiments.sort(function(a,b) {
     return a.score - b.score;
   })
